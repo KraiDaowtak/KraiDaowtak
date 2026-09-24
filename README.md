@@ -1,0 +1,61 @@
+# HemaVerse 3D
+
+แพลตฟอร์มเรียนรู้ **สัณฐานวิทยาเซลล์เม็ดเลือด (Blood cell morphology)** แบบ 3 มิติบนเว็บ สำหรับนักศึกษาเทคนิคการแพทย์ แพทย์ และผู้สนใจโลหิตวิทยา ใช้ได้บนเบราว์เซอร์ทันที ไม่ต้องติดตั้งโปรแกรม
+
+## โหมดการเรียน
+
+| โหมด | สิ่งที่ทำได้ |
+| --- | --- |
+| **Atlas 3D** | สำรวจโมเดล 3 มิติ 33 ชนิด หมุน ซูม ดูป้ายกำกับโครงสร้าง ตัดขวางดูภายในเซลล์ สลับเป็นมุมกล้องจุลทรรศน์ และเทียบขนาดกับเม็ดเลือดแดงปกติบนตาราง 5 µm |
+| **ล่องหลอดเลือด** | นั่งไปกับกระแสเลือดใน venule ลากเพื่อหันมอง คลิกเซลล์ที่ลอยผ่านเพื่อเก็บให้ครบ 8 ชนิด พร้อมเห็น axial streaming, margination และ leukocyte rolling |
+| **นักสืบเซลล์** | ควิซ 10 ข้อจากโมเดล 3 มิติที่หมุนแบบสุ่ม 3 ระดับ (พื้นฐาน / เม็ดเลือดแดง / ทั้งหมด) มีคะแนน สถิติ และคำอธิบายหลังตอบ |
+| **นับแยกชนิด** | จำลองการทำ manual differential count ใต้เลนส์ 100× oil คลิกเม็ดเลือดขาวแล้วกดแป้น 1–8 เหมือนเครื่องนับเซลล์ เลือกตัวอย่างได้ 4 แบบ (ปกติ, ติดเชื้อแบคทีเรีย, พยาธิ/ภูมิแพ้, ไข้เลือดออก) แล้วเทียบผลกับค่าจริง |
+| **เคสคลินิก** | 13 เคสพร้อมประวัติ ผลแล็บ และสไลด์เสมือนที่เลื่อนดูได้หลายฟิลด์ เช่น IDA, β-thal/HbE, G6PD deficiency, มาลาเรีย P. falciparum, TTP, AML, CLL, multiple myeloma หลังตอบสามารถไฮไลต์เซลล์สำคัญบนสไลด์ได้ |
+
+## เซลล์ที่มีในระบบ
+
+- **เซลล์ปกติ:** RBC, segmented neutrophil, band, eosinophil, basophil, lymphocyte, monocyte, platelet
+- **รูปร่างและขนาดเม็ดเลือดแดง:** microcytic hypochromic, macro-ovalocyte, polychromasia, spherocyte, target cell, sickle cell, schistocyte, elliptocyte/pencil cell, teardrop, echinocyte, acanthocyte, stomatocyte, bite cell
+- **สิ่งเจือปนและการเรียงตัว:** Howell-Jolly body, basophilic stippling, Pappenheimer bodies, Heinz bodies, malaria ring form, NRBC, rouleaux
+- **เม็ดเลือดขาวผิดปกติ:** hypersegmented neutrophil, myeloblast with Auer rod, reactive lymphocyte, plasma cell, smudge cell
+
+## รายละเอียดทางวิทยาศาสตร์
+
+- ทุกโมเดลสร้างด้วยโค้ด (procedural) ในหน่วยไมโครเมตรจริง จึงเทียบขนาดระหว่างเซลล์ได้ถูกสัดส่วน
+- รูปทรงเม็ดเลือดแดงคำนวณจากสมการ **Evans–Fung (1972)** ที่วัดจากเม็ดเลือดแดงมนุษย์ แล้วปรับพารามิเตอร์เพื่อสร้าง poikilocyte แต่ละชนิด
+- สีของเม็ดเลือดแดงคำนวณจากความหนาเฉพาะจุด บริเวณที่บางจึงติดสีจางเป็น central pallor เหมือนภาพใต้กล้องจริง (ลองกด "มุมกล้องจุลทรรศน์" กับ target cell)
+- โครมาตินของนิวเคลียสใช้ fractal noise ปรับความหยาบตามชนิดเซลล์ เช่น lymphocyte จับกลุ่มหนา blast ละเอียดโปร่ง plasma cell แบบหน้าปัดนาฬิกา
+
+> เนื้อหาเพื่อการศึกษา ไม่ใช้แทนการวินิจฉัยทางการแพทย์
+
+## วิธีเปิดใช้งาน
+
+เป็นเว็บแบบ static ไม่มีขั้นตอน build เปิดผ่าน web server ใดก็ได้ (ES modules เปิดจาก `file://` โดยตรงไม่ได้)
+
+```bash
+python3 -m http.server 8000
+# แล้วเปิด http://localhost:8000
+```
+
+เผยแพร่ด้วย GitHub Pages ได้ทันที: Settings → Pages → Deploy from branch → เลือก branch และโฟลเดอร์ `/ (root)`
+
+ต้องใช้เบราว์เซอร์ที่รองรับ WebGL 2 และ import maps (Chrome, Edge, Firefox, Safari 16.4 ขึ้นไป) โหลด Three.js 0.160.0 จาก jsDelivr
+
+## โครงสร้างไฟล์
+
+```
+index.html          หน้าหลักและ layout
+css/style.css       ธีมและ layout (รองรับจอมือถือ)
+js/main.js          renderer, การสลับโหมด, event ของ pointer/keyboard
+js/cells.js         เครื่องสร้างโมเดลเซลล์ 3 มิติทั้งหมด (µm)
+js/noise.js         value noise, fbm และตัวสุ่มแบบกำหนด seed
+js/viewer.js        ตัวแสดงเซลล์เดี่ยว (Atlas และ Quiz ใช้ร่วมกัน)
+js/smear.js         สไลด์เสมือนใต้เลนส์ 100× oil
+js/data.js          เนื้อหาเซลล์ ตัวอย่างการนับ และเคสคลินิก (ภาษาไทย)
+js/modes/*.js       โหมด atlas, stream, quiz, diff, cases
+```
+
+## เพิ่มเนื้อหา
+
+- **เซลล์ใหม่:** เพิ่มข้อมูลใน `CELLS` (`js/data.js`) และเพิ่ม `case` ใน `buildCell()` (`js/cells.js`)
+- **เคสใหม่:** เพิ่ม object ใน `CASES` โดยกำหนดสัดส่วนเซลล์บนสไลด์ใน `smear.rbc` และ `smear.wbc`

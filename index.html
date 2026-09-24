@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HemaVerse 3D</title>
+<meta name="description" content="แพลตฟอร์มเรียนรู้สัณฐานวิทยาเซลล์เม็ดเลือดแบบ 3 มิติ: Atlas, ล่องหลอดเลือด, ควิซ, นับแยกชนิด และเคสคลินิก">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body data-mode="atlas">
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <ellipse cx="20" cy="20" rx="17" ry="17" fill="var(--eosin)"/>
+        <ellipse cx="20" cy="20" rx="7" ry="7" fill="var(--eosin-pale)"/>
+        <circle cx="30" cy="10" r="5" fill="var(--azure)"/>
+      </svg>
+      <div>
+        <b>HemaVerse</b>
+        <small>ห้องแล็บสัณฐานวิทยาเซลล์เม็ดเลือด 3 มิติ</small>
+      </div>
+    </div>
+    <nav class="modes" role="tablist" aria-label="โหมดการเรียน">
+      <button role="tab" data-mode="atlas"><b>Atlas 3D</b><small>สำรวจเซลล์</small></button>
+      <button role="tab" data-mode="stream"><b>ล่องหลอดเลือด</b><small>ภารกิจสะสม</small></button>
+      <button role="tab" data-mode="quiz"><b>นักสืบเซลล์</b><small>ควิซ 3 มิติ</small></button>
+      <button role="tab" data-mode="diff"><b>นับแยกชนิด</b><small>Differential</small></button>
+      <button role="tab" data-mode="cases"><b>เคสคลินิก</b><small>อ่านสไลด์</small></button>
+    </nav>
+  </header>
+
+  <div class="work">
+    <aside class="rail" data-for="atlas" aria-label="รายชื่อเซลล์">
+      <label class="search"><span class="sr">ค้นหาเซลล์</span>
+        <input id="cellSearch" type="search" placeholder="ค้นหา เช่น target, นิวโทรฟิล" autocomplete="off">
+      </label>
+      <div id="cellList" class="cell-list"></div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <canvas id="gl"></canvas>
+      <div id="labels" class="labels" hidden></div>
+      <div class="eyepiece" data-for="diff cases" hidden aria-hidden="true"><span class="reticle">100× oil</span></div>
+      <div id="badges" class="badges" data-for="diff"></div>
+      <div id="classPop" class="class-pop" hidden></div>
+      <div id="peek" class="peek" hidden></div>
+
+      <div class="hud hud-bottom" data-for="atlas">
+        <button class="btn tool" id="tRotate" aria-pressed="true">หมุนอัตโนมัติ</button>
+        <button class="btn tool" id="tLabels" aria-pressed="true">ป้ายกำกับ</button>
+        <button class="btn tool" id="tStain" aria-pressed="false">มุมกล้องจุลทรรศน์</button>
+        <button class="btn tool" id="tCompare" aria-pressed="false">เทียบกับ RBC</button>
+        <label class="slider" for="tSlice"><span>ตัดขวาง</span><input id="tSlice" type="range" min="0" max="100" value="0"></label>
+        <button class="btn tool" id="tReset">จัดมุมใหม่</button>
+      </div>
+      <p class="scale-note" data-for="atlas">ตาราง 1 ช่อง = 5 µm · ลากเพื่อหมุน · เลื่อนล้อเพื่อซูม</p>
+      <p class="scale-note" data-for="quiz">ลากเพื่อหมุน · เลื่อนล้อเพื่อซูม · ตาราง 1 ช่อง = 5 µm</p>
+      <div class="hud hud-bottom" id="streamHud" data-for="stream"></div>
+      <div class="crosshair" data-for="stream" aria-hidden="true"></div>
+      <div class="hud hud-bottom" id="diffHud" data-for="diff"></div>
+      <div class="hud hud-bottom" id="casesHud" data-for="cases"></div>
+
+      <div id="loading" class="loading"><div class="spin"></div><p>กำลังเตรียมห้องแล็บ…</p></div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <aside class="panel" aria-live="polite">
+      <section id="atlasInfo" class="pane" data-for="atlas"></section>
+      <section id="streamPanel" class="pane" data-for="stream"></section>
+      <section id="quizPanel" class="pane" data-for="quiz"></section>
+      <section id="diffPanel" class="pane" data-for="diff"></section>
+      <section id="casePanel" class="pane" data-for="cases"></section>
+    </aside>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
