@@ -638,3 +638,70 @@ body[data-mode="stream"] .stage { background: #9c3346; }
   .photo-card { width: min(190px, 46cqw); top: 8px; right: 8px; }
 }
 .kp.sum { border-style: dashed; }
+
+/* ---------- Navy raised buttons
+   Every raised control is navy with an embossed edge (lit top, dark lip, cast shadow).
+   The selected or pressed one lights up bright blue; answers turn green or red. */
+:root {
+  --navy-raised: linear-gradient(180deg, #31527f 0%, #203a63 52%, #182d4f 100%);
+  --navy-hover: linear-gradient(180deg, #3b6195 0%, #26446f 52%, #1c3459 100%);
+  --navy-pressed: linear-gradient(180deg, #14243f, #1c3357);
+  --navy-emboss: 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 3px rgba(10, 22, 44, 0.22), 0 8px 18px -6px rgba(10, 22, 44, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  --blue-lit: linear-gradient(180deg, #5a9ae6 0%, #2f78cf 50%, #1f63b4 100%);
+  --blue-glow: 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 3px rgba(47, 120, 207, 0.22), 0 8px 18px -6px rgba(31, 99, 180, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  --on-navy: #eef3fb;
+  --on-navy-muted: rgba(208, 222, 242, 0.75);
+}
+
+.btn:not(.ghost):not(.primary),
+.kp, .chip, .attr-chip, .opt, .case-nav button, .match-best, .class-pop button,
+.modes button[aria-selected="true"], .seg button[aria-checked="true"], .seg [aria-selected="true"] {
+  background: var(--navy-raised);
+  border-color: rgba(8, 18, 36, 0.55);
+  color: var(--on-navy);
+  box-shadow: var(--navy-emboss);
+}
+.btn:not(.ghost):not(.primary):hover:not(:disabled),
+.kp:hover, .chip:hover, .attr-chip:hover, .opt:hover:not(:disabled), .case-nav button:hover, .match-best:hover, .class-pop button:hover {
+  background: var(--navy-hover);
+  border-color: rgba(8, 18, 36, 0.55);
+  color: #fff;
+  box-shadow: var(--navy-emboss);
+}
+.btn:not(.ghost):active:not(:disabled), .kp:active, .chip:active, .attr-chip:active, .opt:active:not(:disabled), .case-nav button:active {
+  background: var(--navy-pressed);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(1px);
+}
+/* Secondary text on navy */
+.opt small, .attr-chip small, .seg button[aria-checked="true"] small, .seg [aria-selected="true"] small,
+.modes button[aria-selected="true"] small, .match-best span { color: var(--on-navy-muted); }
+.modes button[aria-selected="true"] b, .seg button[aria-checked="true"] b, .seg [aria-selected="true"] b { color: #fff; }
+.match-best b { color: #a9cdf8; }
+.btn:not(.ghost) kbd, .opt kbd, .class-pop kbd {
+  background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.28); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); color: #dfe8f6;
+}
+
+/* Selected / pressed: bright blue */
+.btn.tool[aria-pressed="true"], .btn.primary,
+.kp[aria-current="true"], .chip[aria-pressed="true"], .attr-chip[aria-checked="true"], .case-nav button[aria-selected="true"] {
+  background: var(--blue-lit);
+  border-color: rgba(10, 50, 110, 0.6);
+  color: #fff;
+  box-shadow: var(--blue-glow);
+}
+.btn.primary:hover:not(:disabled), .btn.tool[aria-pressed="true"]:hover { background: linear-gradient(180deg, #6aa6ec 0%, #3784d8 50%, #2569bb 100%); }
+.attr-chip[aria-checked="true"] small { color: rgba(255, 255, 255, 0.85); }
+
+/* Graded answers */
+.opt.right, .case-nav button.ok { background: linear-gradient(180deg, #2fae78, #148457); border-color: rgba(6, 70, 44, 0.6); color: #fff; }
+.opt.wrong, .case-nav button.bad { background: linear-gradient(180deg, #e0647c, #b92e4b); border-color: rgba(100, 14, 34, 0.6); color: #fff; }
+.opt.right small, .opt.wrong small { color: rgba(255, 255, 255, 0.85); }
+.opt.dim { opacity: 0.45; }
+
+/* Ghost buttons stay quiet: navy outline on silver */
+.btn.ghost { color: #1c3357; border-color: rgba(28, 51, 87, 0.45); }
+.btn.ghost:hover { background: rgba(28, 51, 87, 0.08); }
+.btn:disabled, .opt:disabled:not(.right):not(.wrong):not(.dim) { opacity: 0.55; }
