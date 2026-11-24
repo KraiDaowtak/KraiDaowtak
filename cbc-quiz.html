@@ -1,0 +1,461 @@
+<title>ฝึกแปลผล CBC Automation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: หน้าจอ workstation ของเครื่องวิเคราะห์ (ซ้าย) คู่กับแผงคำถาม (ขวา) เรียงซ้อนเป็นคอลัมน์เดียวบนจอแคบ */
+:root{
+  --bg:#e9eef1; --surface:#ffffff; --sunken:#f3f6f8; --chrome:#1d3b49; --chrome-fg:#e8f1f4;
+  --ink:#14232b; --muted:#566974; --line:#cbd6dc; --accent:#0a7284; --accent-soft:#dcf0f3;
+  --hi:#c42b2b; --lo:#1c5fc0; --ok:#1c7a4c; --ok-soft:#e1f3e9; --bad-soft:#fbe6e4; --warn:#9a5a00; --warn-soft:#fbf0d9;
+  --plot:#fbfcfd; --grid:#dfe6ea; --curve:#0a7284; --curve-fill:#0a728426;
+  --d-neut:#1d8fcf; --d-lymph:#c0399b; --d-mono:#2f9a4c; --d-eo:#dd5f22; --d-abn:#7448c9; --d-deb:#8b959c;
+  --sans:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d1519; --surface:#16222a; --sunken:#111b21; --chrome:#0a2a36; --chrome-fg:#d7e8ed;
+  --ink:#e4edf1; --muted:#94a6b0; --line:#2b3b45; --accent:#4cc3d6; --accent-soft:#123741;
+  --hi:#ff7b72; --lo:#79b0ff; --ok:#58c98d; --ok-soft:#12352a; --bad-soft:#40201f; --warn:#f0b455; --warn-soft:#3a2d12;
+  --plot:#0f191f; --grid:#24333c; --curve:#4cc3d6; --curve-fill:#4cc3d62e;
+  --d-neut:#4ab4f0; --d-lymph:#ea6cc6; --d-mono:#5fd07d; --d-eo:#ff8a4f; --d-abn:#a98bf5; --d-deb:#7d8990;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0d1519; --surface:#16222a; --sunken:#111b21; --chrome:#0a2a36; --chrome-fg:#d7e8ed;
+  --ink:#e4edf1; --muted:#94a6b0; --line:#2b3b45; --accent:#4cc3d6; --accent-soft:#123741;
+  --hi:#ff7b72; --lo:#79b0ff; --ok:#58c98d; --ok-soft:#12352a; --bad-soft:#40201f; --warn:#f0b455; --warn-soft:#3a2d12;
+  --plot:#0f191f; --grid:#24333c; --curve:#4cc3d6; --curve-fill:#4cc3d62e;
+  --d-neut:#4ab4f0; --d-lymph:#ea6cc6; --d-mono:#5fd07d; --d-eo:#ff8a4f; --d-abn:#a98bf5; --d-deb:#7d8990;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+.wrap{max-width:1320px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font-size:1.5rem;line-height:1.25;margin:0;font-weight:700;text-wrap:balance}
+.lede{margin:4px 0 0;color:var(--muted);max-width:68ch}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.score{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.9rem}
+.score b{font-size:1.25rem}
+.meter{width:140px;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.linkbtn{background:none;border:1px solid var(--line);border-radius:4px;padding:4px 10px;font-size:.82rem;color:var(--muted)}
+.linkbtn:hover{color:var(--ink);border-color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:0 0 auto;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 12px;text-align:left;display:flex;flex-direction:column;gap:0;min-width:118px}
+.tab small{color:var(--muted);font-size:.76rem}
+.tab .tn{font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.tab .pg{font-family:var(--mono);font-size:.74rem;color:var(--muted);font-weight:500}
+.tab.done .pg{color:var(--ok)}
+.tab[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1020px){.main{grid-template-columns:minmax(0,1fr)}}
+
+/* analyzer window */
+.win{background:var(--surface);border:1px solid var(--line);min-width:0}
+.titlebar{background:var(--chrome);color:var(--chrome-fg);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;justify-content:space-between;padding:6px 12px;font-size:.82rem}
+.titlebar .nm{font-family:var(--mono);font-weight:600;letter-spacing:.04em}
+.titlebar .sim{opacity:.8}
+.sinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--sunken);border-bottom:1px solid var(--line)}
+.sinfo div{background:var(--sunken);padding:5px 10px;min-width:0}
+.sinfo span{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sinfo b{font-family:var(--mono);font-weight:500;font-size:.86rem;overflow-wrap:anywhere}
+.clin{padding:8px 12px;border-bottom:1px solid var(--line);font-size:.9rem}
+.clin b{color:var(--muted);font-weight:600;margin-right:6px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--sunken)}
+.judge{font-family:var(--mono);font-weight:600;font-size:.8rem;padding:2px 10px;border:1px solid currentColor}
+.judge.pos{color:var(--hi)} .judge.neg{color:var(--ok)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-left:auto}
+.seg button{background:var(--surface);border:0;padding:4px 10px;font-size:.82rem}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:600}
+.seg button:disabled{color:var(--muted);cursor:not-allowed;opacity:.6}
+.rnote{padding:6px 12px;background:var(--warn-soft);color:var(--warn);font-size:.86rem;border-bottom:1px solid var(--line)}
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:1px;background:var(--line)}
+.pane{background:var(--surface);padding:10px 12px;min-width:0}
+.pane h3{margin:0 0 6px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.86rem;font-variant-numeric:tabular-nums}
+th{font-family:var(--sans);font-size:.68rem;font-weight:600;color:var(--muted);text-align:right;padding:2px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:3px 6px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+td:first-child{text-align:left;font-weight:600}
+td.val{font-weight:600;font-size:.95rem}
+td.fl{width:1.6em;text-align:center;font-weight:600;padding-inline:2px}
+td.unit,td.ref{color:var(--muted);font-size:.78rem;text-align:left}
+td.prev{color:var(--muted)}
+.H{color:var(--hi)} .L{color:var(--lo)}
+.rb{position:relative;width:64px;height:8px;background:var(--grid);display:inline-block;vertical-align:middle}
+.rb::before{content:"";position:absolute;left:30%;width:40%;top:0;bottom:0;background:var(--line)}
+.rb i{position:absolute;top:-3px;width:3px;height:14px;background:var(--ink);transform:translateX(-50%)}
+.rb i.H{background:var(--hi)} .rb i.L{background:var(--lo)}
+.plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.plot{min-width:0}
+.plot svg{width:100%;height:auto;display:block;background:var(--plot);border:1px solid var(--line)}
+.plot figcaption{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:2px}
+figure{margin:0}
+.ax{stroke:var(--muted);stroke-width:.6;fill:none}
+.gd{stroke:var(--grid);stroke-width:.5;fill:none}
+.disc{stroke:var(--warn);stroke-width:.6;stroke-dasharray:2 2;fill:none}
+.cv{stroke:var(--curve);stroke-width:1.3;fill:var(--curve-fill)}
+.tk{fill:var(--muted);font-family:var(--mono);font-size:7px}
+.k-neut{fill:var(--d-neut)} .k-lymph{fill:var(--d-lymph)} .k-mono{fill:var(--d-mono)} .k-eo{fill:var(--d-eo)} .k-abn{fill:var(--d-abn)} .k-deb{fill:var(--d-deb)}
+.legend{display:flex;flex-wrap:wrap;gap:2px 10px;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:4px}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
+.flags{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.fbox{border:1px solid var(--line);min-height:74px}
+.fbox h4{margin:0;padding:2px 8px;background:var(--sunken);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.74rem;font-weight:600}
+.fbox ul{list-style:none;margin:0;padding:4px 8px;font-family:var(--mono);font-size:.8rem}
+.fbox li.s{color:var(--hi);font-weight:600}
+.fbox li.none{color:var(--muted)}
+.foot{padding:6px 12px;font-size:.76rem;color:var(--muted);border-top:1px solid var(--line)}
+
+/* quiz */
+.quiz{display:flex;flex-direction:column;gap:12px;min-width:0}
+.quiz h2{margin:0;font-size:1.05rem}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.q .qn{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.06em}
+.q p{margin:0}
+.q .qt{font-weight:600}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:8px 10px;display:flex;gap:8px;align-items:flex-start}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+.opt:disabled{cursor:default}
+.opt .mk{font-family:var(--mono);font-weight:600;flex:0 0 1.2em}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)} .opt.right .mk{color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--hi)} .opt.wrong .mk{color:var(--hi)}
+.why{border-left:3px solid var(--accent);padding:2px 0 2px 10px;font-size:.9rem}
+.why b.r{color:var(--ok)} .why b.w{color:var(--hi)}
+.sum{background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:14px}
+.sum h3{margin:0 0 6px;font-size:.95rem}
+.sum ul{margin:0;padding-left:1.2em;font-size:.9rem}
+.sum .act{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.pbtn{background:var(--accent);color:var(--surface);border:0;border-radius:4px;padding:7px 14px;font-weight:600}
+.locked{color:var(--muted);font-size:.86rem;border:1px dashed var(--line);border-radius:6px;padding:10px 14px}
+.disc-note{font-size:.8rem;color:var(--muted);max-width:90ch}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>ฝึกแปลผล CBC จากเครื่องวิเคราะห์อัตโนมัติ</h1>
+      <p class="lede">อ่านหน้าจอรายงานผลของแต่ละราย ตรวจค่าตัวเลข flag ฮิสโตแกรม และ scattergram แล้วตอบคำถามทางขวา ตอบแล้วจะเห็นเฉลยพร้อมเหตุผลทันที</p>
+    </div>
+    <div class="score" aria-live="polite">
+      <span>คะแนน <b id="scoreNum">0</b>/<span id="scoreTot">0</span></span>
+      <span class="meter" aria-hidden="true"><i id="meterFill"></i></span>
+      <button class="linkbtn" id="resetAll" type="button">เริ่มใหม่ทั้งหมด</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="เลือกผู้ป่วย"></div>
+  <div class="main">
+    <section class="win" id="win" aria-label="หน้าจอรายงานผล CBC"></section>
+    <section class="quiz" id="quiz" aria-label="คำถาม"></section>
+  </div>
+  <p class="disc-note">ข้อมูลผู้ป่วยทั้งหมดสมมติขึ้นเพื่อการเรียนการสอน หน้าจอเป็นเครื่องจำลอง ไม่ได้อ้างอิงผลิตภัณฑ์ยี่ห้อใด ค่าอ้างอิงและเกณฑ์ค่าวิกฤตเป็นตัวอย่างสำหรับผู้ใหญ่ ในการทำงานจริงให้ใช้ค่าของห้องปฏิบัติการแต่ละแห่ง</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+var RANGES={
+  WBC:{u:"10³/µL",d:2,lo:4.0,hi:10.0}, RBC:{u:"10⁶/µL",d:2,M:[4.5,5.9],F:[4.0,5.2]},
+  HGB:{u:"g/dL",d:1,M:[13.0,17.0],F:[12.0,15.0]}, HCT:{u:"%",d:1,M:[40,50],F:[36,45]},
+  MCV:{u:"fL",d:1,lo:80,hi:100}, MCH:{u:"pg",d:1,lo:27,hi:33}, MCHC:{u:"g/dL",d:1,lo:32,hi:36},
+  "RDW-CV":{u:"%",d:1,lo:11.5,hi:14.5}, PLT:{u:"10³/µL",d:0,lo:150,hi:450}, MPV:{u:"fL",d:1,lo:7.5,hi:11.5}
+};
+var CBC_ORDER=["WBC","RBC","HGB","HCT","MCV","MCH","MCHC","RDW-CV","PLT","MPV"];
+var DIFF=[["NEUT",40,75,2.0,7.0],["LYMPH",20,45,1.0,3.0],["MONO",2,10,0.2,1.0],["EO",1,6,0.02,0.5],["BASO",0,1,0,0.1]];
+var NORM_RBC=[{mu:90,sd:.16,w:1}], NORM_PLT={mu:8.5,sd:.38};
+
+var CASES=[
+{id:"c1",tab:"หญิง 28 ปี",sub:"อ่อนเพลีย",sampleNo:"2611240031",hn:"64-018827",sex:"F",age:28,ward:"OPD อายุรกรรม",
+ clinical:"อ่อนเพลีย เหนื่อยง่าย 3 เดือน ประจำเดือนมามากและนาน ซีดเล็กน้อย",
+ v:{WBC:6.8,RBC:4.02,HGB:8.6,HCT:28.9,MCV:71.9,MCH:21.4,MCHC:29.8,"RDW-CV":18.9,PLT:468,MPV:9.1},
+ diff:[58.0,31.0,7.5,3.0,0.5],
+ flags:{wbc:[],rbc:["Anemia","Microcytosis","Hypochromia","Anisocytosis"],plt:["Thrombocytosis"]},
+ rbcH:[{mu:70,sd:.25,w:1}],pltH:NORM_PLT,
+ q:[
+ {t:"จากค่าดัชนีเม็ดเลือดแดง ควรบรรยายลักษณะเม็ดเลือดแดงของผู้ป่วยรายนี้ว่าอย่างไร",
+  o:["Normocytic normochromic ขนาดสม่ำเสมอ","Microcytic hypochromic ร่วมกับ anisocytosis","Macrocytic normochromic ร่วมกับ anisocytosis","Microcytic hypochromic ขนาดสม่ำเสมอ"],a:1,
+  why:"MCV 71.9 fL (&lt;80) = microcytic, MCH 21.4 pg และ MCHC 29.8 g/dL ต่ำ = hypochromic, RDW-CV 18.9% สูง แสดงว่าขนาดเม็ดเลือดแดงแตกต่างกันมาก ซึ่งตรงกับฮิสโตแกรม RBC ที่เลื่อนไปทางซ้ายและฐานกว้าง"},
+ {t:"Mentzer index (MCV ÷ RBC) ของรายนี้เท่ากับเท่าใด และชี้ไปทางภาวะใดมากกว่า",
+  o:["ประมาณ 10 ชี้ไปทาง thalassemia trait","ประมาณ 13 แยกไม่ได้","ประมาณ 18 ชี้ไปทาง iron deficiency anemia","ประมาณ 25 ชี้ไปทาง megaloblastic anemia"],a:2,
+  why:"71.9 ÷ 4.02 = 17.9 ค่าที่มากกว่า 13 สนับสนุน iron deficiency เพราะไขกระดูกสร้างเม็ดเลือดแดงได้น้อยลง (RBC ต่ำ) ต่างจาก thalassemia trait ที่จำนวน RBC มักปกติหรือสูง ดัชนีนี้ใช้คัดกรองเท่านั้น ต้องยืนยันด้วยการตรวจอื่น"},
+ {t:"PLT 468 ×10³/µL ในบริบทนี้อธิบายได้ดีที่สุดอย่างไร และควรตรวจอะไรต่อเพื่อยืนยันสาเหตุของภาวะซีด",
+  o:["Essential thrombocythemia ควรส่งตรวจ JAK2 ทันที","Reactive thrombocytosis ที่พบร่วมกับการขาดเหล็กได้ ควรตรวจ serum ferritin / iron studies และดูสเมียร์เลือด","เป็นค่าผิดพลาดจากเครื่องเสมอ ให้ตัด PLT ออกจากรายงาน","เกิดจากการบริจาคเลือดบ่อย ไม่ต้องตรวจเพิ่ม"],a:1,
+  why:"การขาดเหล็กมักพบเกล็ดเลือดสูงแบบ reactive ได้ การยืนยันใช้ serum ferritin (ต่ำ), serum iron ต่ำ, TIBC สูง และควรดูฮิสโตแกรม PLT กับสเมียร์ด้วย เพราะ microcyte หรือ RBC fragment ขนาดเล็กมากอาจถูกนับเป็นเกล็ดเลือดในหลักการ impedance ได้"}],
+ summary:["Microcytic hypochromic anemia + RDW สูง + RBC ต่ำ + Mentzer index &gt; 13 เข้าได้กับ iron deficiency anemia","ยืนยันด้วย ferritin / iron studies และหาสาเหตุของการเสียเลือด","ในประเทศไทยควรนึกถึง thalassemia ที่อาจพบร่วมกันได้เสมอ"]},
+
+{id:"c2",tab:"ชาย 22 ปี",sub:"ตรวจสุขภาพ",sampleNo:"2611240047",hn:"66-102254",sex:"M",age:22,ward:"ตรวจสุขภาพก่อนเข้าทำงาน",
+ clinical:"ไม่มีอาการ ตรวจสุขภาพประจำปี มารดามีประวัติซีดเรื้อรัง",
+ v:{WBC:7.4,RBC:6.12,HGB:12.1,HCT:38.6,MCV:63.1,MCH:19.8,MCHC:31.3,"RDW-CV":14.6,PLT:265,MPV:9.8},
+ diff:[55.0,34.5,7.0,3.0,0.5],
+ flags:{wbc:[],rbc:["Microcytosis","Hypochromia","Erythrocytosis"],plt:[]},
+ rbcH:[{mu:63,sd:.17,w:1}],pltH:NORM_PLT,
+ q:[
+ {t:"ข้อใดเป็นลักษณะเด่นที่ทำให้รายนี้ต่างจาก iron deficiency anemia ทั่วไป",
+  o:["MCHC ต่ำกว่าปกติเล็กน้อย","MCV ต่ำมาก แต่จำนวน RBC สูง และ RDW ใกล้เคียงปกติ","เกล็ดเลือดอยู่ในเกณฑ์ปกติ","WBC อยู่ในเกณฑ์ปกติ"],a:1,
+  why:"MCV 63.1 fL ต่ำมากเมื่อเทียบกับ Hb ที่ลดลงเพียงเล็กน้อย ขณะที่ RBC 6.12 ×10⁶/µL สูง และ RDW 14.6% แทบไม่กว้าง (เซลล์เล็กสม่ำเสมอ ฮิสโตแกรมแคบ) เป็นรูปแบบของ thalassemia trait ส่วน IDA มักมี RBC ต่ำและ RDW สูง"},
+ {t:"Mentzer index ของรายนี้แปลผลอย่างไร",
+  o:["10.3 (&lt;13) สนับสนุน thalassemia trait","10.3 (&lt;13) สนับสนุน iron deficiency","19.8 (&gt;13) สนับสนุน iron deficiency","63.1 แปลผลไม่ได้"],a:0,
+  why:"63.1 ÷ 6.12 = 10.3 ค่าน้อยกว่า 13 ชี้ไปทาง thalassemia trait เพราะร่างกายชดเชยด้วยการสร้างเม็ดเลือดแดงจำนวนมากแต่ขนาดเล็ก"},
+ {t:"ควรแนะนำการตรวจต่อเนื่องอย่างไรจึงเหมาะสมที่สุด",
+  o:["ให้ธาตุเหล็กเสริม 3 เดือนแล้วตรวจ CBC ซ้ำ โดยไม่ต้องตรวจอย่างอื่น","ตรวจไขกระดูก","ตรวจคัดกรอง OF/DCIP และ Hb typing (HPLC หรือ CE) และพิจารณา PCR สำหรับ α-thalassemia 1 หาก Hb typing ปกติ","ตรวจ Coombs test และ reticulocyte count เท่านั้น"],a:2,
+  why:"Hb typing ช่วยวินิจฉัย β-thalassemia trait (HbA₂ สูง) และ HbE trait ได้ แต่ α-thalassemia 1 trait มักให้ Hb typing ปกติ จึงต้องยืนยันด้วย PCR ควรประเมินภาวะเหล็กร่วมด้วย เพราะการขาดเหล็กทำให้ HbA₂ ต่ำลงและบดบังการวินิจฉัยได้ การให้เหล็กโดยไม่ตรวจเสี่ยงต่อภาวะเหล็กเกินโดยไม่จำเป็น"}],
+ summary:["Microcytosis เด่นชัด + RBC สูง + RDW ใกล้ปกติ + Mentzer index &lt; 13 เข้าได้กับ thalassemia trait","ต้องยืนยันชนิดด้วย Hb typing และ/หรือ PCR ก่อนให้คำปรึกษาทางพันธุกรรม","ฮิสโตแกรม RBC เลื่อนซ้ายแต่ยังแคบ ต่างจาก IDA ที่ฐานกว้าง"]},
+
+{id:"c3",tab:"หญิง 67 ปี",sub:"ไข้ ไอ",sampleNo:"2611240062",hn:"59-330418",sex:"F",age:67,ward:"หอผู้ป่วยอายุรกรรมหญิง",
+ clinical:"ไข้ ไอ 1 สัปดาห์ สงสัยปอดอักเสบ ตัวอย่างเจาะช่วงเช้ามืดและวางพักในห้องแอร์ก่อนนำส่ง",
+ v:{WBC:8.9,RBC:2.15,HGB:12.4,HCT:24.1,MCV:112.1,MCH:57.7,MCHC:51.5,"RDW-CV":16.8,PLT:232,MPV:10.1},
+ diff:[62.0,28.0,8.0,1.5,0.5],
+ flags:{wbc:[],rbc:["RBC Agglutination?","Turbidity/HGB Interference?","Macrocytosis","Anisocytosis"],plt:[]},
+ rbcH:[{mu:95,sd:.18,w:1},{mu:185,sd:.15,w:.7}],pltH:NORM_PLT,
+ q:[
+ {t:"ค่าใดเป็นสัญญาณแรกที่บอกว่าผลชุดนี้ยังรายงานไม่ได้",
+  o:["WBC 8.9 ×10³/µL","PLT 232 ×10³/µL","MCHC 51.5 g/dL และ Hb × 3 ไม่ใกล้เคียงกับ Hct","RDW-CV 16.8%"],a:2,
+  why:"MCHC เกินประมาณ 37 g/dL เป็นไปไม่ได้ทางสรีรวิทยา (เกินขีดการละลายของฮีโมโกลบินในเซลล์) และ rule of three ไม่ผ่าน: 12.4 × 3 = 37.2 แต่ Hct ที่เครื่องรายงานคือ 24.1% แสดงว่ามีอย่างน้อยหนึ่งพารามิเตอร์ที่วัดผิด"},
+ {t:"รูปแบบ RBC ต่ำ, MCV สูง, Hct ต่ำ, Hb ไม่เปลี่ยน, MCH และ MCHC สูงมาก ร่วมกับฮิสโตแกรม RBC สองยอด เข้าได้กับสาเหตุใดมากที่สุด",
+  o:["Cold agglutinin ทำให้เม็ดเลือดแดงเกาะกลุ่ม","ตัวอย่างไขมันสูง (lipemia)","Hereditary spherocytosis","Megaloblastic anemia"],a:0,
+  why:"เม็ดเลือดแดงที่เกาะกลุ่มถูกนับเป็นเซลล์เดียวขนาดใหญ่ จึงได้ RBC ต่ำปลอมและ MCV สูงปลอม Hct ที่คำนวณจึงต่ำ ส่วน Hb วัดหลัง lyse เซลล์จึงยังถูกต้อง ถ้าเป็น lipemia ค่า Hb จะสูงปลอมโดยที่ RBC และ MCV ปกติ ส่วน spherocytosis มี MCHC สูงได้เพียงเล็กน้อย ไม่ถึงระดับนี้"},
+ {t:"ควรแก้ไขตัวอย่างนี้อย่างไรก่อนรายงานผล",
+  o:["รายงานผลตามเครื่องพร้อมหมายเหตุว่า MCHC สูง","อุ่นตัวอย่างที่ 37°C ประมาณ 15–30 นาที ผสมให้เข้ากันแล้ววิเคราะห์ซ้ำทันที","ปั่นแยกพลาสมาทิ้งแล้วเติมน้ำกลั่นแทน","เจือจางตัวอย่าง 1:2 ด้วยน้ำเกลือเย็นแล้ววิเคราะห์ซ้ำ"],a:1,
+  why:"Cold agglutinin ทำปฏิกิริยาได้ดีที่อุณหภูมิต่ำ การอุ่นที่ 37°C ทำให้เม็ดเลือดแดงแยกจากกัน ต้องวิเคราะห์ทันทีหลังอุ่น หากยังไม่หายอาจต้องอุ่นนานขึ้น ใช้ diluent อุ่น หรือทำ plasma replacement ด้วยน้ำเกลืออุ่น และควรดูสเมียร์ยืนยันการเกาะกลุ่ม เมื่อตอบครบแล้วกดดูผลหลังอุ่นได้ที่แถบเครื่องมือของหน้าจอ"}],
+ summary:["MCHC &gt; 37 g/dL คือสัญญาณให้หาสิ่งรบกวนเสมอ: cold agglutinin, lipemia, hemolysis, icterus","Cold agglutinin: RBC↓ MCV↑ Hct↓ แต่ Hb ถูกต้อง แก้โดยอุ่น 37°C","หลังอุ่น ค่าดัชนีกลับสู่ปกติและ rule of three ผ่าน (12.4 × 3 ≈ 37.3)","สาเหตุที่พบได้ เช่น การติดเชื้อ <i>Mycoplasma pneumoniae</i> ควรแจ้งแพทย์ว่าพบ cold agglutinin"],
+ rerun:{label:"หลังอุ่น 37°C",note:"วิเคราะห์ซ้ำหลังอุ่นตัวอย่างที่ 37°C นาน 30 นาที",
+  v:{RBC:4.10,HCT:37.3,MCV:91.0,MCH:30.2,MCHC:33.2,"RDW-CV":13.4},flags:{wbc:[],rbc:[],plt:[]},rbcH:NORM_RBC}},
+
+{id:"c4",tab:"ชาย 45 ปี",sub:"ก่อนผ่าตัด",sampleNo:"2611240078",hn:"61-207731",sex:"M",age:45,ward:"OPD ศัลยกรรม",
+ clinical:"ตรวจก่อนผ่าตัดไส้เลื่อน ไม่มีประวัติเลือดออกง่าย ไม่มีจุดจ้ำเลือด CBC เมื่อ 6 เดือนก่อน PLT 236",
+ v:{WBC:9.6,RBC:5.02,HGB:15.1,HCT:45.0,MCV:89.6,MCH:30.1,MCHC:33.6,"RDW-CV":13.0,PLT:42,MPV:null},
+ diff:[60.0,30.0,7.0,2.5,0.5],
+ flags:{wbc:[],rbc:[],plt:["Thrombocytopenia","PLT Clumps?","PLT Abn Distribution"]},
+ rbcH:NORM_RBC,pltH:{mu:9,sd:.45,tail:.6,noise:.08},
+ scat:[{k:"neut",n:270},{k:"lymph",n:135},{k:"mono",n:32},{k:"eo",n:11},{k:"deb",x:11,y:13,sx:5,sy:6,n:45}],
+ q:[
+ {t:"PLT 42 ×10³/µL ในผู้ป่วยที่ไม่มีอาการเลือดออก พร้อม flag “PLT Clumps?” สิ่งแรกที่ควรทำคืออะไร",
+  o:["โทรรายงานค่าวิกฤตทันทีและเสนอให้เกล็ดเลือด","ตรวจหลอดเลือดว่ามีลิ่มเลือดหรือไม่ และดูสเมียร์เลือดโดยเฉพาะบริเวณหางสเมียร์","วิเคราะห์ซ้ำด้วยหลอดเดิม 3 ครั้งแล้วรายงานค่าเฉลี่ย","รายงานผลได้เลยเพราะเครื่องผ่าน QC แล้ว"],a:1,
+  why:"ผลไม่เข้ากับอาการทางคลินิกและผลครั้งก่อน อีกทั้งฮิสโตแกรม PLT ไม่กลับลงสู่เส้นฐานทางขวาและ MPV คำนวณไม่ได้ (----) จึงต้องแยกเกล็ดเลือดต่ำปลอมก่อน โดยตรวจหา clot ในหลอด (เจาะยาก ผสมไม่ดี) และดูสเมียร์หา platelet clump, platelet satellitism หรือ giant platelet"},
+ {t:"ไม่พบลิ่มเลือดในหลอด สเมียร์พบเกล็ดเลือดเกาะกลุ่มจำนวนมากที่หางสเมียร์ สาเหตุที่เป็นไปได้มากที่สุดคืออะไร",
+  o:["Immune thrombocytopenia (ITP)","EDTA-dependent pseudothrombocytopenia","Disseminated intravascular coagulation","Hypersplenism"],a:1,
+  why:"ในบางคน EDTA ทำให้ epitope บน GPIIb/IIIa เผยออกมาและถูกแอนติบอดีในพลาสมาจับ เกล็ดเลือดจึงเกาะกลุ่มในหลอดทดลอง เครื่องนับกลุ่มเป็นอนุภาคใหญ่หรือไม่นับ ทำให้ PLT ต่ำปลอม เป็นปรากฏการณ์ in vitro ไม่มีความเสี่ยงเลือดออก"},
+ {t:"ควรทำอย่างไรเพื่อให้ได้ค่าเกล็ดเลือดที่รายงานได้",
+  o:["เจาะเลือดใหม่ใส่หลอด 3.2% sodium citrate แล้วคูณผล PLT ด้วย 1.1","แช่หลอด EDTA เดิมในตู้เย็น 1 ชั่วโมงแล้ววิเคราะห์ซ้ำ","ประมาณจำนวนจากสเมียร์ของหลอดเดิมแล้วรายงานเป็นตัวเลข","รายงานว่า PLT &lt; 50 ×10³/µL"],a:0,
+  why:"หลอด citrate มีสารกันเลือดแข็ง 1 ส่วนต่อเลือด 9 ส่วน จึงต้องคูณ 1.1 เพื่อแก้การเจือจาง วิธีอื่นที่ใช้ได้ตามแนวทางของห้องปฏิบัติการ เช่น วิเคราะห์ทันทีหลังเจาะ หรืออุ่น 37°C ความเย็นทำให้การเกาะกลุ่มมากขึ้น ควรบันทึกหมายเหตุไว้ในประวัติผู้ป่วยเพื่อการเจาะครั้งต่อไป"}],
+ summary:["เกล็ดเลือดต่ำที่ไม่เข้ากับอาการ ต้องแยก pseudothrombocytopenia ก่อนรายงานเสมอ","เบาะแสจากเครื่อง: flag PLT Clumps?, ฮิสโตแกรม PLT หางขวาไม่ลงเส้นฐาน, MPV ไม่แสดงค่า, มีจุดบริเวณ debris ใน scattergram","หลอด citrate: 198 × 1.1 = 218 ×10³/µL อยู่ในเกณฑ์ปกติ"],
+ rerun:{label:"หลอด citrate",note:"เจาะใหม่ด้วย 3.2% sodium citrate: PLT จากเครื่อง 198 × 1.1 = 218 ×10³/µL (ค่าอื่นคงผลจากหลอด EDTA)",
+  v:{PLT:218,MPV:10.4},flags:{wbc:[],rbc:[],plt:[]},pltH:NORM_PLT,scat:null}},
+
+{id:"c5",tab:"หญิง 34 ปี",sub:"ไข้ จ้ำเลือด",sampleNo:"2611240093",hn:"67-004412",sex:"F",age:34,ward:"ห้องฉุกเฉิน",
+ clinical:"ไข้ อ่อนเพลีย 2 สัปดาห์ เลือดออกตามไรฟัน มีจุดเลือดออกที่ขา ไม่เคยตรวจ CBC ที่โรงพยาบาลนี้",
+ v:{WBC:68.4,RBC:2.41,HGB:7.2,HCT:21.6,MCV:89.6,MCH:29.9,MCHC:33.3,"RDW-CV":15.8,PLT:18,MPV:null},
+ diff:[8.2,21.5,69.1,0.4,0.8],diffStar:true,
+ flags:{wbc:["Leukocytosis","Blasts?","Abn Lympho/Blasts?","Immature Gran?","NRBC?"],rbc:["Anemia","Anisocytosis"],plt:["Thrombocytopenia"]},
+ rbcH:[{mu:90,sd:.2,w:1}],pltH:{mu:9,sd:.5,noise:.3},
+ scat:[{k:"neut",n:36},{k:"lymph",n:60},{k:"abn",x:33,y:66,sx:9,sy:12,n:340},{k:"eo",n:3}],
+ q:[
+ {t:"ค่า differential มีเครื่องหมาย * และมี flag “Blasts?” ควรจัดการกับ differential ชุดนี้อย่างไร",
+  o:["รายงานตามเครื่องได้ เพราะผลรวมครบ 100%","รายงานเฉพาะค่า absolute count","ยังไม่รายงาน differential จากเครื่อง ต้องทำสเมียร์และนับแยกชนิดด้วยกล้องจุลทรรศน์","วิเคราะห์ซ้ำจนกว่า flag จะหายแล้วจึงรายงาน"],a:2,
+  why:"เครื่องหมาย * หมายถึงเครื่องแยกกลุ่มเซลล์ได้ไม่ชัดเจน ใน scattergram กลุ่มเซลล์ผิดปกติกินพื้นที่ทั้งบริเวณ lymphocyte และ monocyte ค่า MONO 69.1% จึงไม่น่าเชื่อถือ ต้องยืนยันด้วย manual differential และตรวจหา NRBC เพื่อพิจารณาแก้ค่า WBC หากเครื่องไม่ได้แก้ให้"},
+ {t:"ภาพรวม WBC สูงมาก ร่วมกับ normocytic anemia และเกล็ดเลือดต่ำมาก พร้อม flag blast ควรนึกถึงภาวะใดเป็นอันดับแรก",
+  o:["การติดเชื้อแบคทีเรียรุนแรง (leukemoid reaction)","Acute leukemia","Iron deficiency anemia","Immune thrombocytopenia"],a:1,
+  why:"เซลล์ตัวอ่อนเพิ่มจำนวนแทนที่เซลล์ปกติในไขกระดูก จึงเกิดซีดและเกล็ดเลือดต่ำร่วมกับ WBC สูงจาก blast ส่วน leukemoid reaction มักเห็น neutrophil และ left shift เป็นลำดับขั้น ไม่ใช่กลุ่มเซลล์เดียวขนาดใหญ่ในตำแหน่งผิดปกติ การวินิจฉัยยืนยันต้องอาศัยสเมียร์ ไขกระดูก และ flow cytometry"},
+ {t:"สเมียร์พบ blast 72% ขั้นตอนใดถูกต้องที่สุดสำหรับนักเทคนิคการแพทย์",
+  o:["ออกผลตามรอบปกติ แพทย์จะเห็นผลเองในระบบ","แจ้งค่าวิกฤตแก่แพทย์หรือพยาบาลผู้ดูแลทันทีตามระเบียบของห้องปฏิบัติการ บันทึกผู้รับแจ้งและเวลา และส่งสเมียร์ให้ผู้เชี่ยวชาญทบทวน","รอผลไขกระดูกก่อนจึงรายงาน CBC","รายงานเฉพาะ Hb และ PLT ส่วน WBC เว้นไว้"],a:1,
+  why:"PLT 18 ×10³/µL และการพบ blast ครั้งแรกจัดเป็นค่าวิกฤตในห้องปฏิบัติการส่วนใหญ่ ต้องแจ้งทันที ทวนสอบการรับแจ้ง (read-back) และบันทึกไว้ การทบทวนสเมียร์โดยผู้เชี่ยวชาญช่วยจำแนกลักษณะ blast เช่น Auer rod ที่มีผลต่อการรักษาเร่งด่วน"}],
+ summary:["Flag blast และ * ที่ differential = ต้องทบทวนสเมียร์ทุกครั้ง ห้ามรายงานค่าจากเครื่อง","Leukocytosis + anemia + thrombocytopenia ชวนให้นึกถึง acute leukemia","การแจ้งค่าวิกฤตอย่างรวดเร็วและมีบันทึกเป็นส่วนหนึ่งของคุณภาพงาน"]},
+
+{id:"c6",tab:"ชาย 21 ปี",sub:"ไข้วันที่ 5",sampleNo:"2611240105",hn:"68-118806",sex:"M",age:21,ward:"หอผู้ป่วยอายุรกรรมชาย",
+ clinical:"ไข้สูงลอย 5 วัน ปวดศีรษะ ปวดเมื่อยตัว คลื่นไส้ วันนี้ไข้เริ่มลง ปวดท้อง มือเท้าเย็น",
+ v:{WBC:2.4,RBC:5.78,HGB:17.2,HCT:51.4,MCV:88.9,MCH:29.8,MCHC:33.5,"RDW-CV":13.2,PLT:38,MPV:11.9},
+ diff:[34.0,52.0,11.0,1.0,2.0],
+ prev:{label:"2 วันก่อน",v:{WBC:3.6,RBC:4.78,HGB:14.2,HCT:42.5,PLT:112}},
+ flags:{wbc:["Leukopenia","Atypical Lympho?"],rbc:[],plt:["Thrombocytopenia"]},
+ rbcH:NORM_RBC,pltH:{mu:11,sd:.45,noise:.14},
+ scat:[{k:"neut",n:150},{k:"lymph",n:190},{k:"mono",n:48},{k:"eo",n:5},{k:"abn",x:24,y:72,sx:5,sy:7,n:45}],
+ q:[
+ {t:"เทียบกับผลเมื่อ 2 วันก่อน Hct เปลี่ยนไปร้อยละเท่าใด และมีความหมายอย่างไร",
+  o:["เพิ่มประมาณ 9% อยู่ในความแปรปรวนปกติ","เพิ่มประมาณ 21% แสดงภาวะเลือดข้นจากการรั่วของพลาสมา","เพิ่มประมาณ 21% แสดงว่าไขกระดูกสร้างเม็ดเลือดแดงเพิ่มขึ้น","ลดลง 21% แสดงว่ามีเลือดออก"],a:1,
+  why:"(51.4 − 42.5) ÷ 42.5 × 100 = 20.9% การเพิ่มของ Hct ตั้งแต่ 20% ขึ้นไปจากค่าเดิมเป็นหลักฐานของ hemoconcentration จาก plasma leakage ค่าดัชนี MCV, MCH, MCHC ไม่เปลี่ยน แสดงว่าเป็นการเปลี่ยนแปลงปริมาตรพลาสมา ไม่ใช่ความผิดพลาดของการวัด"},
+ {t:"WBC ต่ำ ลิมโฟไซต์เด่น มี flag “Atypical Lympho?” เกล็ดเลือดลดลงเร็ว และ Hct สูงขึ้น ในผู้ป่วยไข้เฉียบพลัน เข้าได้กับภาวะใดมากที่สุด",
+  o:["Dengue hemorrhagic fever ระยะวิกฤต","Polycythemia vera","Aplastic anemia","Bacterial sepsis"],a:0,
+  why:"รูปแบบ leukopenia + atypical lymphocyte + thrombocytopenia (&lt; 100 ×10³/µL) + Hct เพิ่ม ≥ 20% ช่วงไข้ลงเป็นลักษณะของไข้เลือดออกเดงกีระยะวิกฤต ส่วน aplastic anemia จะมี Hb ต่ำ และ polycythemia vera มักมีเม็ดเลือดทุกชนิดสูง"},
+ {t:"ก่อนและขณะรายงานผลชุดนี้ นักเทคนิคการแพทย์ควรทำอย่างไร",
+  o:["ถือว่า delta check ไม่ผ่าน ยกเลิกผลและขอเจาะใหม่โดยไม่แจ้งแพทย์","ตรวจสอบการระบุตัวผู้ป่วยและสภาพตัวอย่าง ดูสเมียร์ยืนยัน atypical lymphocyte กับจำนวนเกล็ดเลือด แล้วแจ้งผลเร่งด่วนแก่ผู้ดูแลผู้ป่วย","รายงานตามรอบปกติ เพราะการเปลี่ยนแปลงอธิบายได้ด้วยโรค","เจือจางตัวอย่างเพื่อให้ Hct กลับมาใกล้ค่าเดิมก่อนรายงาน"],a:1,
+  why:"Delta check ที่ไม่ผ่านต้องแยกก่อนว่าเกิดจากตัวอย่างผิดคนหรือมี clot หรือไม่ เมื่อยืนยันแล้วว่าเป็นการเปลี่ยนแปลงจริง ผลนี้มีผลต่อการให้สารน้ำอย่างเร่งด่วน จึงต้องแจ้งทันทีตามเกณฑ์ของห้องปฏิบัติการ การตรวจ NS1 antigen หรือ dengue IgM/IgG ช่วยยืนยันสาเหตุ"}],
+ summary:["ใช้ผลครั้งก่อน (delta check) ประกอบการแปลผลเสมอ: Hct เพิ่ม 20.9%, PLT ลดจาก 112 เหลือ 38","Leukopenia + atypical lymphocyte + thrombocytopenia + hemoconcentration = DHF ระยะวิกฤต","บทบาทของห้องปฏิบัติการคือยืนยันความถูกต้องและสื่อสารผลให้ทันเวลา"]}
+];
+
+/* ---------- state ---------- */
+var KEY="cbcQuizV1", state={ans:{},cur:0}, viewRerun=false;
+try{var s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&s.ans){state=s; if(!(state.cur>=0&&state.cur<CASES.length))state.cur=0;}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function ansOf(c){return state.ans[c.id]||(state.ans[c.id]=[]);}
+function doneCount(c){var a=ansOf(c),n=0;for(var i=0;i<c.q.length;i++)if(a[i]!=null)n++;return n;}
+function isDone(c){return doneCount(c)===c.q.length;}
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function rng(seed){var a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){var u=0,v=0;while(u===0)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function seedOf(str){var h=7;for(var i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))|0;return h;}
+function rangeOf(k,sex){var r=RANGES[k];return r[sex]||[r.lo,r.hi];}
+function flag(v,lo,hi){return v<lo?"L":v>hi?"H":"";}
+function rbar(v,lo,hi,f){var p=30+40*(v-lo)/(hi-lo);p=Math.max(3,Math.min(97,p));return '<span class="rb" aria-hidden="true"><i class="'+f+'" style="left:'+p.toFixed(1)+'%"></i></span>';}
+function view(c){
+  if(!(viewRerun&&c.rerun))return c;
+  var r=c.rerun,o={};for(var k in c)o[k]=c[k];
+  o.v={};for(k in c.v)o.v[k]=c.v[k];for(k in r.v)o.v[k]=r.v[k];
+  if(r.flags)o.flags=r.flags; if(r.rbcH)o.rbcH=r.rbcH; if(r.pltH)o.pltH=r.pltH; if("scat" in r)o.scat=r.scat;
+  return o;
+}
+
+/* ---------- plots ---------- */
+function histSVG(max,ticks,f,discs,noise,seed){
+  var W=220,H=130,x0=12,x1=210,y0=10,y1=104,n=110,pts=[],m=0,r=rng(seed),i;
+  for(i=0;i<=n;i++){var x=max*i/n,y=x<=0?0:f(x);if(noise)y=Math.max(0,y*(1+noise*gauss(r))+noise*.12*Math.abs(gauss(r)));pts.push(y);if(y>m)m=y;}
+  var d="M"+x0+" "+y1;
+  for(i=0;i<=n;i++)d+=" L"+(x0+(x1-x0)*i/n).toFixed(1)+" "+(y1-(pts[i]/m)*(y1-y0)*.92).toFixed(1);
+  d+=" L"+x1+" "+y1+" Z";
+  var g="";
+  ticks.forEach(function(t){var tx=x0+(x1-x0)*t/max;g+='<line class="gd" x1="'+tx+'" y1="'+y0+'" x2="'+tx+'" y2="'+y1+'"/><text class="tk" x="'+tx+'" y="'+(y1+10)+'" text-anchor="middle">'+t+'</text>';});
+  discs.forEach(function(t){var tx=x0+(x1-x0)*t/max;g+='<line class="disc" x1="'+tx+'" y1="'+y0+'" x2="'+tx+'" y2="'+y1+'"/>';});
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img">'+g+'<path class="cv" d="'+d+'"/><line class="ax" x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'"/><text class="tk" x="'+x1+'" y="'+(H-4)+'" text-anchor="end">fL</text></svg>';
+}
+function rbcHist(c){
+  var comps=c.rbcH;
+  return histSVG(250,[50,100,150,200],function(x){var s=0;comps.forEach(function(k){var z=(Math.log(x)-Math.log(k.mu))/k.sd;s+=k.w*Math.exp(-z*z/2);});return s;},[30,235],0.02,seedOf(c.id+"r"+viewRerun));
+}
+function pltHist(c){
+  var p=c.pltH;
+  return histSVG(40,[10,20,30],function(x){var z=(Math.log(x)-Math.log(p.mu))/p.sd,y=Math.exp(-z*z/2);if(x<1.5)y*=x/1.5;if(p.tail&&x>16)y+=p.tail*(x-16)/24;return y;},[2,30],p.noise||0.02,seedOf(c.id+"p"+viewRerun));
+}
+var CL={neut:[62,38,8,6],lymph:[22,44,4,6],mono:[38,61,5,6],eo:[86,30,4,5]};
+function scatSVG(c){
+  var cl=c.scat,r=rng(seedOf(c.id+"s"+viewRerun)),out="",i;
+  if(!cl){var tot=450;cl=[{k:"neut",n:tot*c.diff[0]/100},{k:"lymph",n:tot*c.diff[1]/100},{k:"mono",n:tot*c.diff[2]/100},{k:"eo",n:tot*c.diff[3]/100}];}
+  cl.forEach(function(k){
+    var b=CL[k.k]||[0,0,0,0],cx=k.x!=null?k.x:b[0],cy=k.y!=null?k.y:b[1],sx=k.sx||b[2],sy=k.sy||b[3];
+    for(i=0;i<Math.round(k.n);i++){
+      var x=cx+sx*gauss(r),y=cy+sy*gauss(r)+(k.k==="neut"?(x-cx)*.25:0);
+      x=Math.max(1,Math.min(99,x));y=Math.max(1,Math.min(99,y));
+      out+='<circle class="k-'+k.k+'" cx="'+(18+x*1.74).toFixed(1)+'" cy="'+(184-y*1.74).toFixed(1)+'" r="1.15"/>';
+    }
+  });
+  for(i=0;i<25;i++)out+='<circle class="k-deb" cx="'+(18+Math.abs(gauss(r))*9).toFixed(1)+'" cy="'+(184-Math.abs(gauss(r))*9).toFixed(1)+'" r="1"/>';
+  return '<svg viewBox="0 0 200 200" role="img"><line class="ax" x1="18" y1="10" x2="18" y2="184"/><line class="ax" x1="18" y1="184" x2="192" y2="184"/>'+out+
+    '<text class="tk" x="192" y="195" text-anchor="end">SSC →</text><text class="tk" x="12" y="14" text-anchor="end" transform="rotate(-90 12 14)">SFL →</text></svg>';
+}
+
+/* ---------- render: analyzer ---------- */
+function renderWin(){
+  var base=CASES[state.cur],c=view(base),h="",done=isDone(base);
+  var anyFlag=c.flags.wbc.length+c.flags.rbc.length+c.flags.plt.length>0;
+  h+='<div class="titlebar"><span class="nm">HEMA-SIM 5 · Sample Explorer</span><span class="sim">เครื่องจำลองเพื่อการเรียน</span></div>';
+  h+='<div class="sinfo">'+
+    '<div><span>Sample No.</span><b>'+c.sampleNo+(viewRerun&&base.rerun?"-R":"")+'</b></div>'+
+    '<div><span>HN</span><b>'+c.hn+'</b></div>'+
+    '<div><span>เพศ / อายุ</span><b>'+(c.sex==="M"?"ชาย":"หญิง")+' / '+c.age+' ปี</b></div>'+
+    '<div><span>หน่วยงาน</span><b>'+esc(c.ward)+'</b></div>'+
+    '<div><span>Mode</span><b>WB · CBC+DIFF</b></div>'+
+    '<div><span>Analyzed</span><b>24/11/2569 '+(8+state.cur)+':'+(viewRerun?"52":"14")+'</b></div></div>';
+  h+='<div class="clin"><b>ข้อมูลทางคลินิก</b>'+esc(c.clinical)+'</div>';
+  h+='<div class="toolbar"><span class="judge '+(anyFlag?"pos":"neg")+'">'+(anyFlag?"POSITIVE":"NEGATIVE")+'</span>';
+  if(base.rerun){
+    h+='<span class="seg" role="group" aria-label="เลือกผลที่แสดง"><button type="button" id="vFirst" aria-pressed="'+(!viewRerun)+'">ผลครั้งแรก</button>'+
+       '<button type="button" id="vRerun" aria-pressed="'+viewRerun+'" '+(done?"":"disabled title=\"ตอบคำถามให้ครบก่อน\"")+'>'+esc(base.rerun.label)+'</button></span>';
+  }
+  h+='</div>';
+  if(viewRerun&&base.rerun)h+='<div class="rnote">'+esc(base.rerun.note)+'</div>';
+
+  /* CBC table */
+  var hasPrev=!!c.prev&&!viewRerun;
+  var t='<div class="scroll"><table><thead><tr><th>Item</th><th>Data</th><th></th><th style="text-align:left">Unit</th><th></th><th style="text-align:left">ค่าอ้างอิง</th>'+(hasPrev?'<th>'+esc(c.prev.label)+'</th>':'')+'</tr></thead><tbody>';
+  CBC_ORDER.forEach(function(k){
+    var R=RANGES[k],rg=rangeOf(k,c.sex),v=c.v[k];
+    if(v==null){t+='<tr><td>'+k+'</td><td class="val">----</td><td class="fl"></td><td class="unit">'+R.u+'</td><td></td><td class="ref">'+rg[0]+' – '+rg[1]+'</td>'+(hasPrev?'<td class="prev"></td>':'')+'</tr>';return;}
+    var f=flag(v,rg[0],rg[1]);
+    t+='<tr><td>'+k+'</td><td class="val '+f+'">'+v.toFixed(R.d)+'</td><td class="fl '+f+'">'+f+'</td><td class="unit">'+R.u+'</td><td>'+rbar(v,rg[0],rg[1],f)+'</td><td class="ref">'+rg[0]+' – '+rg[1]+'</td>'+
+       (hasPrev?'<td class="prev">'+(c.prev.v[k]!=null?c.prev.v[k].toFixed(R.d):"")+'</td>':'')+'</tr>';
+  });
+  t+='</tbody></table></div>';
+
+  /* DIFF table */
+  var st=c.diffStar?"*":"";
+  var d='<div class="scroll"><table><thead><tr><th>Item</th><th>%</th><th></th><th>10³/µL</th><th></th><th style="text-align:left">ค่าอ้างอิง (%)</th></tr></thead><tbody>';
+  DIFF.forEach(function(r,i){
+    var p=c.diff[i],ab=c.v.WBC*p/100,f1=flag(p,r[1],r[2]),f2=flag(ab,r[3],r[4]);
+    d+='<tr><td>'+r[0]+'</td><td class="val '+f1+'">'+p.toFixed(1)+st+'</td><td class="fl '+f1+'">'+f1+'</td><td class="val '+f2+'">'+ab.toFixed(2)+st+'</td><td class="fl '+f2+'">'+f2+'</td><td class="ref">'+r[1]+' – '+r[2]+'</td></tr>';
+  });
+  d+='</tbody></table></div>';
+  if(c.diffStar)d+='<p style="margin:6px 0 0;font-size:.78rem;color:var(--muted)">* ค่ามีความน่าเชื่อถือต่ำ</p>';
+
+  function fbox(name,list){return '<div class="fbox"><h4>'+name+'</h4><ul>'+(list.length?list.map(function(m){return '<li class="'+(/\?$/.test(m)?"s":"")+'">'+esc(m)+'</li>';}).join(""):'<li class="none">—</li>')+'</ul></div>';}
+
+  h+='<div class="panes">'+
+     '<div class="pane"><h3>CBC</h3>'+t+'</div>'+
+     '<div class="pane"><h3>Differential</h3>'+d+'<h3 style="margin-top:14px">IP Messages</h3><div class="flags">'+fbox("WBC",c.flags.wbc)+fbox("RBC",c.flags.rbc)+fbox("PLT",c.flags.plt)+'</div></div>'+
+     '</div>';
+  h+='<div class="pane" style="border-top:1px solid var(--line)"><h3>Distribution</h3><div class="plots">'+
+     '<figure class="plot"><figcaption>WDF scattergram</figcaption>'+scatSVG(c)+'<div class="legend"><span><i style="background:var(--d-neut)"></i>NEUT</span><span><i style="background:var(--d-lymph)"></i>LYMPH</span><span><i style="background:var(--d-mono)"></i>MONO</span><span><i style="background:var(--d-eo)"></i>EO</span><span><i style="background:var(--d-abn)"></i>ผิดปกติ</span><span><i style="background:var(--d-deb)"></i>debris</span></div></figure>'+
+     '<figure class="plot"><figcaption>RBC histogram</figcaption>'+rbcHist(c)+'</figure>'+
+     '<figure class="plot"><figcaption>PLT histogram</figcaption>'+pltHist(c)+'</figure></div></div>';
+  h+='<div class="foot">H = สูงกว่าค่าอ้างอิง · L = ต่ำกว่าค่าอ้างอิง · ข้อความที่ลงท้ายด้วย ? เป็น suspect message · เส้นประคือ discriminator</div>';
+  var w=document.getElementById("win");w.innerHTML=h;
+  var a=document.getElementById("vFirst"),b=document.getElementById("vRerun");
+  if(a)a.onclick=function(){viewRerun=false;renderWin();};
+  if(b)b.onclick=function(){viewRerun=true;renderWin();};
+}
+
+/* ---------- render: quiz ---------- */
+function renderQuiz(){
+  var c=CASES[state.cur],a=ansOf(c),h="";
+  h+='<div class="qhead"><h2>คำถาม: '+esc(c.tab)+' '+esc(c.sub)+'</h2><button class="linkbtn" type="button" id="resetCase">ทำรายนี้ใหม่</button></div>';
+  c.q.forEach(function(q,qi){
+    var chosen=a[qi],answered=chosen!=null;
+    h+='<div class="q"><span class="qn">ข้อ '+(qi+1)+' / '+c.q.length+'</span><p class="qt">'+q.t+'</p><div class="opts">';
+    q.o.forEach(function(o,oi){
+      var cls="opt",mk=String.fromCharCode(65+oi);
+      if(answered){if(oi===q.a){cls+=" right";mk="✓";}else if(oi===chosen){cls+=" wrong";mk="✗";}}
+      h+='<button type="button" class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'" '+(answered?"disabled":"")+'><span class="mk">'+mk+'</span><span>'+o+'</span></button>';
+    });
+    h+='</div>';
+    if(answered)h+='<div class="why">'+(chosen===q.a?'<b class="r">ถูกต้อง</b> ':'<b class="w">ยังไม่ถูก</b> ')+q.why+'</div>';
+    h+='</div>';
+  });
+  if(isDone(c)){
+    var sc=0;c.q.forEach(function(q,i){if(a[i]===q.a)sc++;});
+    h+='<div class="sum"><h3>สรุปประเด็น ('+sc+'/'+c.q.length+' ข้อ)</h3><ul>'+c.summary.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ul><div class="act">';
+    if(c.rerun)h+='<button type="button" class="pbtn" id="showRerun">ดูผล'+esc(c.rerun.label)+'</button>';
+    if(state.cur<CASES.length-1)h+='<button type="button" class="'+(c.rerun?"linkbtn":"pbtn")+'" id="nextCase">รายถัดไป →</button>';
+    h+='</div></div>';
+  }else{
+    h+='<div class="locked">ตอบครบทุกข้อเพื่อดูสรุปประเด็น'+(c.rerun?'และผลหลังแก้ไขตัวอย่าง':'')+'</div>';
+  }
+  var el=document.getElementById("quiz");el.innerHTML=h;
+  el.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){
+    var qi=+b.dataset.q;if(a[qi]!=null)return;a[qi]=+b.dataset.o;save();renderAll(true);
+  };});
+  document.getElementById("resetCase").onclick=function(){state.ans[c.id]=[];viewRerun=false;save();renderAll();};
+  var n=document.getElementById("nextCase");if(n)n.onclick=function(){go(state.cur+1);};
+  var r=document.getElementById("showRerun");if(r)r.onclick=function(){viewRerun=true;renderWin();document.getElementById("win").scrollIntoView({behavior:"smooth",block:"start"});};
+}
+function renderTabs(){
+  var h="",score=0,tot=0;
+  CASES.forEach(function(c,i){
+    var a=ansOf(c),dn=doneCount(c);
+    c.q.forEach(function(q,qi){tot++;if(a[qi]===q.a)score++;});
+    h+='<button type="button" role="tab" class="tab'+(dn===c.q.length?" done":"")+'" aria-selected="'+(i===state.cur)+'" data-i="'+i+'"><span class="tn">ราย '+(i+1)+'<span class="pg">'+(dn===c.q.length?"✓ ":"")+dn+'/'+c.q.length+'</span></span><small>'+esc(c.tab)+' · '+esc(c.sub)+'</small></button>';
+  });
+  var t=document.getElementById("tabs");t.innerHTML=h;
+  t.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){go(+b.dataset.i);};});
+  document.getElementById("scoreNum").textContent=score;
+  document.getElementById("scoreTot").textContent=tot;
+  var answered=0;CASES.forEach(function(c){answered+=doneCount(c);});
+  document.getElementById("meterFill").style.width=(100*answered/tot)+"%";
+}
+function go(i){state.cur=i;viewRerun=false;save();renderAll();}
+function renderAll(keepWin){renderTabs();if(!keepWin||isDone(CASES[state.cur]))renderWin();renderQuiz();}
+document.getElementById("resetAll").onclick=function(){state={ans:{},cur:0};viewRerun=false;save();renderAll();};
+renderAll();
+})();
+</script>
