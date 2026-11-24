@@ -158,6 +158,33 @@ td.prev{color:var(--muted)}
 .pbtn:disabled{opacity:.6;cursor:wait}
 .locked{color:var(--muted);font-size:.86rem;border:1.5px dashed #c3d0dc;border-radius:14px;padding:12px 16px}
 .disc-note{font-size:.8rem;color:var(--muted);max-width:90ch;margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.bar .seg{margin-left:0}
+.bar .seg button{padding:6px 14px;font-size:.88rem}
+.timer{font-family:var(--mono);font-weight:600;color:var(--accent-strong);background:var(--accent-soft);border-radius:999px;padding:3px 12px}
+.judge.hid{color:var(--muted);background:var(--sunken)}
+.rnote.pickn{background:var(--accent-soft);color:var(--accent-strong)}
+tr.pick{cursor:pointer} tr.pick:hover td{background:var(--accent-soft)} tr.pick:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+tr.sel td{background:#d3eef1} tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+tr.hit td:first-child{box-shadow:inset 3px 0 0 var(--ok)} tr.miss td:first-child{box-shadow:inset 3px 0 0 var(--warn)} tr.miss td{background:var(--warn-soft)}
+tr.fp td:first-child{box-shadow:inset 3px 0 0 var(--hi);text-decoration:line-through}
+.plot canvas.armed{outline:3px solid var(--accent);outline-offset:2px;cursor:crosshair}
+.armn{margin:0 0 8px;font-size:.86rem;font-weight:600;color:var(--accent-strong)}
+.numrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.numin{font:inherit;font-family:var(--mono);width:8.5em;max-width:100%;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.unit2{font-family:var(--mono);font-size:.84rem;color:var(--muted)}
+.yours{margin:0;font-size:.86rem;color:var(--muted)} .yours b{color:var(--ink);font-family:var(--mono)}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)} .opt.picked .mk{background:var(--accent);border-color:var(--accent);color:#fff}
+.hres{margin:0;padding-left:1.2em;font-size:.9rem} .hres .m{color:var(--warn)} .hres .f{color:var(--hi)}
+.exsub{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.exsub .act{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px;min-width:0}
+.card h2{margin:0 0 6px;font-size:1.1rem} .card h3{margin:16px 0 6px;font-size:.95rem;color:var(--accent-strong)}
+.card p,.card li{max-width:75ch} .card ul{margin:0;padding-left:1.2em}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:18px}
+.ttab{font-family:var(--sans);font-size:.88rem} .ttab th{font-size:.74rem;text-align:left;padding:4px 8px} .ttab td{text-align:left;padding:5px 8px;white-space:normal;font-weight:400} .ttab td:first-child{font-weight:600;white-space:nowrap}
+.ttab code,.card code{font-family:var(--mono);font-size:.86em;background:var(--sunken);padding:0 4px;border-radius:4px}
+.savenote{font-size:.8rem;color:var(--muted);margin:0;min-height:1.2em}
 @media (prefers-reduced-motion:reduce){.meter i,.opt{transition:none}}
 </style>
 
@@ -167,24 +194,147 @@ td.prev{color:var(--muted)}
       <h1>CBC Interpretation Learning Platform</h1>
       <p class="by">by Hemato-AHS NU</p>
     </div>
-    <div class="score" aria-live="polite">
-      <span>คะแนน <b id="scoreNum">0</b><span class="of">/<span id="scoreTot">0</span></span></span>
+    <div class="score" id="scoreBox" aria-live="polite">
+      <span><span id="scoreLbl">คะแนน</span> <b id="scoreNum">0</b><span class="of">/<span id="scoreTot">0</span></span></span>
       <span class="meter" aria-hidden="true"><i id="meterFill"></i></span>
       <button class="linkbtn" id="resetAll" type="button">เริ่มใหม่ทั้งหมด</button>
     </div>
   </div>
-  <div class="tabs" id="tabs" role="tablist" aria-label="เลือกผู้ป่วย"></div>
-  <div class="main">
-    <div class="leftcol">
-      <section class="win" id="win" aria-label="หน้าจอรายงานผล CBC"></section>
-      <section class="gal" id="gal" aria-label="ภาพสเมียร์และภาพเซลล์">
-        <div><h2>ภาพสเมียร์เลือดและภาพเซลล์</h2><p class="gsub" id="gsub"></p></div>
-        <div class="ggrid" id="gList"></div>
-        <div class="gform" id="gForm" hidden></div>
-      </section>
+  <div class="bar">
+    <div class="seg" id="nav" role="group" aria-label="หน้า">
+      <button type="button" data-p="practice" aria-pressed="true">ฝึกแปลผล</button>
+      <button type="button" data-p="ref" aria-pressed="false">ทบทวนพื้นฐาน</button>
+      <button type="button" data-p="teach" id="navTeach" aria-pressed="false" hidden>ผลของผู้เรียน</button>
     </div>
-    <section class="quiz" id="quiz" aria-label="คำถาม"></section>
+    <div class="seg" id="modeSeg" role="group" aria-label="โหมด">
+      <button type="button" data-m="learn" aria-pressed="true">โหมดเรียน</button>
+      <button type="button" data-m="exam" aria-pressed="false">โหมดสอบ</button>
+    </div>
+    <span class="timer" id="timer" hidden></span>
   </div>
+
+  <div id="pgPractice">
+    <div class="card" id="examStart" hidden>
+      <h2>โหมดสอบ</h2>
+      <ul>
+        <li>สุ่ม 6 รายจากทั้งหมด และสลับลำดับตัวเลือกทุกครั้ง</li>
+        <li>หน้าจอแสดง flag ตามปกติ ไม่มีขั้นหาค่าผิดปกติ</li>
+        <li>แก้คำตอบได้จนกว่าจะกดส่ง ระบบจับเวลาตั้งแต่เริ่มจนส่ง</li>
+        <li>เฉลยและคะแนนแสดงหลังส่งคำตอบ</li>
+      </ul>
+      <p style="margin-top:14px"><button type="button" class="pbtn" id="examGo">เริ่มสอบ</button></p>
+    </div>
+    <div id="practiceBody" style="display:flex;flex-direction:column;gap:18px">
+      <div class="tabs" id="tabs" role="tablist" aria-label="เลือกผู้ป่วย"></div>
+      <div class="main">
+        <div class="leftcol">
+          <section class="win" id="win" aria-label="หน้าจอรายงานผล CBC"></section>
+          <section class="gal" id="gal" aria-label="ภาพสเมียร์และภาพเซลล์">
+            <div><h2>ภาพสเมียร์เลือดและภาพเซลล์</h2><p class="gsub" id="gsub"></p></div>
+            <div class="ggrid" id="gList"></div>
+            <div class="gform" id="gForm" hidden></div>
+          </section>
+        </div>
+        <section class="quiz" id="quiz" aria-label="คำถาม"></section>
+      </div>
+    </div>
+  </div>
+
+  <div id="pgRef" hidden>
+    <div class="refgrid">
+      <div class="card">
+        <h2>ลำดับการอ่านผล CBC</h2>
+        <ul>
+          <li>ตรวจข้อมูลตัวอย่าง: ถูกคน ถูกหลอด ไม่มีลิ่มเลือด</li>
+          <li>ดู IP message และเครื่องหมาย <code>*</code> หรือ <code>----</code> ก่อน เพราะบอกว่าค่าใดยังเชื่อถือไม่ได้</li>
+          <li>อ่านทีละสายเซลล์: WBC และ differential, RBC และดัชนี, PLT และค่าขนาดเกล็ดเลือด</li>
+          <li>ตรวจความสอดคล้องระหว่างพารามิเตอร์ (rule of three, MCHC)</li>
+          <li>ดู scattergram และฮิสโตแกรมว่าตรงกับตัวเลขหรือไม่</li>
+          <li>เทียบกับผลครั้งก่อน (delta check) และข้อมูลทางคลินิก</li>
+          <li>ตัดสินใจ: รายงานได้ ต้องแก้ไขตัวอย่าง ต้องดูสเมียร์ หรือต้องแจ้งค่าวิกฤต</li>
+        </ul>
+        <h3>การตรวจความสอดคล้อง</h3>
+        <ul>
+          <li><b>Rule of three:</b> RBC × 3 ≈ HGB และ HGB × 3 ≈ HCT (± 3) ใช้ได้เมื่อเม็ดเลือดแดงขนาดและสีปกติ</li>
+          <li><b>MCHC:</b> ค่าที่เกินประมาณ 37 g/dL ให้หาสิ่งรบกวนก่อนรายงาน</li>
+          <li><b>Delta check:</b> ร้อยละการเปลี่ยนแปลง = (ค่าใหม่ − ค่าเดิม) ÷ ค่าเดิม × 100</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>สูตรที่ใช้บ่อย</h2>
+        <div class="scroll"><table class="ttab"><thead><tr><th>ค่า</th><th>สูตร</th><th>หน่วย</th></tr></thead><tbody>
+          <tr><td>MCV</td><td>HCT × 10 ÷ RBC</td><td>fL</td></tr>
+          <tr><td>MCH</td><td>HGB × 10 ÷ RBC</td><td>pg</td></tr>
+          <tr><td>MCHC</td><td>HGB × 100 ÷ HCT</td><td>g/dL</td></tr>
+          <tr><td>RDW-CV</td><td>SD ของขนาด RBC ÷ MCV × 100</td><td>%</td></tr>
+          <tr><td>RDW-SD</td><td>ความกว้างของฮิสโตแกรม RBC ที่ระดับ 20% ของยอด</td><td>fL</td></tr>
+          <tr><td>Absolute count</td><td>WBC × ร้อยละของเซลล์ ÷ 100</td><td>×10³/µL</td></tr>
+          <tr><td>RET#</td><td>RBC (×10⁶/µL) × RET% × 10</td><td>×10³/µL</td></tr>
+          <tr><td>PCT</td><td>PLT × MPV ÷ 10,000</td><td>%</td></tr>
+          <tr><td>WBC ที่แก้ด้วย NRBC</td><td>WBC × 100 ÷ (100 + NRBC ต่อ 100 WBC)</td><td>×10³/µL</td></tr>
+          <tr><td>PLT จากหลอด citrate</td><td>PLT ที่วัดได้ × 1.1</td><td>×10³/µL</td></tr>
+        </tbody></table></div>
+        <h3>คำเรียกความผิดปกติ</h3>
+        <div class="scroll"><table class="ttab"><thead><tr><th>ค่า</th><th>ต่ำ</th><th>สูง</th></tr></thead><tbody>
+          <tr><td>MCV</td><td>Microcytic</td><td>Macrocytic</td></tr>
+          <tr><td>MCHC</td><td>Hypochromic</td><td>ตรวจหาสิ่งรบกวน</td></tr>
+          <tr><td>RDW</td><td>ขนาดสม่ำเสมอ</td><td>Anisocytosis</td></tr>
+          <tr><td>WBC</td><td>Leukopenia</td><td>Leukocytosis</td></tr>
+          <tr><td>HGB / HCT</td><td>Anemia</td><td>Erythrocytosis</td></tr>
+          <tr><td>PLT</td><td>Thrombocytopenia</td><td>Thrombocytosis</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card">
+        <h2>หลักการวัดของแต่ละช่อง</h2>
+        <div class="scroll"><table class="ttab"><thead><tr><th>ช่อง</th><th>หลักการ</th><th>ค่าที่ได้</th></tr></thead><tbody>
+          <tr><td>RBC / PLT</td><td>Impedance แบบ sheath flow: นับและวัดขนาดอนุภาคจากความต้านทานไฟฟ้า</td><td>RBC, HCT, MCV, RDW, PLT, MPV, PDW, P-LCR</td></tr>
+          <tr><td>HGB</td><td>ทำให้เม็ดเลือดแดงแตกแล้ววัดการดูดกลืนแสง (SLS-hemoglobin)</td><td>HGB</td></tr>
+          <tr><td>WDF</td><td>Fluorescence flow cytometry</td><td>Differential 5 ชนิด และ IG</td></tr>
+          <tr><td>WNR</td><td>Fluorescence flow cytometry</td><td>WBC, BASO, NRBC</td></tr>
+          <tr><td>RET</td><td>Fluorescence flow cytometry ย้อม RNA</td><td>RET, IRF, RET-He, PLT-O</td></tr>
+        </tbody></table></div>
+        <h3>ความหมายของแกนใน scattergram</h3>
+        <ul>
+          <li><b>SSC</b> (side scatter): ความซับซ้อนภายในเซลล์ เช่น แกรนูลและรูปร่างนิวเคลียส</li>
+          <li><b>SFL</b> (side fluorescence): ปริมาณกรดนิวคลีอิก (DNA, RNA) ในเซลล์</li>
+          <li><b>FSC</b> (forward scatter): ขนาดของเซลล์</li>
+        </ul>
+        <p>WDF ใช้ SSC (แกนนอน) กับ SFL (แกนตั้ง) ส่วน WNR, RET และ PLT-O ใช้ SFL (แกนนอน) กับ FSC (แกนตั้ง) ลองใช้ความหมายของแกนคาดเดาตำแหน่งของเซลล์แต่ละชนิดก่อนตอบคำถามชี้บนกราฟ</p>
+        <h3>การอ่านฮิสโตแกรม</h3>
+        <ul>
+          <li>แกนนอนคือขนาด (fL) แกนตั้งคือจำนวนสัมพัทธ์</li>
+          <li>ปกติมียอดเดียว และเส้นกราฟลงแตะเส้นฐานก่อนถึงเส้น discriminator ทั้งสองด้าน</li>
+          <li>ยอดเลื่อนซ้ายหรือขวาบอกขนาดเฉลี่ย ฐานกว้างบอกขนาดที่ไม่สม่ำเสมอ สองยอดบอกว่ามีเซลล์สองกลุ่ม</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>ข้อความเตือนที่พบบ่อยและสิ่งที่ควรทำ</h2>
+        <div class="scroll"><table class="ttab"><thead><tr><th>ข้อความ</th><th>สิ่งที่ควรทำ</th></tr></thead><tbody>
+          <tr><td>Blasts? / Abn Lympho?</td><td>ไม่รายงาน differential จากเครื่อง ดูสเมียร์และนับแยกด้วยกล้อง</td></tr>
+          <tr><td>Atypical Lympho?</td><td>ดูสเมียร์ยืนยัน</td></tr>
+          <tr><td>Left Shift? / IG Present</td><td>ดูสเมียร์หา band form และ granulocyte ตัวอ่อน</td></tr>
+          <tr><td>NRBC Present</td><td>ตรวจว่า WBC ถูกหัก NRBC แล้ว</td></tr>
+          <tr><td>RBC Agglutination?</td><td>อุ่นตัวอย่าง 37°C แล้ววิเคราะห์ซ้ำ</td></tr>
+          <tr><td>Turbidity/HGB Interference?</td><td>ตรวจความขุ่นของพลาสมา แก้ค่า HGB</td></tr>
+          <tr><td>PLT Clumps?</td><td>ตรวจลิ่มเลือด ดูสเมียร์ พิจารณาเก็บด้วยหลอด citrate</td></tr>
+          <tr><td>PLT Abn Distribution</td><td>ดูฮิสโตแกรม PLT, PLT-O และสเมียร์</td></tr>
+          <tr><td>เครื่องหมาย <code>*</code></td><td>ค่ามีความน่าเชื่อถือต่ำ ต้องยืนยันด้วยวิธีอื่น</td></tr>
+          <tr><td>เครื่องหมาย <code>----</code></td><td>เครื่องคำนวณค่าไม่ได้ หาสาเหตุจากกราฟ</td></tr>
+        </tbody></table></div>
+        <p style="margin-top:12px;font-size:.84rem;color:var(--muted)">ชื่อข้อความและเกณฑ์ต่างกันไปตามรุ่นของเครื่องและข้อกำหนดของห้องปฏิบัติการ ให้ยึดคู่มือของเครื่องและ SOP ของหน่วยงานเป็นหลัก</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pgTeach" hidden>
+    <div class="card">
+      <div class="qhead"><h2>ผลของผู้เรียน</h2><button type="button" class="linkbtn" id="teachReload">โหลดผลล่าสุด</button></div>
+      <p class="gsub">เห็นเฉพาะเจ้าของหน้าและผู้ที่ได้สิทธิ์ Editor ผู้เรียนต้องได้สิทธิ์ Contributor และลงชื่อเข้าใช้ คะแนนจึงจะถูกบันทึก</p>
+      <div id="teachBody"></div>
+    </div>
+  </div>
+
+  <p class="savenote" id="saveNote"></p>
   <p class="disc-note">ข้อมูลผู้ป่วยทั้งหมดสมมติขึ้นเพื่อการเรียนการสอน หน้าจอเป็นเครื่องจำลอง ไม่ได้อ้างอิงผลิตภัณฑ์ยี่ห้อใด ค่าอ้างอิงและเกณฑ์ค่าวิกฤตเป็นตัวอย่างสำหรับผู้ใหญ่ ในการทำงานจริงให้ใช้ค่าของห้องปฏิบัติการแต่ละแห่ง</p>
 </div>
 <div class="lb" id="lb" hidden><img id="lbImg" alt=""><p id="lbCap"></p></div>
@@ -344,13 +494,161 @@ c6:{q:[
 };
 CASES.forEach(function(c){c.q=QZ[c.id].q;c.summary=QZ[c.id].summary;});
 
+/* ---------- รายเพิ่มเติม + คำถามเสริม ---------- */
+var NEWC=[
+{id:"n0",tab:"หญิง 31 ปี",sub:"ตรวจสุขภาพ",sampleNo:"2611240012",hn:"65-220931",sex:"F",age:31,ward:"ตรวจสุขภาพประจำปี",
+ clinical:"ไม่มีอาการ ไม่มีโรคประจำตัว ตรวจสุขภาพประจำปี",
+ imgHint:"เช่น สเมียร์ปกติ และภาพเม็ดเลือดขาวปกติแต่ละชนิด",
+ v:{WBC:6.5,RBC:4.52,HGB:13.4,HCT:40.2,MCV:88.9,MCH:29.6,MCHC:33.3,"RDW-SD":42.0,"RDW-CV":12.8,"NRBC%":0,PLT:268,PDW:11.5,MPV:10.0,"P-LCR":25.0,PCT:0.27,"IG%":0.2,"RET%":1.10,IRF:6.5,"RET-He":32.5},
+ diff:[56.0,33.0,7.5,3.0,0.5],flags:{wbc:[],rbc:[],plt:[]},rbcH:NORM_RBC,pltH:NORM_PLT,
+ q:[
+ {t:"ตรวจความสอดคล้องด้วย rule of three: HGB × 3 ควรใกล้เคียง HCT ผลชุดนี้เป็นอย่างไร",
+  o:["ไม่ผ่าน เพราะ HCT สูงกว่าที่คาดมาก","ผ่าน เพราะ 13.4 × 3 = 40.2 ตรงกับ HCT 40.2%","ไม่ผ่าน เพราะ HGB ต่ำกว่าที่คาดมาก","ใช้กฎนี้ไม่ได้กับผู้หญิง"],a:1,
+  why:"HGB 13.4 × 3 = 40.2 ตรงกับ HCT ที่รายงาน (ยอมรับความต่างได้ประมาณ ±3) กฎนี้ใช้ได้เมื่อเม็ดเลือดแดงมีขนาดและปริมาณฮีโมโกลบินปกติ จึงเป็นการตรวจสอบเบื้องต้นที่ควรทำกับทุกผล"},
+ {type:"num",t:"คำนวณ MCHC จาก HGB และ HCT ของรายนี้ (ทศนิยม 1 ตำแหน่ง)",ans:33.3,tol:0.2,unit:"g/dL",
+  why:"MCHC = HGB × 100 ÷ HCT = 13.4 × 100 ÷ 40.2 = 33.3 g/dL อยู่ในช่วง 32–36"},
+ {type:"spot",plot:"WDF",t:"ใน WDF scattergram แกนนอน SSC บอกความซับซ้อนภายในเซลล์ แกนตั้ง SFL บอกปริมาณกรดนิวคลีอิก ให้คลิกบนกลุ่มเซลล์ที่เป็น lymphocyte",target:{x:33,y:24,rx:9,ry:20},
+  why:"Lymphocyte มีแกรนูลน้อย จึงอยู่ทางซ้ายสุดของแกน SSC ในบรรดาเม็ดเลือดขาว และมี SFL ปานกลาง กลุ่มที่อยู่สูงกว่าและเยื้องขวาคือ monocyte กลุ่มใหญ่ตรงกลางด้านล่างคือ neutrophil และกลุ่มขวาสุดคือ eosinophil ซึ่งมีแกรนูลมากที่สุด"},
+ {t:"ลักษณะใดของฮิสโตแกรม RBC และ PLT บอกว่าการกระจายขนาดเป็นปกติ",
+  o:["มีสองยอดแยกจากกันชัดเจน","ยอดเดียว รูปทรงสมมาตรพอควร และเส้นกราฟลงแตะเส้นฐานทั้งสองด้านภายในเส้น discriminator","ปลายขวายกสูงขึ้นเรื่อย ๆ","เส้นกราฟหยักเป็นฟันเลื่อยตลอดเส้น"],a:1,
+  why:"ฮิสโตแกรมปกติมียอดเดียวและกลับลงสู่เส้นฐานก่อนถึง discriminator ทั้งด้านล่างและด้านบน หากมีสองยอด ปลายไม่ลงเส้นฐาน หรือเส้นหยักมาก แสดงว่ามีประชากรเซลล์มากกว่าหนึ่งกลุ่ม มีอนุภาครบกวน หรือจำนวนเซลล์น้อยเกินไป"}],
+ summary:["ผลปกติ: ทุกค่าอยู่ในช่วงอ้างอิง ไม่มี flag และ rule of three ผ่าน","จำรูปร่างและตำแหน่งของกลุ่มเซลล์ปกติใน scattergram ไว้เป็นจุดอ้างอิงสำหรับรายอื่น","ฮิสโตแกรมปกติมียอดเดียวและลงแตะเส้นฐานทั้งสองด้าน"]},
+
+{id:"m1",tab:"ชาย 58 ปี",sub:"อ่อนเพลีย ชาปลายมือ",sampleNo:"2611240118",hn:"58-771203",sex:"M",age:58,ward:"OPD อายุรกรรม",
+ clinical:"อ่อนเพลีย 2 เดือน ลิ้นเลี่ยน ชาปลายมือปลายเท้า รับประทานอาหารได้น้อย",
+ imgHint:"เช่น สเมียร์ที่เห็น macro-ovalocyte, hypersegmented neutrophil",
+ v:{WBC:3.4,RBC:2.10,HGB:8.4,HCT:25.2,MCV:120.0,MCH:40.0,MCHC:33.3,"RDW-SD":78.0,"RDW-CV":18.2,"NRBC%":0,PLT:118,PDW:13.5,MPV:10.8,"P-LCR":31.0,PCT:0.13,"IG%":0.2,"RET%":0.60,IRF:8.0,"RET-He":38.5},
+ diff:[48.0,42.0,7.0,2.5,0.5],flags:{wbc:["Leukopenia"],rbc:["Anemia","Macrocytosis","Anisocytosis"],plt:["Thrombocytopenia"]},
+ rbcH:[{mu:120,sd:.24,w:1}],pltH:{mu:9.5,sd:.42,noise:.06},
+ q:[
+ {t:"จากค่าดัชนีเม็ดเลือดแดง ควรบรรยายลักษณะเม็ดเลือดแดงของรายนี้ว่าอย่างไร",
+  o:["Microcytic hypochromic","Normocytic normochromic","Macrocytic normochromic","Macrocytic hyperchromic"],a:2,
+  why:"MCV 120.0 fL สูงกว่า 100 = macrocytic ส่วน MCHC 33.3 g/dL ปกติ = normochromic ฮิสโตแกรม RBC เลื่อนไปทางขวาและฐานกว้าง (RDW-SD 78.0 fL)"},
+ {t:"MCH 40.0 pg สูง แต่ MCHC 33.3 g/dL ปกติ ควรแปลผลอย่างไร",
+  o:["เซลล์มีความเข้มข้นของฮีโมโกลบินสูงผิดปกติ","เซลล์ขนาดใหญ่จึงมีฮีโมโกลบินต่อเซลล์มากขึ้น แต่ความเข้มข้นในเซลล์ยังปกติ","เครื่องวัด HGB ผิดพลาด","ต้องอุ่นตัวอย่างแล้ววิเคราะห์ซ้ำ"],a:1,
+  why:"MCH คือปริมาณฮีโมโกลบินต่อเซลล์ จึงเปลี่ยนตามขนาดเซลล์ ส่วน MCHC คือความเข้มข้นต่อปริมาตรเซลล์ การบอกว่าเซลล์ติดสีปกติหรือจางจึงดูจาก MCHC เป็นหลัก รายนี้ rule of three ผ่าน (8.4 × 3 = 25.2) จึงไม่มีสัญญาณของสิ่งรบกวน"},
+ {type:"num",t:"คำนวณ RET# (×10³/µL) จาก RBC และ RET% ของรายนี้ (ทศนิยม 1 ตำแหน่ง)",ans:12.6,tol:0.3,unit:"×10³/µL",
+  why:"RET# = RBC × RET% × 10 = 2.10 × 0.60 × 10 = 12.6 ×10³/µL ต่ำกว่าเกณฑ์ (25–100) ทั้งที่ RET% 0.60 ยังอยู่ในช่วงอ้างอิง เมื่อ RBC ต่ำ ค่าร้อยละจะดูสูงเกินจริง จึงควรแปลผลจาก RET# เสมอ"},
+ {t:"ข้อใดสรุปจำนวนเม็ดเลือดทั้งสามชนิดของรายนี้ได้ถูกต้อง",
+  o:["WBC ต่ำอย่างเดียว","HGB ต่ำอย่างเดียว","WBC, HGB และ PLT ต่ำทั้งสามชนิด (pancytopenia)","WBC สูง HGB ต่ำ PLT ต่ำ"],a:2,
+  why:"WBC 3.4 ×10³/µL, HGB 8.4 g/dL และ PLT 118 ×10³/µL ต่ำกว่าค่าอ้างอิงทั้งหมด เรียกว่า pancytopenia ค่า NEUT# = 3.4 × 48 ÷ 100 = 1.63 ×10³/µL ก็ต่ำด้วย เมื่อพบเม็ดเลือดต่ำหลายชนิดพร้อมกันควรทบทวนสเมียร์"}],
+ summary:["MCV สูง = macrocytic และใช้ MCHC ตัดสินว่า normochromic หรือไม่","MCH เปลี่ยนตามขนาดเซลล์ ส่วน MCHC บอกความเข้มข้น","แปลผล reticulocyte จาก RET# ไม่ใช่ RET% เพียงอย่างเดียว","เม็ดเลือดต่ำทั้งสามชนิดเรียกว่า pancytopenia"]},
+
+{id:"n1",tab:"ชาย 40 ปี",sub:"ไข้ ปวดท้อง",sampleNo:"2611240126",hn:"63-415520",sex:"M",age:40,ward:"ห้องฉุกเฉิน",
+ clinical:"ไข้สูง ปวดท้องน้อยด้านขวา 1 วัน คลื่นไส้",
+ imgHint:"เช่น ภาพ band form, metamyelocyte, toxic granulation",
+ v:{WBC:18.6,RBC:4.85,HGB:14.5,HCT:43.2,MCV:89.1,MCH:29.9,MCHC:33.6,"RDW-SD":41.5,"RDW-CV":12.9,"NRBC%":0,PLT:312,PDW:11.0,MPV:9.6,"P-LCR":22.0,PCT:0.30,"IG%":3.2,"RET%":1.00,IRF:5.5,"RET-He":32.0},
+ diff:[84.0,10.0,5.0,0.5,0.5],flags:{wbc:["Leukocytosis","Neutrophilia","IG Present","Left Shift?"],rbc:[],plt:[]},
+ rbcH:NORM_RBC,pltH:NORM_PLT,wdfX:[{k:"ig",n:520}],
+ q:[
+ {type:"num",t:"คำนวณ NEUT# (×10³/µL) จาก WBC และ NEUT% ของรายนี้ (ทศนิยม 2 ตำแหน่ง)",ans:15.62,tol:0.05,unit:"×10³/µL",
+  why:"NEUT# = WBC × NEUT% ÷ 100 = 18.6 × 84.0 ÷ 100 = 15.62 ×10³/µL สูงกว่าเกณฑ์ (2.0–7.0) จึงเป็น absolute neutrophilia และเป็นสาเหตุของ WBC ที่สูง"},
+ {t:"LYMPH% 10.0 ต่ำ แต่ LYMPH# 1.86 ×10³/µL อยู่ในเกณฑ์ ควรแปลผลอย่างไร",
+  o:["Lymphocyte ลดลงจริง","Lymphocyte ปกติ ค่าร้อยละต่ำเพราะสัดส่วนของ neutrophil เพิ่มขึ้น","เครื่องนับ lymphocyte ผิดพลาด","ต้องวิเคราะห์ซ้ำ"],a:1,
+  why:"ค่าร้อยละของเม็ดเลือดขาวทุกชนิดรวมกันเป็น 100 เมื่อชนิดหนึ่งเพิ่มมาก ร้อยละของชนิดอื่นจะลดลงเองแม้จำนวนจริงไม่เปลี่ยน เรียกว่า relative lymphopenia การแปลผลจึงใช้ค่า absolute เป็นหลัก"},
+ {t:"IG 3.2% (0.60 ×10³/µL) พร้อมข้อความ “IG Present” และ “Left Shift?” หมายความว่าอย่างไร และควรทำอย่างไร",
+  o:["พบ lymphocyte ตัวอ่อน รายงานได้เลย","เครื่องตรวจพบ granulocyte ตัวอ่อน และสงสัยว่ามี band form เพิ่มขึ้น ควรดูสเมียร์ยืนยัน","เป็นสิ่งรบกวนจากเกล็ดเลือด","หมายถึง eosinophil สูง"],a:1,
+  why:"IG (immature granulocyte) คือ promyelocyte, myelocyte และ metamyelocyte ซึ่งเครื่องนับแยกได้และมี SFL สูงกว่า neutrophil ตัวแก่ ใน WDF จึงเห็นกลุ่ม neutrophil ยืดสูงขึ้น ส่วน band form เครื่องนับแยกไม่ได้ จึงรายงานเป็น suspect message “Left Shift?” ซึ่งต้องยืนยันด้วยสเมียร์"},
+ {type:"spot",plot:"WDF",t:"คลิกบนกลุ่มเซลล์ใน WDF scattergram ที่มีจำนวนเพิ่มขึ้นและเป็นสาเหตุของ WBC สูงในรายนี้",target:{x:60,y:24,rx:15,ry:14},
+  why:"กลุ่ม neutrophil อยู่กลางค่อนไปทางขวาของแกน SSC (มีแกรนูลมากกว่า lymphocyte และ monocyte) และมี SFL ต่ำ ในรายนี้กลุ่มนี้หนาแน่นมากและมีส่วนที่ยืดสูงขึ้นตามแกน SFL จาก IG"}],
+ summary:["WBC สูงจาก NEUT# ที่เพิ่มขึ้น ยืนยันด้วยการคำนวณค่า absolute","ร้อยละที่ต่ำของเซลล์ชนิดอื่นอาจเป็นเพียง relative change","IG เป็นค่าที่เครื่องนับได้ ส่วน Left Shift? เป็น suspect message ที่ต้องยืนยันด้วยสเมียร์"]},
+
+{id:"e1",tab:"หญิง 26 ปี",sub:"ผื่นคัน",sampleNo:"2611240133",hn:"67-090145",sex:"F",age:26,ward:"OPD ผิวหนัง",
+ clinical:"ผื่นคันทั่วตัว 3 สัปดาห์ มีประวัติภูมิแพ้ เดินเท้าเปล่าในสวนเป็นประจำ",
+ imgHint:"เช่น ภาพ eosinophil บนสเมียร์",
+ v:{WBC:11.8,RBC:4.40,HGB:13.0,HCT:39.2,MCV:89.1,MCH:29.5,MCHC:33.2,"RDW-SD":42.8,"RDW-CV":13.1,"NRBC%":0,PLT:290,PDW:11.8,MPV:10.2,"P-LCR":26.0,PCT:0.30,"IG%":0.3,"RET%":1.20,IRF:7.0,"RET-He":32.8},
+ diff:[45.5,25.0,6.0,23.0,0.5],flags:{wbc:["Leukocytosis","Eosinophilia"],rbc:[],plt:[]},
+ rbcH:NORM_RBC,pltH:NORM_PLT,
+ q:[
+ {t:"WBC 11.8 ×10³/µL สูงเล็กน้อย เม็ดเลือดขาวชนิดใดเป็นสาเหตุ",
+  o:["Neutrophil","Lymphocyte","Monocyte","Eosinophil"],a:3,
+  why:"EO 23.0% คิดเป็น 2.71 ×10³/µL สูงกว่าเกณฑ์ (0.02–0.5) ชัดเจน ส่วน NEUT# 5.37, LYMPH# 2.95 และ MONO# 0.71 ×10³/µL อยู่ในเกณฑ์ทั้งหมด"},
+ {type:"num",t:"คำนวณ EO# (×10³/µL) จาก WBC และ EO% ของรายนี้ (ทศนิยม 2 ตำแหน่ง)",ans:2.71,tol:0.03,unit:"×10³/µL",
+  why:"EO# = WBC × EO% ÷ 100 = 11.8 × 23.0 ÷ 100 = 2.71 ×10³/µL"},
+ {type:"spot",plot:"WDF",t:"คลิกบนกลุ่มเซลล์ใน WDF scattergram ที่มีจำนวนเพิ่มขึ้นผิดปกติในรายนี้",target:{x:80,y:17,rx:13,ry:10},
+  why:"Eosinophil มีแกรนูลขนาดใหญ่จำนวนมาก จึงมี SSC สูงที่สุดและอยู่ขวาสุดของ WDF เทียบกับรายปกติจะเห็นว่ากลุ่มนี้หนาแน่นขึ้นมาก"},
+ {t:"NEUT% 45.5 ค่อนไปทางต่ำ ในขณะที่ NEUT# 5.37 ×10³/µL ปกติ ข้อใดถูกต้อง",
+  o:["ผู้ป่วยมี neutropenia","จำนวน neutrophil ปกติ ร้อยละลดลงเพราะเซลล์ชนิดอื่นเพิ่มขึ้น","ต้องรายงานเฉพาะค่าร้อยละ","ค่า absolute เชื่อถือไม่ได้เมื่อ WBC สูง"],a:1,
+  why:"ภาวะ neutropenia ตัดสินจาก NEUT# ไม่ใช่ร้อยละ รายนี้ NEUT# อยู่ในช่วง 2.0–7.0 ×10³/µL ร้อยละที่ลดลงเป็นผลจากสัดส่วนของ eosinophil ที่เพิ่มขึ้น"}],
+ summary:["หาชนิดเม็ดเลือดขาวที่เป็นสาเหตุของ WBC ผิดปกติจากค่า absolute","Eosinophil อยู่ขวาสุดของ WDF เพราะมี SSC สูง","ค่าร้อยละของเซลล์อื่นเปลี่ยนตามสัดส่วนได้โดยจำนวนจริงไม่เปลี่ยน"]},
+
+{id:"r1",tab:"ชาย 30 ปี",sub:"ซีด ตัวเหลือง",sampleNo:"2611240141",hn:"66-538812",sex:"M",age:30,ward:"หอผู้ป่วยอายุรกรรมชาย",
+ clinical:"ซีด ตัวเหลือง ปัสสาวะสีเข้ม 3 วัน หลังมีไข้และรับประทานยาแก้ปวด",
+ imgHint:"เช่น สเมียร์ที่เห็น polychromasia, NRBC, bite cell",
+ v:{WBC:12.4,RBC:2.95,HGB:9.0,HCT:27.5,MCV:93.2,MCH:30.5,MCHC:32.7,"RDW-SD":62.0,"RDW-CV":18.5,"NRBC%":2.5,PLT:320,PDW:12.5,MPV:10.5,"P-LCR":28.0,PCT:0.34,"IG%":0.8,"RET%":12.50,IRF:32.0,"RET-He":33.5},
+ diff:[68.0,22.0,7.5,2.0,0.5],flags:{wbc:["Leukocytosis","NRBC Present"],rbc:["Anemia","Anisocytosis","Reticulocytosis"],plt:[]},
+ rbcH:[{mu:90,sd:.2,w:1},{mu:128,sd:.18,w:.32}],pltH:NORM_PLT,
+ q:[
+ {t:"RET# 368.8 ×10³/µL และ IRF 32.0% สูง ในขณะที่ HGB 9.0 g/dL บอกอะไร",
+  o:["การสร้างเม็ดเลือดแดงลดลง","ไขกระดูกตอบสนองโดยสร้างเม็ดเลือดแดงเพิ่มขึ้นมาก","เครื่องนับเกล็ดเลือดเป็น reticulocyte","ไม่เกี่ยวกับการสร้างเม็ดเลือดแดง"],a:1,
+  why:"RET# = 2.95 × 12.50 × 10 = 368.8 ×10³/µL สูงกว่าเกณฑ์หลายเท่า และ IRF สูงแสดงว่ามี reticulocyte อายุน้อย (MFR, HFR) ถูกปล่อยออกมามาก ใน RET scattergram จึงเห็นจุดทางขวาของกลุ่ม RBC หนาแน่นและกระจายไปไกลตามแกน SFL"},
+ {type:"spot",plot:"RET",t:"ใน RET scattergram แกนนอน SFL บอกปริมาณ RNA ให้คลิกบนบริเวณของ reticulocyte",target:{x:52,y:70,rx:32,ry:30},
+  why:"Reticulocyte ยังมี RNA เหลืออยู่ จึงติดสีฟลูออเรสเซนต์และอยู่ทางขวาของกลุ่มเม็ดเลือดแดงตัวแก่ที่ระดับ FSC ใกล้เคียงกัน ยิ่งอายุน้อยยิ่งอยู่ขวามาก ส่วนกลุ่มที่อยู่ต่ำชิดแกนนอนคือเกล็ดเลือด"},
+ {t:"MCV 93.2 fL ปกติ แต่ RDW-SD 62.0 fL และ RDW-CV 18.5% สูง ฮิสโตแกรม RBC มีไหล่ด้านขวา ควรแปลผลอย่างไร",
+  o:["เม็ดเลือดแดงขนาดสม่ำเสมอ","มีเม็ดเลือดแดงมากกว่าหนึ่งขนาดปนกัน ค่าเฉลี่ยจึงดูปกติแต่การกระจายกว้าง","เครื่องวัด MCV ผิดพลาด","เกิดจากเกล็ดเลือดขนาดใหญ่"],a:1,
+  why:"MCV เป็นค่าเฉลี่ย จึงซ่อนความแตกต่างของขนาดไว้ได้ Reticulocyte มีขนาดใหญ่กว่าเม็ดเลือดแดงตัวแก่ เมื่อมีจำนวนมากจะเห็นเป็นไหล่ทางขวาของฮิสโตแกรมและทำให้ RDW สูง จึงควรอ่าน MCV คู่กับ RDW และรูปร่างฮิสโตแกรมเสมอ"},
+ {t:"NRBC 2.5/100 WBC มีผลต่อค่า WBC อย่างไร",
+  o:["ไม่มีผลใด ๆ ในทุกเครื่อง","NRBC มีนิวเคลียสจึงอาจถูกนับเป็น WBC ได้ เครื่องที่นับ NRBC แยกได้จะหักออกให้ มิฉะนั้นต้องแก้ค่า WBC","ทำให้ WBC ต่ำปลอม","ทำให้ PLT สูงปลอม"],a:1,
+  why:"เครื่องนี้นับ NRBC แยกในช่อง WNR (เห็นเป็นกลุ่มแยกทางซ้ายของกลุ่ม WBC) และรายงาน WBC ที่หักแล้ว หากเครื่องนับแยกไม่ได้ ต้องแก้ค่าด้วยสูตร WBC ที่แก้แล้ว = WBC × 100 ÷ (100 + NRBC ต่อ 100 WBC)"}],
+ summary:["RET# และ IRF สูงร่วมกับ HGB ต่ำ = ไขกระดูกตอบสนองสร้างเม็ดเลือดแดงเพิ่ม","Reticulocyte อยู่ทางขวาของกลุ่ม RBC ใน RET scattergram ตามปริมาณ RNA","MCV ปกติไม่ได้แปลว่าขนาดสม่ำเสมอ ต้องดู RDW และฮิสโตแกรม","NRBC ต้องถูกหักออกจาก WBC"]},
+
+{id:"l1",tab:"ชาย 52 ปี",sub:"เบาหวาน",sampleNo:"2611240149",hn:"57-664390",sex:"M",age:52,ward:"OPD เบาหวาน",
+ clinical:"เบาหวานและไขมันในเลือดสูง มาตรวจติดตาม ไม่ได้งดอาหาร พลาสมาหลังปั่นขุ่นขาวคล้ายน้ำนม",
+ imgHint:"เช่น ภาพหลอดเลือดที่พลาสมาขุ่นขาว",
+ v:{WBC:7.8,RBC:4.60,HGB:16.8,HCT:41.0,MCV:89.1,MCH:36.5,MCHC:41.0,"RDW-SD":42.0,"RDW-CV":13.0,"NRBC%":0,PLT:255,PDW:11.5,MPV:10.0,"P-LCR":25.0,PCT:0.26,"IG%":0.3,"RET%":1.20,IRF:6.0,"RET-He":32.5},
+ diff:[60.0,30.0,7.0,2.5,0.5],flags:{wbc:[],rbc:["Turbidity/HGB Interference?"],plt:[]},
+ rbcH:NORM_RBC,pltH:NORM_PLT,
+ q:[
+ {type:"num",t:"ตาม rule of three ถ้า HGB 16.8 g/dL ถูกต้อง HCT ควรมีค่าประมาณเท่าใด (ทศนิยม 1 ตำแหน่ง)",ans:50.4,tol:0.3,unit:"%",
+  why:"16.8 × 3 = 50.4% แต่ HCT ที่เครื่องรายงานคือ 41.0% ต่างกันเกิน ±3 จึงมีค่าใดค่าหนึ่งผิด"},
+ {t:"RBC 4.60 และ MCV 89.1 ปกติ แต่ MCH 36.5 และ MCHC 41.0 สูง ค่าที่วัดโดยตรงตัวใดน่าจะผิด",
+  o:["RBC","MCV","HGB","PLT"],a:2,
+  why:"MCH และ MCHC คำนวณจาก HGB ทั้งคู่ (MCH = HGB×10÷RBC, MCHC = HGB×100÷HCT) เมื่อ RBC, MCV และ HCT สอดคล้องกันดี ค่าที่ทำให้ทั้งสองดัชนีสูงพร้อมกันคือ HGB สังเกตว่า HGB 16.8 g/dL ยังอยู่ในช่วงอ้างอิง เครื่องจึงไม่ขึ้น H ที่ HGB ค่าที่อยู่ในช่วงปกติจึงไม่ได้แปลว่าถูกต้องเสมอ"},
+ {t:"รูปแบบของรายนี้ต่างจากกรณีเม็ดเลือดแดงเกาะกลุ่ม (MCHC สูงเช่นกัน) อย่างไร",
+  o:["ไม่ต่างกัน","รายนี้ RBC และ MCV ปกติ ส่วนกรณีเกาะกลุ่ม RBC ต่ำและ MCV สูง","รายนี้ RBC ต่ำและ MCV สูง","รายนี้ PLT ต่ำ"],a:1,
+  why:"สิ่งรบกวนที่ทำให้ตัวอย่างขุ่น (ไขมันสูง) รบกวนการวัดแสงของ HGB เท่านั้น ค่าที่ได้จากการนับเซลล์จึงปกติ ส่วนการเกาะกลุ่มรบกวนการนับเซลล์ ทำให้ RBC ต่ำและ MCV สูง โดย HGB ถูกต้อง การดูว่าค่าใดผิดปกติร่วมกันจึงบอกชนิดของสิ่งรบกวนได้"},
+ {t:"ควรแก้ไขอย่างไรก่อนรายงานผล",
+  o:["รายงานตามเครื่อง เพราะ HGB อยู่ในช่วงอ้างอิง","อุ่นตัวอย่างที่ 37°C แล้ววิเคราะห์ซ้ำ","แก้ค่า HGB เช่น ทำ plasma replacement หรือหักค่า plasma blank แล้วคำนวณ MCH และ MCHC ใหม่","เจาะเลือดใหม่ใส่หลอด citrate"],a:2,
+  why:"ต้องกำจัดความขุ่นของพลาสมาก่อนวัด HGB เช่น ปั่นแล้วแทนที่พลาสมาด้วย diluent ปริมาตรเท่ากัน หรือวัดค่า HGB ของพลาสมามาหักออก ค่าที่มาจากการนับเซลล์ใช้ผลเดิมได้ การอุ่นใช้แก้การเกาะกลุ่มจากความเย็น ไม่ได้แก้ความขุ่นจากไขมัน เมื่อตอบครบแล้วกดดูผลหลังแก้ไขได้ที่แถบเครื่องมือ"}],
+ summary:["MCHC สูงเกินจริงโดย RBC และ MCV ปกติ ชี้ไปที่ HGB สูงปลอมจากตัวอย่างขุ่น","ค่าที่อยู่ในช่วงอ้างอิงก็ผิดได้ ต้องตรวจความสอดคล้องระหว่างพารามิเตอร์เสมอ","หลังแก้ไข HGB 13.7 g/dL: MCH 29.8 pg, MCHC 33.4 g/dL และ rule of three ผ่าน (13.7 × 3 = 41.1)"],
+ rerun:{label:"หลังแก้ไข HGB",note:"ทำ plasma replacement แล้ววัด HGB ซ้ำ ค่าจากการนับเซลล์คงผลเดิม",
+  v:{HGB:13.7,MCH:29.8,MCHC:33.4},flags:{wbc:[],rbc:[],plt:[]}}}
+];
+var EXTRA={
+c1:{type:"num",t:"คำนวณ MCHC จาก HGB และ HCT ของรายนี้ (ทศนิยม 1 ตำแหน่ง)",ans:29.8,tol:0.2,unit:"g/dL",why:"MCHC = HGB × 100 ÷ HCT = 8.6 × 100 ÷ 28.9 = 29.8 g/dL ต่ำกว่า 32 จึงเป็น hypochromic"},
+c2:{type:"num",t:"คำนวณ MCV จาก HCT และ RBC ของรายนี้ (ทศนิยม 1 ตำแหน่ง)",ans:63.1,tol:0.3,unit:"fL",why:"MCV = HCT × 10 ÷ RBC = 38.6 × 10 ÷ 6.12 = 63.1 fL"},
+c3:{type:"num",t:"ตาม rule of three ถ้า HGB 12.4 g/dL ถูกต้อง HCT ควรมีค่าประมาณเท่าใด (ทศนิยม 1 ตำแหน่ง)",ans:37.2,tol:0.3,unit:"%",why:"12.4 × 3 = 37.2% ซึ่งใกล้กับ HCT หลังอุ่นตัวอย่าง (37.3%) แสดงว่า HGB เป็นค่าที่ถูกต้องมาตั้งแต่แรก"},
+c4:{type:"spot",plot:"PLT-O",t:"ใน PLT-O scattergram ให้คลิกบนบริเวณที่เกล็ดเลือดปกติควรอยู่",target:{x:17,y:46,rx:13,ry:20},why:"เกล็ดเลือดมีขนาดเล็ก (FSC ต่ำ) และติดสีฟลูออเรสเซนต์เล็กน้อย จึงเรียงเป็นแถบโค้งทางซ้ายล่างของกราฟ ต่ำกว่ากลุ่มเม็ดเลือดแดงที่อยู่ด้านบน ในผลครั้งแรกของรายนี้มีจุดกระจายสูงขึ้นไปทางขวาบนจากเกล็ดเลือดที่เกาะกลุ่ม"},
+c5:{type:"spot",plot:"WNR",t:"ใน WNR scattergram ให้คลิกบนกลุ่มของ NRBC",target:{x:40,y:46,rx:13,ry:13},why:"ในช่อง WNR เม็ดเลือดขาวติดสีฟลูออเรสเซนต์มากกว่าจึงอยู่ทางขวา ส่วน NRBC ติดสีน้อยกว่าและอยู่ทางซ้ายของกลุ่ม WBC แถบชิดแกนล่างคือเศษเม็ดเลือดแดงที่ถูกทำให้แตก"},
+c6:{type:"num",t:"คำนวณ LYMPH# (×10³/µL) จาก WBC และ LYMPH% ของรายนี้ (ทศนิยม 2 ตำแหน่ง)",ans:1.25,tol:0.02,unit:"×10³/µL",why:"LYMPH# = 2.4 × 52.0 ÷ 100 = 1.25 ×10³/µL อยู่ในเกณฑ์ปกติ (1.0–3.0)"}
+};
+CASES.forEach(function(c){c.q=c.q.concat([EXTRA[c.id]]);});
+CASES=[NEWC[0]].concat(CASES,NEWC.slice(1));
+var HUNT=MAIN.filter(function(k){return !Array.isArray(k);}).concat(RETROWS);
+
 /* ---------- state ---------- */
-var KEY="cbcQuizV2", state={ans:{},cur:0}, viewRerun=false;
-try{var s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&s.ans){state=s; if(!(state.cur>=0&&state.cur<CASES.length))state.cur=0;}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-function ansOf(c){return state.ans[c.id]||(state.ans[c.id]=[]);}
-function doneCount(c){var a=ansOf(c),n=0;for(var i=0;i<c.q.length;i++)if(a[i]!=null)n++;return n;}
-function isDone(c){return doneCount(c)===c.q.length;}
+var KEY="cbcPlatV3",viewRerun=false,spotArm=null,submitArm=false;
+var st={mode:"learn",page:"practice",cur:0,learn:{ans:{},hunt:{}},exam:null,examLast:null};
+try{var s0=JSON.parse(localStorage.getItem(KEY)||"null");if(s0&&s0.learn&&s0.learn.ans&&s0.learn.hunt){st=s0;st.page="practice";}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function examLive(){return st.mode==="exam"&&!!st.exam&&!st.exam.end;}
+function examOver(){return st.mode==="exam"&&!!st.exam&&!!st.exam.end;}
+function ses(){return st.mode==="exam"&&st.exam?st.exam:st.learn;}
+function caseList(){return st.mode==="exam"&&st.exam?st.exam.order:CASES.map(function(_,i){return i;});}
+function curCase(){var l=caseList();if(!(st.cur>=0&&st.cur<l.length))st.cur=0;return CASES[l[st.cur]];}
+function ansOf(c,s){s=s||ses();return s.ans[c.id]||(s.ans[c.id]=[]);}
+function huntOf(c){return st.learn.hunt[c.id]||(st.learn.hunt[c.id]={sel:[],done:false});}
+function isOK(q,a){if(a==null)return false;if(q.type==="num")return Math.abs(a-q.ans)<=q.tol+1e-9;if(q.type==="spot")return !!a.ok;return a===q.a;}
+function nAns(c,s){var a=ansOf(c,s),n=0;c.q.forEach(function(q,i){if(a[i]!=null)n++;});return n;}
+function nRight(c,s){var a=ansOf(c,s),n=0;c.q.forEach(function(q,i){if(isOK(q,a[i]))n++;});return n;}
+function flagsShown(c){return st.mode==="exam"||huntOf(c).done;}
+function revealed(c,qi){return st.mode==="exam"?examOver():ansOf(c)[qi]!=null;}
+function caseDone(c){return st.mode==="exam"?examOver():(huntOf(c).done&&nAns(c)===c.q.length);}
+function view0(c){var r=viewRerun;viewRerun=false;var o=view(c);viewRerun=r;return o;}
+function truthOf(c){var v=view0(c),out=[];HUNT.forEach(function(k){var x=v.v[k];if(x==null)return;var rg=rangeOf(k,c.sex);if(flag(x,rg[0],rg[1]))out.push(k);});return out;}
+function huntOK(c){var h=huntOf(c);if(!h.done)return false;var t=truthOf(c);return t.length===h.sel.length&&t.every(function(k){return h.sel.indexOf(k)>=0;});}
+function perm(n,seed){var r=rng(seed),a=[],i;for(i=0;i<n;i++)a.push(i);for(i=n-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function fmtT(ms){var s=Math.max(0,Math.round(ms/1000)),m=Math.floor(s/60);s=s%60;return m+":"+(s<10?"0":"")+s;}
 
 /* ---------- helpers ---------- */
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
@@ -393,7 +691,7 @@ function pltHist(c){
 var COL={cyan:"#00d8e0",mag:"#d22bd2",green:"#2fc02f",red:"#e63a1e",blue:"#2233ff",teal:"#35c9b6",grey:"#9aa0a6",yel:"#d8c020"};
 function G(b){var q=Math.sqrt(1-b[4]*b[4]);return function(r){var a=gauss(r);return [b[0]+b[2]*a,b[1]+b[3]*(b[4]*a+q*gauss(r))];};}
 /* WDF: x = SSC, y = SFL  |  [cx,cy,sx,sy,rho] */
-var WDF_CL={neut:[60,21,5.2,3.3,.4],lymph:[33,24,2.8,8,.78],mono:[50,47,3,8.5,.3],eo:[80,17,4.5,2.6,.45],atyp:[38,47,4,9,.55],blast:[42,40,7.5,13,.5]};
+var WDF_CL={neut:[60,21,5.2,3.3,.4],lymph:[33,24,2.8,8,.78],mono:[50,47,3,8.5,.3],eo:[80,17,4.5,2.6,.45],atyp:[38,47,4,9,.55],ig:[62,33,5,6.5,.3],blast:[42,40,7.5,13,.5]};
 var WDF_C={neut:COL.cyan,lymph:COL.mag,mono:COL.green,eo:COL.red,atyp:COL.mag};
 function drawScat(id,name,xl,yl,cl,seed){
   var cv=document.getElementById(id);if(!cv)return;
@@ -426,7 +724,7 @@ function drawPlots(c){
     if(k.k==="blast"){var gb=G(WDF_CL.blast);return {n:k.n*1.6,c:COL.mag,p:function(r){var q=gb(r),u=r();q[2]=u<.1?COL.grey:(q[0]-(q[1]-40)*.35<41?COL.mag:COL.green);return q;}};}
     return {n:k.n*1.6,c:WDF_C[k.k],p:G(WDF_CL[k.k])};});
   else cl=[["neut",0],["lymph",1],["mono",2],["eo",3]].map(function(p){return {n:38*f*c.diff[p[1]],c:WDF_C[p[0]],p:G(WDF_CL[p[0]])};});
-  (c.wdfX||[]).forEach(function(k){if(k.k==="atyp")cl.push({n:k.n*1.8,c:COL.mag,p:G(WDF_CL.atyp)});});
+  (c.wdfX||[]).forEach(function(k){if(k.k==="atyp")cl.push({n:k.n*1.8,c:COL.mag,p:G(WDF_CL.atyp)});if(k.k==="ig")cl.push({n:k.n,c:COL.cyan,p:G(WDF_CL.ig)});});
   cl.push({n:260,c:COL.blue,p:G([29,4,7,1.4,0])});
   if(clump)cl.push({n:420,c:COL.blue,p:G([22,10,8,5,.6])});
   drawScat("cvWDF","WDF","SSC","SFL",cl,sd("wdf"));
@@ -438,7 +736,7 @@ function drawPlots(c){
   if(clump)w.push({n:420,c:COL.blue,p:G([24,14,9,7,.5])});
   drawScat("cvWNR","WNR","SFL","FSC",w,sd("wnr"));
   /* RET: x = SFL, y = FSC */
-  var ry=60+(c.v.MCV-90)*.28,rn=Math.max(40,Math.min(1400,c.v["RET%"]*380)),irf=c.v.IRF/100,pn=c.v.PLT;
+  var ry=60+(c.v.MCV-90)*.28,rn=Math.max(40,Math.min(3200,c.v["RET%"]*380)),irf=c.v.IRF/100,pn=c.v.PLT;
   var rc=[{n:5200,c:COL.blue,p:G([17,ry,2.8,10,.5])},{n:700,c:COL.blue,p:function(r){var t=r();return [3+t*13+gauss(r)*1.6,3+t*(ry-12)+gauss(r)*4];}},
           {n:rn*(1-irf),c:COL.mag,p:G([36,ry+8,6.5,11,.2])},{n:rn*irf*.65,c:COL.mag,p:G([54,ry+9,7.5,11,.1])},{n:rn*irf*.35,c:COL.red,p:G([73,ry+9,9,11,.1])},
           {n:Math.max(30,Math.min(1100,pn*2.8)),c:COL.teal,p:function(r){var x=4+Math.abs(gauss(r))*17;return [x,1.5+x*.2+gauss(r)*1.5];}}];
@@ -456,80 +754,114 @@ function drawPlots(c){
 }
 
 /* ---------- render: analyzer ---------- */
-function rowHTML(k,c,hasPrev,star){
+var CVID={"WDF":"cvWDF","WNR":"cvWNR","RET":"cvRET","PLT-O":"cvPLTO"};
+var PA={S:440,L:26,B:24,T:8,R:8};
+function rowHTML(k,c,hasPrev,star,o){
   var R=RANGES[k],rg=rangeOf(k,c.sex),v=c.v[k],ref=rg[0]===rg[1]?String(rg[0]):rg[0]+" – "+rg[1];
   var pv=hasPrev?'<td class="prev">'+(c.prev.v[k]!=null?c.prev.v[k].toFixed(R.d):"")+'</td>':'';
   if(v==null)return '<tr><td>'+k+'</td><td class="val"><span>----</span></td><td class="fl"></td><td class="unit">'+R.u+'</td><td></td><td class="ref">'+ref+'</td>'+pv+'</tr>';
-  var f=flag(v,rg[0],rg[1]);
-  return '<tr><td>'+k+'</td><td class="val '+f+'"><span>'+v.toFixed(R.d)+(star?"*":"")+'</span></td><td class="fl '+f+'">'+f+'</td><td class="unit">'+R.u+'</td><td>'+rbar(v,rg[0],rg[1],f)+'</td><td class="ref">'+ref+'</td>'+pv+'</tr>';
+  var real=flag(v,rg[0],rg[1]),f=o.show?real:"",cls="",attr="";
+  if(o.pick){cls="pick"+(o.sel.indexOf(k)>=0?" sel":"");attr=' data-k="'+k+'" tabindex="0" role="button" aria-pressed="'+(o.sel.indexOf(k)>=0)+'"';}
+  else if(o.mark){var picked=o.sel.indexOf(k)>=0;cls=real&&picked?"hit":real?"miss":picked?"fp":"";}
+  return '<tr class="'+cls+'"'+attr+'><td>'+k+'</td><td class="val '+f+'"><span>'+v.toFixed(R.d)+(star?"*":"")+'</span></td><td class="fl '+f+'">'+f+'</td><td class="unit">'+R.u+'</td><td>'+(o.show?rbar(v,rg[0],rg[1],f):'<span class="rb" aria-hidden="true"></span>')+'</td><td class="ref">'+ref+'</td>'+pv+'</tr>';
 }
 function renderWin(){
-  var base=CASES[state.cur],c=view(base),h="",done=isDone(base);
+  var base=curCase(),c=view(base),h="",done=caseDone(base),show=flagsShown(base),hunt=huntOf(base);
+  var o={show:show,pick:st.mode==="learn"&&!hunt.done,mark:st.mode==="learn"&&hunt.done&&!viewRerun,sel:hunt.sel};
   var anyFlag=c.flags.wbc.length+c.flags.rbc.length+c.flags.plt.length>0;
+  var armPlot=(spotArm!=null&&base.q[spotArm]&&base.q[spotArm].type==="spot")?base.q[spotArm].plot:null;
   h+='<div class="titlebar"><span class="nm">HEMA-SIM 5 · Sample Explorer</span><span class="sim">เครื่องจำลองเพื่อการเรียน</span></div>';
   h+='<div class="sinfo">'+
     '<div><span>Sample No.</span><b>'+c.sampleNo+(viewRerun&&base.rerun?"-R":"")+'</b></div>'+
     '<div><span>HN</span><b>'+c.hn+'</b></div>'+
     '<div><span>เพศ / อายุ</span><b>'+(c.sex==="M"?"ชาย":"หญิง")+' / '+c.age+' ปี</b></div>'+
     '<div><span>หน่วยงาน</span><b>'+esc(c.ward)+'</b></div>'+
-    '<div><span>Analyzed</span><b>24/11/2569 '+(8+state.cur)+':'+(viewRerun?"52":"14")+'</b></div></div>';
+    '<div><span>Analyzed</span><b>24/11/2569 '+(8+CASES.indexOf(base))+':'+(viewRerun?"52":"14")+'</b></div></div>';
   h+='<div class="clin"><b>ข้อมูลทางคลินิก</b>'+esc(c.clinical)+'</div>';
-  h+='<div class="toolbar"><span class="judge '+(anyFlag?"pos":"neg")+'">'+(anyFlag?"POSITIVE":"NEGATIVE")+'</span><span class="mode">WB · CBC+DIFF+RET</span>';
+  h+='<div class="toolbar">'+(show?'<span class="judge '+(anyFlag?"pos":"neg")+'">'+(anyFlag?"POSITIVE":"NEGATIVE")+'</span>':'<span class="judge hid">ซ่อน flag</span>')+'<span class="mode">WB · CBC+DIFF+RET</span>';
   if(base.rerun){
     h+='<span class="seg" role="group" aria-label="เลือกผลที่แสดง"><button type="button" id="vFirst" aria-pressed="'+(!viewRerun)+'">ผลครั้งแรก</button>'+
        '<button type="button" id="vRerun" aria-pressed="'+viewRerun+'" '+(done?"":"disabled title=\"ตอบคำถามให้ครบก่อน\"")+'>'+esc(base.rerun.label)+'</button></span>';
   }
   h+='</div>';
   if(viewRerun&&base.rerun)h+='<div class="rnote">'+esc(base.rerun.note)+'</div>';
+  if(o.pick)h+='<div class="rnote pickn">ขั้นที่ 1: คลิกแถวในตาราง CBC และ Reticulocyte ที่ค่าอยู่นอกช่วงอ้างอิง แล้วกด “ตรวจคำตอบ” ในแผงด้านขวา</div>';
 
   var hasPrev=!!c.prev&&!viewRerun,cols=hasPrev?7:6;
   var head='<thead><tr><th>Item</th><th>Data</th><th></th><th style="text-align:left">Unit</th><th></th><th style="text-align:left">ค่าอ้างอิง</th>';
   var t='<div class="scroll"><table>'+head+(hasPrev?'<th>'+esc(c.prev.label)+'</th>':'')+'</tr></thead><tbody>';
-  MAIN.forEach(function(k){t+=Array.isArray(k)?'<tr class="sec"><td colspan="'+cols+'">'+k[0]+'</td></tr>':rowHTML(k,c,hasPrev,false);});
+  MAIN.forEach(function(k){t+=Array.isArray(k)?'<tr class="sec"><td colspan="'+cols+'">'+k[0]+'</td></tr>':rowHTML(k,c,hasPrev,false,o);});
   t+='</tbody></table></div>';
 
-  var st=c.diffStar?"*":"";
+  var stt=c.diffStar?"*":"";
+  function F(v,lo,hi){return show?flag(v,lo,hi):"";}
   var d='<div class="scroll"><table><thead><tr><th>Item</th><th>%</th><th></th><th>10³/µL</th><th></th><th style="text-align:left">ค่าอ้างอิง (%)</th></tr></thead><tbody>';
   DIFF.forEach(function(r,i){
-    var p=c.diff[i],ab=c.v.WBC*p/100,f1=flag(p,r[1],r[2]),f2=flag(ab,r[3],r[4]);
-    d+='<tr><td>'+r[0]+'</td><td class="val '+f1+'"><span>'+p.toFixed(1)+st+'</span></td><td class="fl '+f1+'">'+f1+'</td><td class="val '+f2+'"><span>'+ab.toFixed(2)+st+'</span></td><td class="fl '+f2+'">'+f2+'</td><td class="ref">'+r[1]+' – '+r[2]+'</td></tr>';
+    var p=c.diff[i],ab=c.v.WBC*p/100,f1=F(p,r[1],r[2]),f2=F(ab,r[3],r[4]);
+    d+='<tr><td>'+r[0]+'</td><td class="val '+f1+'"><span>'+p.toFixed(1)+stt+'</span></td><td class="fl '+f1+'">'+f1+'</td><td class="val '+f2+'"><span>'+ab.toFixed(2)+stt+'</span></td><td class="fl '+f2+'">'+f2+'</td><td class="ref">'+r[1]+' – '+r[2]+'</td></tr>';
   });
-  var ig=c.v["IG%"],iga=c.v["IG#"],g1=flag(ig,0,0.6),g2=flag(iga,0,0.06);
-  d+='<tr><td>IG</td><td class="val '+g1+'"><span>'+ig.toFixed(1)+st+'</span></td><td class="fl '+g1+'">'+g1+'</td><td class="val '+g2+'"><span>'+iga.toFixed(2)+st+'</span></td><td class="fl '+g2+'">'+g2+'</td><td class="ref">0 – 0.6</td></tr>';
+  var ig=c.v["IG%"],iga=c.v["IG#"],g1=F(ig,0,0.6),g2=F(iga,0,0.06);
+  d+='<tr><td>IG</td><td class="val '+g1+'"><span>'+ig.toFixed(1)+stt+'</span></td><td class="fl '+g1+'">'+g1+'</td><td class="val '+g2+'"><span>'+iga.toFixed(2)+stt+'</span></td><td class="fl '+g2+'">'+g2+'</td><td class="ref">0 – 0.6</td></tr>';
   d+='</tbody></table></div>';
   if(c.diffStar)d+='<p class="note">* ค่ามีความน่าเชื่อถือต่ำ</p>';
   var rt='<div class="scroll"><table>'+head+'</tr></thead><tbody>';
-  RETROWS.forEach(function(k){rt+=rowHTML(k,c,false,false);});
+  RETROWS.forEach(function(k){rt+=rowHTML(k,c,false,false,o);});
   rt+='</tbody></table></div>';
 
-  function fbox(name,list){return '<div class="fbox"><h4>'+name+'</h4><ul>'+(list.length?list.map(function(m){return '<li class="'+(/\?$/.test(m)?"s":"")+'">'+esc(m)+'</li>';}).join(""):'<li class="none">—</li>')+'</ul></div>';}
+  function fbox(name,list){return '<div class="fbox"><h4>'+name+'</h4><ul>'+(!show?'<li class="none">ซ่อนไว้</li>':list.length?list.map(function(m){return '<li class="'+(/\?$/.test(m)?"s":"")+'">'+esc(m)+'</li>';}).join(""):'<li class="none">—</li>')+'</ul></div>';}
+  function cvs(name,ax){return '<figure class="plot"><canvas id="'+CVID[name]+'" class="'+(armPlot===name?"armed":"")+'" role="img" aria-label="'+name+' scattergram '+ax+'"></canvas></figure>';}
 
   h+='<div class="panes">'+
      '<div class="pane"><h3>CBC</h3>'+t+'</div>'+
      '<div class="pane"><h3>Differential</h3>'+d+'<h3>Reticulocyte</h3>'+rt+'<h3>IP Messages</h3><div class="flags">'+fbox("WBC",c.flags.wbc)+fbox("RBC",c.flags.rbc)+fbox("PLT",c.flags.plt)+'</div></div>'+
      '</div>';
-  h+='<div class="dist"><h3>Scattergram / Distribution</h3><div class="plots">'+
-     '<figure class="plot"><canvas id="cvWDF" role="img" aria-label="WDF scattergram แกนนอน SSC แกนตั้ง SFL"></canvas></figure>'+
-     '<figure class="plot"><canvas id="cvWNR" role="img" aria-label="WNR scattergram แกนนอน SFL แกนตั้ง FSC"></canvas></figure>'+
-     '<figure class="plot"><canvas id="cvRET" role="img" aria-label="RET scattergram แกนนอน SFL แกนตั้ง FSC"></canvas></figure>'+
-     '<figure class="plot"><canvas id="cvPLTO" role="img" aria-label="PLT-O scattergram แกนนอน SFL แกนตั้ง FSC"></canvas></figure>'+
-     '<figure class="plot">'+rbcHist(c)+'</figure>'+
-     '<figure class="plot">'+pltHist(c)+'</figure></div></div>';
+  h+='<div class="dist" id="dist"><h3>Scattergram / Distribution</h3>'+(armPlot?'<p class="armn">คลิกบนกราฟ '+armPlot+' เพื่อตอบคำถาม</p>':'')+'<div class="plots">'+
+     cvs("WDF","แกนนอน SSC แกนตั้ง SFL")+cvs("WNR","แกนนอน SFL แกนตั้ง FSC")+cvs("RET","แกนนอน SFL แกนตั้ง FSC")+cvs("PLT-O","แกนนอน SFL แกนตั้ง FSC")+
+     '<figure class="plot">'+rbcHist(c)+'</figure><figure class="plot">'+pltHist(c)+'</figure></div></div>';
   h+='<div class="foot">H = สูงกว่าค่าอ้างอิง · L = ต่ำกว่าค่าอ้างอิง · ข้อความที่ลงท้ายด้วย ? เป็น suspect message · ---- = เครื่องคำนวณค่าไม่ได้ · เส้นประสีเขียวคือ discriminator</div>';
   var w=document.getElementById("win");w.innerHTML=h;
-  drawPlots(c);
+  drawPlots(c);drawOverlays(base);
   var a=document.getElementById("vFirst"),b=document.getElementById("vRerun");
   if(a)a.onclick=function(){viewRerun=false;renderWin();};
   if(b)b.onclick=function(){viewRerun=true;renderWin();};
+  w.querySelectorAll("tr.pick").forEach(function(tr){
+    function tog(){var k=tr.dataset.k,i=hunt.sel.indexOf(k);if(i>=0)hunt.sel.splice(i,1);else hunt.sel.push(k);save();renderWin();renderQuiz();}
+    tr.onclick=tog;tr.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}};
+  });
+  Object.keys(CVID).forEach(function(name){
+    var cv=document.getElementById(CVID[name]);
+    cv.onclick=function(e){
+      if(spotArm==null)return;var q=base.q[spotArm];
+      if(!q||q.type!=="spot"||q.plot!==name||!canAnswer(base,spotArm))return;
+      var r=cv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*PA.S,py=(e.clientY-r.top)/r.height*PA.S;
+      var x=(px-PA.L)/(PA.S-PA.L-PA.R)*100,y=(PA.S-PA.B-py)/(PA.S-PA.T-PA.B)*100,tg=q.target;
+      var ok=Math.pow((x-tg.x)/tg.rx,2)+Math.pow((y-tg.y)/tg.ry,2)<=1;
+      ansOf(base)[spotArm]={x:Math.round(x*10)/10,y:Math.round(y*10)/10,ok:ok};spotArm=null;
+      save();touched();renderAll();
+    };
+  });
 }
+function drawOverlays(c){
+  if(viewRerun)return;
+  var a=ansOf(c),pw=PA.S-PA.L-PA.R,ph=PA.S-PA.T-PA.B;
+  c.q.forEach(function(q,qi){
+    if(q.type!=="spot"||a[qi]==null)return;
+    var cv=document.getElementById(CVID[q.plot]);if(!cv)return;var g=cv.getContext("2d"),tg=q.target;
+    function X(x){return PA.L+x/100*pw;} function Y(y){return PA.T+ph-y/100*ph;}
+    if(revealed(c,qi)){g.save();g.setLineDash([8,6]);g.strokeStyle="#ffe14d";g.lineWidth=2.5;g.beginPath();g.ellipse(X(tg.x),Y(tg.y),tg.rx/100*pw,tg.ry/100*ph,0,0,Math.PI*2);g.stroke();g.restore();}
+    g.strokeStyle="#ffffff";g.lineWidth=3;g.beginPath();g.arc(X(a[qi].x),Y(a[qi].y),10,0,Math.PI*2);g.stroke();
+    g.beginPath();g.moveTo(X(a[qi].x)-16,Y(a[qi].y));g.lineTo(X(a[qi].x)+16,Y(a[qi].y));g.moveTo(X(a[qi].x),Y(a[qi].y)-16);g.lineTo(X(a[qi].x),Y(a[qi].y)+16);g.stroke();
+  });
+}
+function canAnswer(c,qi){return st.mode==="exam"?examLive():(huntOf(c).done&&ansOf(c)[qi]==null);}
 
 /* ---------- gallery (shared images: assets + db) ---------- */
-var caps={db:null,assets:null},imgs=[],imgState="loading",delArm=null;
+var caps={db:null,assets:null,user:null},imgs=[],imgState="loading",delArm=null;
 var KIND={smear:"ภาพสเมียร์เลือด",cell:"ภาพเซลล์"};
 var ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg>';
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 function renderGallery(){
-  var c=CASES[state.cur],list=document.getElementById("gList"),sub=document.getElementById("gsub"),editor=!!(caps.assets&&caps.db),done=isDone(c);
+  var c=curCase(),list=document.getElementById("gList"),sub=document.getElementById("gsub"),editor=!!(caps.assets&&caps.db),done=caseDone(c);
   list.textContent="";
   var mine=imgs.filter(function(m){return m.caseId===c.id&&/^[A-Za-z0-9_-]+$/.test(String(m.asset||""));}).sort(function(a,b){return (a.ts||0)-(b.ts||0);});
   var hiddenN=0;
@@ -558,7 +890,7 @@ function renderGallery(){
     ["smear","cell"].forEach(function(k){var e=el("div","gempty");e.innerHTML=ICON;e.appendChild(el("b",null,KIND[k]));e.appendChild(el("span",null,imgState==="loading"?"กำลังโหลด…":"ยังไม่มีภาพสำหรับรายนี้"));list.appendChild(e);});
   }
   sub.textContent=editor?"เพิ่มภาพประกอบของแต่ละรายได้จากแบบฟอร์มด้านล่าง ผู้เรียนจะเห็นภาพทันทีที่อัปโหลดเสร็จ":"ภาพประกอบจากกล้องจุลทรรศน์ของผู้ป่วยรายนี้ กดที่ภาพเพื่อขยาย";
-  var hint=document.getElementById("gHint");if(hint)hint.textContent="กำลังเพิ่มภาพให้ ราย "+(state.cur+1)+" ("+c.tab+" "+c.sub+") "+(c.imgHint||"");
+  var hint=document.getElementById("gHint");if(hint)hint.textContent="กำลังเพิ่มภาพให้ ราย "+(CASES.indexOf(c)+1)+" ("+c.tab+" "+c.sub+") "+(c.imgHint||"");
 }
 function gmsg(t,cls){var m=document.getElementById("gMsg");if(m){m.textContent=t;m.className="gmsg "+(cls||"");}}
 function buildForm(){
@@ -571,7 +903,7 @@ function buildForm(){
     '<div><button type="button" class="pbtn" id="gUp">อัปโหลดภาพ</button></div><div class="gmsg" id="gMsg" aria-live="polite"></div>';
   f.hidden=false;
   document.getElementById("gUp").onclick=function(){
-    var btn=this,file=document.getElementById("gFile").files[0],c=CASES[state.cur];
+    var btn=this,file=document.getElementById("gFile").files[0],c=curCase();
     if(!file){gmsg("เลือกไฟล์ภาพก่อน","err");return;}
     if(!/^image\//.test(file.type)){gmsg("รองรับเฉพาะไฟล์ภาพ PNG, JPEG, WebP หรือ GIF","err");return;}
     if(file.size>20*1024*1024){gmsg("ไฟล์ใหญ่เกิน 20 MB ย่อขนาดภาพแล้วลองใหม่","err");return;}
@@ -591,6 +923,11 @@ document.getElementById("lb").onclick=function(){this.hidden=true;};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")document.getElementById("lb").hidden=true;});
 function initCaps(){
   if(!window.claude||!window.claude.use){imgState="none";renderGallery();return;}
+  window.claude.use("user").then(function(u){
+    caps.user=u;if(!u)return;
+    Promise.resolve(u.canEdit()).then(function(v){if(v)document.getElementById("navTeach").hidden=false;},function(){});
+    Promise.resolve(u.id()).then(function(id){if(id){uid=id;saveNote("เมื่อคุณตอบคำถาม คะแนนจะถูกบันทึกให้อาจารย์ผู้สอนเห็น");}},function(){});
+  });
   window.claude.use("assets").then(function(a){caps.assets=a;if(a&&caps.db){buildForm();}renderGallery();});
   window.claude.use("db").then(function(db){
     if(!db){imgState="none";renderGallery();return;}
@@ -605,57 +942,211 @@ function initCaps(){
 }
 
 /* ---------- render: quiz ---------- */
-function renderQuiz(){
-  var c=CASES[state.cur],a=ansOf(c),h="";
-  h+='<div class="qhead"><h2>คำถาม: '+esc(c.tab)+' '+esc(c.sub)+'</h2><button class="linkbtn" type="button" id="resetCase">ทำรายนี้ใหม่</button></div>';
-  c.q.forEach(function(q,qi){
-    var chosen=a[qi],answered=chosen!=null;
-    h+='<div class="q"><span class="qn">ข้อ '+(qi+1)+' / '+c.q.length+'</span><p class="qt">'+q.t+'</p><div class="opts">';
-    q.o.forEach(function(o,oi){
-      var cls="opt",mk=String.fromCharCode(65+oi);
-      if(answered){if(oi===q.a){cls+=" right";mk="✓";}else if(oi===chosen){cls+=" wrong";mk="✗";}else cls+=" dim";}
-      h+='<button type="button" class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'" '+(answered?"disabled":"")+'><span class="mk">'+mk+'</span><span>'+o+'</span></button>';
+function qCard(c,q,qi){
+  var a=ansOf(c),chosen=a[qi],answered=chosen!=null,rev=answered&&revealed(c,qi),live=canAnswer(c,qi),h="";
+  var kind=q.type==="num"?"คำนวณ":q.type==="spot"?"ชี้บนกราฟ":"เลือกตอบ";
+  h+='<div class="q"><span class="qn">ข้อ '+(qi+1)+' / '+c.q.length+' · '+kind+'</span><p class="qt">'+q.t+'</p>';
+  if(q.type==="num"){
+    if(live)h+='<div class="numrow"><input type="number" inputmode="decimal" step="any" id="num-'+c.id+'-'+qi+'" data-q="'+qi+'" class="numin" aria-label="คำตอบ" value="'+(answered?chosen:"")+'"><span class="unit2">'+q.unit+'</span>'+(st.mode==="learn"?'<button type="button" class="pbtn numgo" data-q="'+qi+'">ตอบ</button>':'')+'</div>';
+    else if(answered)h+='<p class="yours">คำตอบของคุณ: <b>'+chosen+'</b> '+q.unit+'</p>';
+    else h+='<p class="yours">ไม่ได้ตอบ</p>';
+  }else if(q.type==="spot"){
+    if(live)h+='<div class="numrow"><button type="button" class="pbtn spotgo" data-q="'+qi+'">'+(answered?"เลือกตำแหน่งใหม่บนกราฟ ":"เลือกตำแหน่งบนกราฟ ")+q.plot+'</button>'+(answered?'<span class="yours">เลือกตำแหน่งแล้ว</span>':'')+'</div>';
+    else h+='<p class="yours">'+(answered?'ตำแหน่งที่คุณเลือกแสดงเป็นเครื่องหมายสีขาวบนกราฟ '+q.plot+' วงเส้นประสีเหลืองคือบริเวณที่ถูกต้อง':'ไม่ได้ตอบ')+'</p>';
+  }else{
+    var ord=(st.mode==="exam"&&st.exam)?perm(q.o.length,st.exam.seed+seedOf(c.id)+qi*7):q.o.map(function(_,i){return i;});
+    h+='<div class="opts">';
+    ord.forEach(function(oi,pos){
+      var cls="opt",mk=String.fromCharCode(65+pos);
+      if(rev||(!live&&examOver())){if(oi===q.a){cls+=" right";mk="✓";}else if(oi===chosen){cls+=" wrong";mk="✗";}else cls+=" dim";}
+      else if(answered&&oi===chosen)cls+=" picked";
+      h+='<button type="button" class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'" '+(live?"":"disabled")+'><span class="mk">'+mk+'</span><span>'+q.o[oi]+'</span></button>';
     });
     h+='</div>';
-    if(answered)h+='<div class="why">'+(chosen===q.a?'<b class="r">ถูกต้อง</b> ':'<b class="w">ยังไม่ถูก</b> ')+q.why+'</div>';
-    h+='</div>';
-  });
-  if(isDone(c)){
-    var sc=0;c.q.forEach(function(q,i){if(a[i]===q.a)sc++;});
-    h+='<div class="sum"><h3>สรุปประเด็น ('+sc+'/'+c.q.length+' ข้อ)</h3><ul>'+c.summary.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ul><div class="act">';
-    if(c.rerun)h+='<button type="button" class="pbtn" id="showRerun">ดูผล'+esc(c.rerun.label)+'</button>';
-    if(state.cur<CASES.length-1)h+='<button type="button" class="'+(c.rerun?"linkbtn":"pbtn")+'" id="nextCase">รายถัดไป →</button>';
-    h+='</div></div>';
-  }else{
-    h+='<div class="locked">ตอบครบทุกข้อเพื่อดูสรุปประเด็น'+(c.rerun?'และผลหลังแก้ไขตัวอย่าง':'')+'</div>';
   }
-  var q2=document.getElementById("quiz");q2.innerHTML=h;
-  q2.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){
-    var qi=+b.dataset.q;if(a[qi]!=null)return;a[qi]=+b.dataset.o;save();renderAll(true);
+  if(rev||examOver()){
+    var ok=isOK(q,chosen);
+    h+='<div class="why">'+(ok?'<b class="r">ถูกต้อง</b> ':'<b class="w">'+(answered?"ยังไม่ถูก":"ไม่ได้ตอบ")+'</b> ')+(q.type==="num"?'คำตอบคือ '+q.ans+' '+q.unit+' · ':'')+q.why+'</div>';
+  }
+  return h+'</div>';
+}
+function renderQuiz(){
+  var c=curCase(),a=ansOf(c),h="",hunt=huntOf(c),learn=st.mode==="learn";
+  h+='<div class="qhead"><h2>'+esc(c.tab)+' '+esc(c.sub)+'</h2>'+(learn?'<button class="linkbtn" type="button" id="resetCase">ทำรายนี้ใหม่</button>':'')+'</div>';
+  if(examOver()){
+    var L=st.examLast||{};
+    h+='<div class="sum"><h3>ผลการสอบ: '+L.score+' / '+L.total+' คะแนน · ใช้เวลา '+fmtT((L.sec||0)*1000)+'</h3><p style="margin:0;font-size:.9rem">เลือกดูเฉลยของแต่ละรายได้จากแถบด้านบน</p><div class="act"><button type="button" class="pbtn" id="examNew">เริ่มสอบชุดใหม่</button></div></div>';
+  }
+  if(learn){
+    var t=truthOf(c);
+    h+='<div class="q"><span class="qn">ขั้นที่ 1 · หาค่าที่ผิดปกติ</span>';
+    if(!hunt.done){
+      h+='<p class="qt">คลิกแถวพารามิเตอร์ในตาราง CBC และ Reticulocyte ที่ค่าอยู่นอกช่วงอ้างอิงให้ครบ</p><p class="yours">เลือกแล้ว '+hunt.sel.length+' รายการ'+(hunt.sel.length?': '+hunt.sel.join(", "):'')+' · ถ้าเห็นว่าปกติทุกค่า กดตรวจคำตอบได้เลย</p><div class="numrow"><button type="button" class="pbtn" id="huntGo">ตรวจคำตอบ</button></div>';
+    }else{
+      var hit=t.filter(function(k){return hunt.sel.indexOf(k)>=0;}),miss=t.filter(function(k){return hunt.sel.indexOf(k)<0;}),fp=hunt.sel.filter(function(k){return t.indexOf(k)<0;});
+      h+='<p class="qt">'+(huntOK(c)?'<b class="r" style="color:var(--ok)">ถูกต้องครบ</b>':'<b style="color:var(--hi)">ยังไม่ครบถ้วน</b>')+' · ค่าที่อยู่นอกช่วงอ้างอิงมี '+t.length+' รายการ</p>'+
+         '<ul class="hres">'+(t.length?'':'<li>ทุกค่าอยู่ในช่วงอ้างอิง</li>')+(hit.length?'<li><b>หาเจอ:</b> '+hit.join(", ")+'</li>':'')+(miss.length?'<li class="m"><b>พลาด:</b> '+miss.join(", ")+'</li>':'')+(fp.length?'<li class="f"><b>เลือกเกิน (ค่าปกติ):</b> '+fp.join(", ")+'</li>':'')+'</ul>'+
+         '<p class="yours">ตอนนี้หน้าจอแสดง flag H/L และ IP message แล้ว ลองดูค่า differential ด้วย</p>';
+    }
+    h+='</div>';
+  }
+  if(learn&&!hunt.done){
+    h+='<div class="locked">ขั้นที่ 2: คำถาม '+c.q.length+' ข้อ จะเปิดเมื่อทำขั้นที่ 1 เสร็จ</div>';
+  }else{
+    c.q.forEach(function(q,qi){h+=qCard(c,q,qi);});
+    if(caseDone(c)){
+      h+='<div class="sum"><h3>สรุปประเด็น'+(learn?' ('+(nRight(c)+(huntOK(c)?1:0))+'/'+(c.q.length+1)+' คะแนน)':' ('+nRight(c)+'/'+c.q.length+')')+'</h3><ul>'+c.summary.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ul><div class="act">';
+      if(c.rerun)h+='<button type="button" class="pbtn" id="showRerun">ดูผล'+esc(c.rerun.label)+'</button>';
+      if(st.cur<caseList().length-1)h+='<button type="button" class="'+(c.rerun?"linkbtn":"pbtn")+'" id="nextCase">รายถัดไป →</button>';
+      h+='</div></div>';
+    }else if(examLive()){
+      var tot=0,ansd=0;st.exam.order.forEach(function(i){tot+=CASES[i].q.length;ansd+=nAns(CASES[i]);});
+      h+='<div class="locked exsub"><span>ตอบแล้ว '+ansd+' / '+tot+' ข้อ แก้คำตอบได้จนกว่าจะส่ง</span><span class="act">'+(st.cur<caseList().length-1?'<button type="button" class="linkbtn" id="nextCase">รายถัดไป →</button>':'')+'<button type="button" class="pbtn" id="examSubmit">'+(submitArm?"ยืนยันส่งคำตอบ":"ส่งคำตอบ")+'</button></span></div>';
+    }else{
+      h+='<div class="locked">ตอบครบทุกข้อเพื่อดูสรุปประเด็น'+(c.rerun?'และผลหลังแก้ไขตัวอย่าง':'')+'</div>';
+    }
+  }
+  var el2=document.getElementById("quiz");el2.innerHTML=h;
+  el2.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){
+    var qi=+b.dataset.q;if(!canAnswer(c,qi))return;a[qi]=+b.dataset.o;submitArm=false;save();touched();renderAll();
   };});
-  document.getElementById("resetCase").onclick=function(){state.ans[c.id]=[];viewRerun=false;save();renderAll();};
-  var n=document.getElementById("nextCase");if(n)n.onclick=function(){go(state.cur+1);};
-  var r=document.getElementById("showRerun");if(r)r.onclick=function(){viewRerun=true;renderWin();document.getElementById("win").scrollIntoView({behavior:"smooth",block:"start"});};
+  el2.querySelectorAll(".numgo").forEach(function(b){b.onclick=function(){
+    var qi=+b.dataset.q,v=parseFloat(document.getElementById("num-"+c.id+"-"+qi).value);if(!isFinite(v)||!canAnswer(c,qi))return;a[qi]=v;save();touched();renderAll();
+  };});
+  el2.querySelectorAll(".numin").forEach(function(inp){
+    inp.onkeydown=function(e){if(e.key==="Enter"&&st.mode==="learn"){var g=el2.querySelector('.numgo[data-q="'+inp.dataset.q+'"]');if(g)g.click();}};
+    if(st.mode==="exam")inp.oninput=function(){var v=parseFloat(inp.value);a[+inp.dataset.q]=isFinite(v)?v:null;save();};
+  });
+  el2.querySelectorAll(".spotgo").forEach(function(b){b.onclick=function(){
+    spotArm=+b.dataset.q;viewRerun=false;renderWin();var d=document.getElementById("dist");if(d)d.scrollIntoView({behavior:"smooth",block:"center"});
+  };});
+  var x;
+  if((x=document.getElementById("huntGo")))x.onclick=function(){hunt.done=true;save();touched();renderAll();};
+  if((x=document.getElementById("resetCase")))x.onclick=function(){st.learn.ans[c.id]=[];st.learn.hunt[c.id]={sel:[],done:false};viewRerun=false;spotArm=null;save();touched();renderAll();};
+  if((x=document.getElementById("nextCase")))x.onclick=function(){go(st.cur+1);};
+  if((x=document.getElementById("showRerun")))x.onclick=function(){viewRerun=true;renderWin();document.getElementById("win").scrollIntoView({behavior:"smooth",block:"start"});};
+  if((x=document.getElementById("examSubmit")))x.onclick=function(){if(!submitArm){submitArm=true;renderQuiz();return;}finishExam();};
+  if((x=document.getElementById("examNew")))x.onclick=function(){st.exam=null;st.cur=0;save();renderAll();};
+}
+function startExam(){
+  var idx=perm(CASES.length,(Math.random()*1e9)|0).slice(0,6);
+  st.exam={order:idx,seed:(Math.random()*1e9)|0,start:Date.now(),end:null,ans:{}};st.cur=0;viewRerun=false;spotArm=null;submitArm=false;save();renderAll();
+}
+function finishExam(){
+  var e=st.exam,score=0,tot=0,q={};e.end=Date.now();
+  e.order.forEach(function(i){var c=CASES[i],a=ansOf(c,e);tot+=c.q.length;q[c.id]=c.q.map(function(qq,k){if(a[k]==null)return "-";var ok=isOK(qq,a[k]);if(ok)score++;return ok?"1":"0";}).join("");});
+  st.examLast={score:score,total:tot,sec:Math.round((e.end-e.start)/1000),ts:e.end,q:q};submitArm=false;st.cur=0;save();touched();renderAll();
 }
 function renderTabs(){
-  var h="",score=0,tot=0;
-  CASES.forEach(function(c,i){
-    var a=ansOf(c),dn=doneCount(c);
-    c.q.forEach(function(q,qi){tot++;if(a[qi]===q.a)score++;});
-    h+='<button type="button" role="tab" class="tab'+(dn===c.q.length?" done":"")+'" aria-selected="'+(i===state.cur)+'" data-i="'+i+'"><span class="tn">ราย '+(i+1)+'<span class="pg">'+(dn===c.q.length?"✓ ":"")+dn+'/'+c.q.length+'</span></span><small>'+esc(c.tab)+' · '+esc(c.sub)+'</small></button>';
+  var h="",list=caseList(),score=0,tot=0,ansd=0,learn=st.mode==="learn";
+  list.forEach(function(ci,i){
+    var c=CASES[ci],n=c.q.length+(learn?1:0),dn=nAns(c)+(learn&&huntOf(c).done?1:0);
+    tot+=n;ansd+=dn;score+=nRight(c)+(learn&&huntOK(c)?1:0);
+    h+='<button type="button" role="tab" class="tab'+(dn===n?" done":"")+'" aria-selected="'+(i===st.cur)+'" data-i="'+i+'"><span class="tn">ราย '+(i+1)+'<span class="pg">'+(dn===n?"✓ ":"")+dn+'/'+n+'</span></span><small>'+esc(c.tab)+' · '+esc(c.sub)+'</small></button>';
   });
   var t=document.getElementById("tabs");t.innerHTML=h;
   t.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){go(+b.dataset.i);};});
-  document.getElementById("scoreNum").textContent=score;
+  var live=examLive();
+  document.getElementById("scoreLbl").textContent=live?"ตอบแล้ว":"คะแนน";
+  document.getElementById("scoreNum").textContent=live?ansd:score;
   document.getElementById("scoreTot").textContent=tot;
-  var answered=0;CASES.forEach(function(c){answered+=doneCount(c);});
-  document.getElementById("meterFill").style.width=(100*answered/tot)+"%";
+  document.getElementById("meterFill").style.width=(tot?100*ansd/tot:0)+"%";
+  document.getElementById("resetAll").hidden=!learn;
 }
-function go(i){state.cur=i;viewRerun=false;delArm=null;save();renderAll();}
-function renderAll(keepWin){renderTabs();if(!keepWin||isDone(CASES[state.cur]))renderWin();renderQuiz();renderGallery();}
-document.getElementById("resetAll").onclick=function(){state={ans:{},cur:0};viewRerun=false;save();renderAll();};
+function tick(){
+  var el3=document.getElementById("timer");
+  if(examLive()){el3.hidden=false;el3.textContent="เวลา "+fmtT(Date.now()-st.exam.start);}
+  else if(examOver()){el3.hidden=false;el3.textContent="เวลา "+fmtT(st.exam.end-st.exam.start);}
+  else el3.hidden=true;
+}
+function go(i){st.cur=i;viewRerun=false;delArm=null;spotArm=null;submitArm=false;save();renderAll();}
+function renderAll(){
+  var pr=st.page==="practice",needStart=st.mode==="exam"&&!st.exam;
+  document.getElementById("pgPractice").hidden=!pr;document.getElementById("pgRef").hidden=st.page!=="ref";document.getElementById("pgTeach").hidden=st.page!=="teach";
+  document.querySelectorAll("#nav button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.p===st.page);});
+  document.querySelectorAll("#modeSeg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.m===st.mode);});
+  document.getElementById("modeSeg").hidden=!pr;document.getElementById("scoreBox").hidden=!pr||needStart;
+  document.getElementById("examStart").hidden=!(pr&&needStart);
+  document.getElementById("practiceBody").hidden=needStart;
+  tick();
+  if(!pr||needStart)return;
+  renderTabs();renderWin();renderQuiz();renderGallery();
+}
+document.getElementById("resetAll").onclick=function(){st.learn={ans:{},hunt:{}};st.cur=0;viewRerun=false;spotArm=null;save();touched();renderAll();};
+document.querySelectorAll("#nav button").forEach(function(b){b.onclick=function(){st.page=b.dataset.p;renderAll();if(st.page==="teach")loadTeach();};});
+document.querySelectorAll("#modeSeg button").forEach(function(b){b.onclick=function(){if(st.mode===b.dataset.m)return;st.mode=b.dataset.m;st.cur=0;viewRerun=false;spotArm=null;submitArm=false;save();renderAll();};});
+document.getElementById("examGo").onclick=startExam;
+setInterval(tick,1000);
+
+/* ---------- results: save own score, teacher overview ---------- */
+var uid=null,saveT=null,saving=false,dirty=false,saveOff=false;
+function buildResult(){
+  var L={score:0,total:0,answered:0,q:{},hunt:{}};
+  CASES.forEach(function(c){
+    var a=ansOf(c,st.learn),h=huntOf(c);L.total+=c.q.length+1;
+    if(h.done){L.hunt[c.id]=huntOK(c)?1:0;L.score+=L.hunt[c.id];L.answered++;}
+    L.q[c.id]=c.q.map(function(q,i){if(a[i]==null)return "-";L.answered++;var ok=isOK(q,a[i]);if(ok)L.score++;return ok?"1":"0";}).join("");
+  });
+  return {learn:L,exam:st.examLast||null,ts:Date.now()};
+}
+function saveNote(t){var n=document.getElementById("saveNote");if(n)n.textContent=t;}
+function touched(){if(!caps.db||!uid||saveOff)return;dirty=true;clearTimeout(saveT);saveT=setTimeout(flush,2000);}
+function flush(){
+  if(saving||!dirty)return;saving=true;dirty=false;
+  caps.db.doc("results/"+uid).set(buildResult()).then(function(){saveNote("บันทึกคะแนนล่าสุดแล้ว อาจารย์ผู้สอนเห็นคะแนนของคุณได้");},function(e){
+    var code=e&&e.code;if(code==="permission_denied"||code==="not_granted"||code==="unauthenticated"){saveOff=true;saveNote("บัญชีนี้ไม่มีสิทธิ์บันทึกคะแนนให้อาจารย์ คะแนนเก็บไว้ในเบราว์เซอร์นี้เท่านั้น");}
+    else saveNote("ยังบันทึกคะแนนไม่ได้ จะลองใหม่เมื่อตอบข้อถัดไป");
+  }).then(function(){saving=false;if(dirty)touched();});
+}
+function qText(q){var d=document.createElement("div");d.innerHTML=q.t;return d.textContent;}
+function loadTeach(){
+  var box=document.getElementById("teachBody");
+  if(!caps.db||!caps.user){box.textContent="หน้านี้ใช้ได้เมื่อเปิดจาก claude.ai ด้วยบัญชีที่มีสิทธิ์แก้ไขหน้านี้";return;}
+  box.textContent="กำลังโหลด…";
+  caps.db.collection("results").get().then(function(snap){
+    var rows=snap.docs.map(function(d){var x=d.data()||{};x._id=d.id;return x;}).filter(function(x){return x.learn||x.exam;});
+    box.textContent="";
+    if(!rows.length){box.appendChild(el("p","gsub","ยังไม่มีผลของผู้เรียน ผลจะปรากฏเมื่อผู้เรียนที่ได้สิทธิ์ Contributor เริ่มตอบคำถาม"));return;}
+    var ids=rows.map(function(x){return x._id;});
+    Promise.resolve(caps.user.profiles(ids)).catch(function(){return {};}).then(function(ps){
+      ps=ps||{};
+      var sc=el("div","scroll"),tb=el("table","ttab"),hd=el("tr");
+      ["ผู้เรียน","โหมดเรียน","ทำแล้ว","โหมดสอบ","เวลาสอบ","อัปเดตล่าสุด"].forEach(function(t){hd.appendChild(el("th",null,t));});
+      var th=el("thead");th.appendChild(hd);tb.appendChild(th);var bd=el("tbody");
+      rows.sort(function(a,b){return (b.ts||0)-(a.ts||0);}).forEach(function(x){
+        var tr=el("tr"),L=x.learn||{},E=x.exam,p=ps[x._id];
+        tr.appendChild(el("td",null,(p&&p.name)||"ผู้เรียน "+String(x._id).slice(-5)));
+        tr.appendChild(el("td",null,L.total?L.score+" / "+L.total:"—"));
+        tr.appendChild(el("td",null,L.total?L.answered+" / "+L.total:"—"));
+        tr.appendChild(el("td",null,E?E.score+" / "+E.total:"—"));
+        tr.appendChild(el("td",null,E?fmtT(E.sec*1000):"—"));
+        tr.appendChild(el("td",null,x.ts?new Date(x.ts).toLocaleString("th-TH"):"—"));
+        bd.appendChild(tr);
+      });
+      tb.appendChild(bd);sc.appendChild(tb);
+      box.appendChild(el("h3",null,"คะแนนรายบุคคล ("+rows.length+" คน)"));box.appendChild(sc);
+      var items=[];
+      CASES.forEach(function(c,ci){
+        var hn=0,hk=0;rows.forEach(function(x){var v=x.learn&&x.learn.hunt?x.learn.hunt[c.id]:null;if(v===0||v===1){hn++;hk+=v;}});
+        if(hn)items.push({n:hn,k:hk,lab:"ราย "+(ci+1)+" ขั้นที่ 1",txt:"หาค่าที่ผิดปกติให้ครบ ("+c.tab+" "+c.sub+")"});
+        c.q.forEach(function(q,qi){
+          var n=0,k=0;rows.forEach(function(x){var s2=x.learn&&x.learn.q?x.learn.q[c.id]:null;if(typeof s2!=="string")return;var ch=s2.charAt(qi);if(ch==="1"||ch==="0"){n++;if(ch==="1")k++;}});
+          if(n)items.push({n:n,k:k,lab:"ราย "+(ci+1)+" ข้อ "+(qi+1),txt:qText(q)});
+        });
+      });
+      items.sort(function(a,b){return a.k/a.n-b.k/b.n;});
+      box.appendChild(el("h3",null,"ข้อที่ผู้เรียนตอบผิดมากที่สุด (โหมดเรียน)"));
+      var sc2=el("div","scroll"),tb2=el("table","ttab"),hd2=el("tr");
+      ["ข้อ","คำถาม","ตอบถูก","จำนวนผู้ตอบ"].forEach(function(t){hd2.appendChild(el("th",null,t));});
+      var th2=el("thead");th2.appendChild(hd2);tb2.appendChild(th2);var bd2=el("tbody");
+      items.slice(0,15).forEach(function(it){var tr=el("tr");tr.appendChild(el("td",null,it.lab));var td=el("td","qtx",it.txt);tr.appendChild(td);tr.appendChild(el("td",null,Math.round(100*it.k/it.n)+"%"));tr.appendChild(el("td",null,String(it.n)));bd2.appendChild(tr);});
+      tb2.appendChild(bd2);sc2.appendChild(tb2);box.appendChild(sc2);
+    });
+  },function(){box.textContent="โหลดผลไม่สำเร็จ บัญชีนี้อาจไม่มีสิทธิ์ดูผลของผู้เรียน";});
+}
+document.getElementById("teachReload").onclick=loadTeach;
 renderAll();
 initCaps();
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){drawPlots(view(CASES[state.cur]));});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(st.page==="practice"&&!(st.mode==="exam"&&!st.exam)){drawPlots(view(curCase()));drawOverlays(curCase());}});
 })();
 </script>
