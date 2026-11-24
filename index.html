@@ -33,6 +33,7 @@
       </div>
     </div>
     <nav class="modes" role="tablist" aria-label="โหมดการเรียน">
+      <button role="tab" data-mode="basics"><b>หลักการอ่านเซลล์</b><small>พื้นฐาน 9 หลัก</small></button>
       <button role="tab" data-mode="atlas"><b>Atlas 3D</b><small>สำรวจเซลล์</small></button>
       <button role="tab" data-mode="stream"><b>ล่องหลอดเลือด</b><small>ภารกิจสะสม</small></button>
       <button role="tab" data-mode="quiz"><b>นักสืบเซลล์</b><small>ควิซ 3 มิติ</small></button>
@@ -67,6 +68,9 @@
       </div>
       <p class="scale-note" data-for="atlas">ตาราง 1 ช่อง = 5 µm · ลากเพื่อหมุน · เลื่อนล้อเพื่อซูม</p>
       <p class="scale-note" data-for="quiz">ลากเพื่อหมุน · เลื่อนล้อเพื่อซูม · ตาราง 1 ช่อง = 5 µm</p>
+      <aside id="photoCard" class="photo-card" data-for="atlas" aria-label="ภาพจริงจากกล้องจุลทรรศน์"></aside>
+      <div id="photoBox" class="photo-box" hidden></div>
+      <div class="hud hud-bottom" id="basicsHud" data-for="basics"></div>
       <div class="hud hud-bottom" id="streamHud" data-for="stream"></div>
       <div class="crosshair" data-for="stream" aria-hidden="true"></div>
       <div class="hud hud-bottom" id="diffHud" data-for="diff"></div>
@@ -77,6 +81,7 @@
     </main>
 
     <aside class="panel" aria-live="polite">
+      <section id="basicsPanel" class="pane" data-for="basics"></section>
       <section id="atlasInfo" class="pane" data-for="atlas"></section>
       <section id="streamPanel" class="pane" data-for="stream"></section>
       <section id="quizPanel" class="pane" data-for="quiz"></section>

@@ -77,6 +77,7 @@ export class AtlasMode {
     this.viewer.setCell(id, 7);
     this.viewer.setSlice(document.getElementById('tSlice').value / 100);
     this.info.innerHTML = cellCard(byId[id]);
+    this.ui.photos?.show(id);
     this.info.scrollTop = 0;
   }
 

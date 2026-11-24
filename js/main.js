@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { CellViewer } from './viewer.js';
 import { AtlasMode } from './modes/atlas.js';
+import { BasicsMode } from './modes/basics.js';
+import { RealPhotos } from './photos.js';
 import { StreamMode } from './modes/stream.js';
 import { QuizMode } from './modes/quiz.js';
 import { DiffMode } from './modes/diff.js';
@@ -37,7 +39,9 @@ const ui = {
 };
 
 const viewer = new CellViewer(renderer, canvas, ui.labels);
+ui.photos = new RealPhotos(ui);
 const modes = {
+  basics: new BasicsMode(viewer, ui),
   atlas: new AtlasMode(viewer, ui),
   stream: new StreamMode(renderer, ui),
   quiz: new QuizMode(viewer, ui),
@@ -103,8 +107,8 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-let start = 'atlas';
-try { start = localStorage.getItem('hv:mode') || 'atlas'; } catch (e) { /* ignore */ }
+let start = 'basics';
+try { start = localStorage.getItem('hv:mode') || 'basics'; } catch (e) { /* ignore */ }
 const hash = location.hash.replace('#', '');
 if (modes[hash]) start = hash;
 setMode(start);

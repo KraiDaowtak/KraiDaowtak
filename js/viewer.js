@@ -106,14 +106,19 @@ export class CellViewer {
   }
 
   setCell(id, seed = 7) {
+    return this.setObject(buildCell(id, seed));
+  }
+
+  // Show any built object ({ group, labels, radius }). keepView keeps rotation and camera,
+  // used when a cell is rebuilt live while the learner adjusts it.
+  setObject(cell, { keepView = false } = {}) {
     if (this.current) {
       this.holder.remove(this.current.group);
       disposeCell(this.current.group);
     }
-    const cell = buildCell(id, seed);
     this.current = cell;
     this.holder.add(cell.group);
-    this.holder.rotation.set(0, 0, 0);
+    if (!keepView) this.holder.rotation.set(0, 0, 0);
     cell.group.traverse((o) => { if (o.isMesh) o.castShadow = true; });
     const floorY = -Math.max(3, cell.radius * 0.75);
     this.grid.position.y = floorY;
@@ -122,8 +127,14 @@ export class CellViewer {
     this.blob.scale.setScalar(cell.radius * 2.6);
     this._buildLabels();
     this.setCompare(!!this.compareRef);
-    this.frame();
+    if (!keepView) this.frame();
     return cell;
+  }
+
+  setLabelList(labels) {
+    if (!this.current) return;
+    this.current.labels = labels;
+    this._buildLabels();
   }
 
   frame() {

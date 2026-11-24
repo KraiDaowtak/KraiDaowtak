@@ -6,6 +6,7 @@
 
 | โหมด | สิ่งที่ทำได้ |
 | --- | --- |
+| **หลักการอ่านเซลล์** | เรียนหลักการบรรยายเซลล์ 5 ข้อ (ขนาดและรูปร่าง, N/C ratio, รูปร่างนิวเคลียส, โครมาติน, นิวคลีโอลัส) และลักษณะไซโทพลาซึม (สี ขอบ hof, แกรนูล, แวคิวโอล, inclusion body) ตามกรอบของ Shiro Miwa, *Atlas of Blood Cells* แต่ละหลักไฮไลต์ส่วนนั้นบนเซลล์ 3 มิติที่ปรับลักษณะได้สด พร้อมบอกว่าเซลล์ที่ประกอบขึ้นใกล้เคียงเซลล์จริงชนิดใด และมีโหมดฝึกกรอกใบบันทึกลักษณะ 9 ข้อก่อนระบุชื่อเซลล์ |
 | **Atlas 3D** | สำรวจโมเดล 3 มิติ 33 ชนิด หมุน ซูม ดูป้ายกำกับโครงสร้าง ตัดขวางดูภายในเซลล์ สลับเป็นมุมกล้องจุลทรรศน์ และเทียบขนาดกับเม็ดเลือดแดงปกติบนตาราง 5 µm |
 | **ล่องหลอดเลือด** | นั่งไปกับกระแสเลือดใน venule ลากเพื่อหันมอง คลิกเซลล์ที่ลอยผ่านเพื่อเก็บให้ครบ 8 ชนิด พร้อมเห็น axial streaming, margination และ leukocyte rolling |
 | **นักสืบเซลล์** | ควิซ 10 ข้อจากโมเดล 3 มิติที่หมุนแบบสุ่ม 3 ระดับ (พื้นฐาน / เม็ดเลือดแดง / ทั้งหมด) มีคะแนน สถิติ และคำอธิบายหลังตอบ |
@@ -18,6 +19,21 @@
 - **รูปร่างและขนาดเม็ดเลือดแดง:** microcytic hypochromic, macro-ovalocyte, polychromasia, spherocyte, target cell, sickle cell, schistocyte, elliptocyte/pencil cell, teardrop, echinocyte, acanthocyte, stomatocyte, bite cell
 - **สิ่งเจือปนและการเรียงตัว:** Howell-Jolly body, basophilic stippling, Pappenheimer bodies, Heinz bodies, malaria ring form, NRBC, rouleaux
 - **เม็ดเลือดขาวผิดปกติ:** hypersegmented neutrophil, myeloblast with Auer rod, reactive lymphocyte, plasma cell, smudge cell
+
+## ภาพจริงจากกล้องจุลทรรศน์
+
+ในโหมด Atlas มีกล่อง "ภาพจริงจากกล้องจุลทรรศน์" ที่มุมขวาบนของภาพ 3 มิติ แสดงภาพถ่ายจริงของเซลล์ที่เลือกเทียบกับโมเดล เพิ่มภาพได้ 2 วิธี
+
+- **บน claude.ai:** ผู้ที่มีสิทธิ์แก้ไข artifact (Owner/Editor) จะเห็นปุ่ม "+ เพิ่มภาพจริง" อัปโหลดไฟล์ JPG/PNG/WebP พร้อมคำอธิบายและที่มา ทุกคนที่เปิดหน้าจะเห็นภาพทันที และลบได้จากกล่องเดียวกัน
+- **บน GitHub Pages หรือเซิร์ฟเวอร์ของตัวเอง:** วางไฟล์ภาพในโฟลเดอร์ `photos/` แล้วระบุใน `photos/manifest.json` โดยใช้ id ของเซลล์ (ดูได้จาก `js/data.js`)
+
+```json
+{
+  "neutrophil": [
+    { "src": "photos/neutrophil-01.jpg", "caption": "นิวเคลียส 4 lobe", "credit": "Wright stain, 100× oil" }
+  ]
+}
+```
 
 ## รายละเอียดทางวิทยาศาสตร์
 
@@ -52,7 +68,11 @@ js/noise.js         value noise, fbm และตัวสุ่มแบบก�
 js/viewer.js        ตัวแสดงเซลล์เดี่ยว (Atlas และ Quiz ใช้ร่วมกัน)
 js/smear.js         สไลด์เสมือนใต้เลนส์ 100× oil
 js/data.js          เนื้อหาเซลล์ ตัวอย่างการนับ และเคสคลินิก (ภาษาไทย)
-js/modes/*.js       โหมด atlas, stream, quiz, diff, cases
+js/basics-data.js   หลักการอ่านเซลล์ ตัวเลือกลักษณะ และตารางลักษณะของเซลล์อ้างอิง
+js/teach.js         เซลล์สอน 3 มิติที่ปรับลักษณะได้และไฮไลต์ทีละส่วน
+js/photos.js        กล่องภาพจริงจากกล้องจุลทรรศน์
+photos/             ภาพจริงและ manifest.json
+js/modes/*.js       โหมด basics, atlas, stream, quiz, diff, cases
 ```
 
 ## เพิ่มเนื้อหา

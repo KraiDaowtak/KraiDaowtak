@@ -59,7 +59,7 @@ function solidMat(color, opts = {}) {
   });
 }
 
-function glassyMat(color, opacity = 0.45, opts = {}) {
+export function glassyMat(color, opacity = 0.45, opts = {}) {
   return new THREE.MeshPhysicalMaterial({
     color, transparent: true, opacity, roughness: 0.35, metalness: 0,
     clearcoat: 0.4, depthWrite: false, side: THREE.DoubleSide, ...opts,
@@ -67,7 +67,7 @@ function glassyMat(color, opacity = 0.45, opts = {}) {
 }
 
 // Chromatin: colour each vertex of a nucleus by clumped fractal noise.
-function paintChromatin(geo, { light = STAIN.nucLight, dark = STAIN.nucDark, freq = 3, seed = 0, lo = 0.38, hi = 0.62, pattern } = {}) {
+export function paintChromatin(geo, { light = STAIN.nucLight, dark = STAIN.nucDark, freq = 3, seed = 0, lo = 0.38, hi = 0.62, pattern } = {}) {
   const pos = geo.attributes.position;
   const col = new Float32Array(pos.count * 3);
   const a = C(light), b = C(dark), tmp = new THREE.Color();
@@ -83,7 +83,7 @@ function paintChromatin(geo, { light = STAIN.nucLight, dark = STAIN.nucDark, fre
 }
 
 // Build a lumpy blob (nucleus / cytoplasm) from a unit sphere.
-function blob(r, { scale = [1, 1, 1], amp = 0.08, freq = 2.2, seed = 0, deform, w = 72, h = 48 } = {}) {
+export function blob(r, { scale = [1, 1, 1], amp = 0.08, freq = 2.2, seed = 0, deform, w = 72, h = 48 } = {}) {
   const g = baseSphere(w, h);
   const p = g.attributes.position;
   const v = new THREE.Vector3();
@@ -98,12 +98,12 @@ function blob(r, { scale = [1, 1, 1], amp = 0.08, freq = 2.2, seed = 0, deform, 
   return g;
 }
 
-function nucleusMat() {
+export function nucleusMat() {
   return cachedMat('nucleus', () => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75, metalness: 0 }));
 }
 
 // Scatter granules inside an ellipsoid, avoiding listed spheres.
-function granules(count, { rMin, rMax, color, spread = 0.12, bounds, avoid = [], seed = 1, roughness = 0.35, emissive, emissiveIntensity = 0 }) {
+export function granules(count, { rMin, rMax, color, spread = 0.12, bounds, avoid = [], seed = 1, roughness = 0.35, emissive, emissiveIntensity = 0 }) {
   const rand = mulberry32(seed);
   const sph = new THREE.SphereGeometry(1, 8, 6);
   const material = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness, metalness: 0, emissive: emissive || '#000000', emissiveIntensity });
@@ -316,7 +316,7 @@ function onSurface(geo, xn, zn, sink = 0.1) {
 // ---------------------------------------------------------------------------
 // White cells, platelets and inclusion variants
 
-function lobedNucleus(n, seed, { arc = 2.7, lobeR = 1.35, spread = 1.0 } = {}) {
+export function lobedNucleus(n, seed, { arc = 2.7, lobeR = 1.35, spread = 1.0 } = {}) {
   const group = new THREE.Group();
   const rand = mulberry32(seed);
   const centers = [];
