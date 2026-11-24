@@ -12,7 +12,7 @@ function endotheliumTexture() {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
   const g = c.getContext('2d');
-  g.fillStyle = '#b8424f';
+  g.fillStyle = '#d4606d';
   g.fillRect(0, 0, 256, 256);
   const rand = mulberry32(5);
   for (let i = 0; i < 46; i++) {
@@ -53,11 +53,11 @@ export class StreamMode {
   build() {
     this.built = true;
     const scene = (this.scene = new THREE.Scene());
-    scene.background = new THREE.Color('#2a0710');
-    scene.fog = new THREE.FogExp2('#3b0913', 0.011);
+    scene.background = new THREE.Color('#9c3346');
+    scene.fog = new THREE.FogExp2('#b2475a', 0.0085);
     this.camera = new THREE.PerspectiveCamera(62, 1, 0.5, 400);
     scene.add(this.camera);
-    scene.add(new THREE.HemisphereLight('#ffd6dc', '#4a0f1c', 1.3));
+    scene.add(new THREE.HemisphereLight('#fff0f2', '#8a2a3c', 2.0));
     const head = new THREE.DirectionalLight('#fff1f0', 1.6);
     head.position.set(3, 4, 0);
     head.target.position.set(0, 0, -20);
@@ -79,7 +79,7 @@ export class StreamMode {
 
     const vessel = new THREE.Mesh(
       new THREE.TubeGeometry(curve, 600, VESSEL_R, 48, true),
-      new THREE.MeshStandardMaterial({ map: endotheliumTexture(), side: THREE.BackSide, roughness: 0.55, emissive: '#3a0510', emissiveIntensity: 0.7 })
+      new THREE.MeshStandardMaterial({ map: endotheliumTexture(), side: THREE.BackSide, roughness: 0.55, emissive: '#7a1f30', emissiveIntensity: 0.45 })
     );
     scene.add(vessel);
 

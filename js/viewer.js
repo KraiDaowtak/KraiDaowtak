@@ -3,15 +3,59 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildCell, disposeCell, rbcMesh } from './cells.js';
 
-const BG_DARK = new THREE.Color('#141120');
-const BG_GLASS = new THREE.Color('#efe7dc');
+const BG_GLASS = new THREE.Color('#f3ede4');
+
+// Photo-studio cyclorama: a bright pool of light fading to lilac at the edges.
+function studioBackdrop() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d');
+  const lin = g.createLinearGradient(0, 0, 0, 512);
+  lin.addColorStop(0, '#f4f1fa');
+  lin.addColorStop(0.62, '#ebe6f4');
+  lin.addColorStop(1, '#d8d0e9');
+  g.fillStyle = lin;
+  g.fillRect(0, 0, 512, 512);
+  const glow = g.createRadialGradient(256, 190, 10, 256, 230, 330);
+  glow.addColorStop(0, 'rgba(255,255,255,1)');
+  glow.addColorStop(0.45, 'rgba(255,255,255,0.55)');
+  glow.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = glow;
+  g.fillRect(0, 0, 512, 512);
+  const warm = g.createRadialGradient(70, 40, 0, 70, 40, 260);
+  warm.addColorStop(0, 'rgba(255,205,218,0.55)');
+  warm.addColorStop(1, 'rgba(255,205,218,0)');
+  g.fillStyle = warm;
+  g.fillRect(0, 0, 512, 512);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+// Soft ambient-occlusion blob that sits right under the cell.
+function contactShadow() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, 'rgba(40,22,80,0.55)');
+  r.addColorStop(0.5, 'rgba(40,22,80,0.22)');
+  r.addColorStop(1, 'rgba(40,22,80,0)');
+  g.fillStyle = r;
+  g.fillRect(0, 0, 128, 128);
+  const tex = new THREE.CanvasTexture(c);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2;
+  return m;
+}
 
 export class CellViewer {
   constructor(renderer, dom, labelLayer) {
     this.renderer = renderer;
     this.labelLayer = labelLayer;
     this.scene = new THREE.Scene();
-    this.scene.background = BG_DARK.clone();
+    this.studio = studioBackdrop();
+    this.scene.background = this.studio;
     this.camera = new THREE.PerspectiveCamera(34, 1, 0.1, 500);
     this.camera.position.set(12, 11, 16);
     this.controls = new OrbitControls(this.camera, dom);
@@ -21,20 +65,31 @@ export class CellViewer {
     this.controls.maxDistance = 90;
     this.controls.enabled = false;
 
-    const hemi = new THREE.HemisphereLight('#f4ecff', '#2a1f3a', 1.1);
-    const key = new THREE.DirectionalLight('#fff4ea', 2.2);
-    key.position.set(8, 14, 10);
-    const rim = new THREE.DirectionalLight('#8fb0ff', 1.3);
-    rim.position.set(-12, 4, -10);
-    const under = new THREE.DirectionalLight('#ffd6de', 0.5);
+    const hemi = new THREE.HemisphereLight('#ffffff', '#c9bde2', 1.5);
+    const key = new THREE.DirectionalLight('#fff6ee', 2.6);
+    key.position.set(9, 22, 11);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    Object.assign(key.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 80 });
+    key.shadow.radius = 6;
+    key.shadow.bias = -0.0005;
+    const rim = new THREE.DirectionalLight('#b8a6ff', 1.2);
+    rim.position.set(-14, 6, -12);
+    const under = new THREE.DirectionalLight('#ffd6de', 0.45);
     under.position.set(0, -10, 4);
     this.scene.add(hemi, key, rim, under);
 
-    // 5 µm reference grid under the cell.
-    this.grid = new THREE.GridHelper(60, 12, '#4b3f6b', '#2c2540');
+    // 5 µm reference grid under the cell, on a floor that catches its shadow.
+    this.grid = new THREE.GridHelper(60, 12, '#a99cd0', '#cfc6e6');
     this.grid.material.transparent = true;
-    this.grid.material.opacity = 0.55;
+    this.grid.material.opacity = 0.75;
     this.scene.add(this.grid);
+    this.floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.ShadowMaterial({ color: '#2a1850', opacity: 0.3 }));
+    this.floor.rotation.x = -Math.PI / 2;
+    this.floor.receiveShadow = true;
+    this.scene.add(this.floor);
+    this.blob = contactShadow();
+    this.scene.add(this.blob);
 
     this.holder = new THREE.Group();
     this.scene.add(this.holder);
@@ -59,7 +114,12 @@ export class CellViewer {
     this.current = cell;
     this.holder.add(cell.group);
     this.holder.rotation.set(0, 0, 0);
-    this.grid.position.y = -Math.max(3, cell.radius * 0.75);
+    cell.group.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    const floorY = -Math.max(3, cell.radius * 0.75);
+    this.grid.position.y = floorY;
+    this.floor.position.y = floorY - 0.02;
+    this.blob.position.y = floorY + 0.02;
+    this.blob.scale.setScalar(cell.radius * 2.6);
     this._buildLabels();
     this.setCompare(!!this.compareRef);
     this.frame();
@@ -77,8 +137,8 @@ export class CellViewer {
 
   setStain(on) {
     this.stain = on;
-    this.scene.background.copy(on ? BG_GLASS : BG_DARK);
-    this.grid.visible = !on;
+    this.scene.background = on ? BG_GLASS : this.studio;
+    this.grid.visible = this.floor.visible = this.blob.visible = !on;
     this.frame();
   }
 
@@ -89,6 +149,7 @@ export class CellViewer {
     }
     if (on && this.current) {
       const ref = rbcMesh('normal');
+      ref.castShadow = true;
       ref.position.set(this.current.radius + 5, this.grid.position.y + 1.2, 0);
       this.compareRef = ref;
       this.scene.add(ref);
