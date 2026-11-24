@@ -1,4 +1,4 @@
-// Bas-relief backdrop: blood cells carved into a pale plaster wall, lit from the top-left.
+// Bas-relief backdrop: blood cells carved into a pale blue-grey plaster wall, lit from the top-left.
 // A height map is stamped from real cell profiles (Evans–Fung for red cells), then shaded once
 // on a canvas. A soft lamp follows the pointer; the wall drifts a few pixels for parallax.
 import { mulberry32 } from './noise.js';
@@ -6,10 +6,10 @@ import { mulberry32 } from './noise.js';
 const LIGHT = (() => { const v = [-0.52, -0.62, 0.58]; const l = Math.hypot(...v); return v.map((x) => x / l); })();
 const EF = (r) => Math.sqrt(Math.max(0, 1 - r * r)) * (0.81 + 7.83 * r * r - 4.39 * r ** 4) / 4.4;
 
-const BASE = [236, 235, 245];
-const HIGH = [255, 255, 255];
-const SHADE = [196, 188, 220];
-const TINT = { rbc: [250, 226, 234], wbc: [232, 226, 250], plt: [238, 232, 250] };
+const BASE = [226, 232, 238];
+const HIGH = [251, 253, 255];
+const SHADE = [170, 185, 200];
+const TINT = { rbc: [236, 228, 233], wbc: [220, 230, 241], plt: [228, 234, 242] };
 
 function build(W, H, seed = 7) {
   const rand = mulberry32(seed);

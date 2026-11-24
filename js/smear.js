@@ -28,7 +28,7 @@ export class SmearField {
     this.camera.position.set(0, 60, 0);
     this.camera.up.set(0, 0, -1);
     this.camera.lookAt(0, 0, 0);
-    this.scene.add(new THREE.HemisphereLight('#ffffff', '#d9cfe0', 1.6));
+    this.scene.add(new THREE.HemisphereLight('#ffffff', '#d2dbe4', 1.6));
     const key = new THREE.DirectionalLight('#fffaf2', 1.4);
     key.position.set(6, 30, 8);
     this.scene.add(key);
@@ -138,7 +138,7 @@ export class SmearField {
     return null;
   }
 
-  ring(rec, color = '#6c4ee0', width = 0.5) {
+  ring(rec, color = '#2c6aa3', width = 0.5) {
     const r = rec.r + 1.2;
     const m = new THREE.Mesh(new THREE.RingGeometry(r, r + width, 64), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthTest: false }));
     m.rotation.x = -Math.PI / 2;

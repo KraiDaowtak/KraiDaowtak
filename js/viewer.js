@@ -11,9 +11,9 @@ function studioBackdrop() {
   c.width = c.height = 512;
   const g = c.getContext('2d');
   const lin = g.createLinearGradient(0, 0, 0, 512);
-  lin.addColorStop(0, '#f4f1fa');
-  lin.addColorStop(0.62, '#ebe6f4');
-  lin.addColorStop(1, '#d8d0e9');
+  lin.addColorStop(0, '#f3f6f9');
+  lin.addColorStop(0.62, '#e4eaf0');
+  lin.addColorStop(1, '#cbd5df');
   g.fillStyle = lin;
   g.fillRect(0, 0, 512, 512);
   const glow = g.createRadialGradient(256, 190, 10, 256, 230, 330);
@@ -23,8 +23,8 @@ function studioBackdrop() {
   g.fillStyle = glow;
   g.fillRect(0, 0, 512, 512);
   const warm = g.createRadialGradient(70, 40, 0, 70, 40, 260);
-  warm.addColorStop(0, 'rgba(255,205,218,0.55)');
-  warm.addColorStop(1, 'rgba(255,205,218,0)');
+  warm.addColorStop(0, 'rgba(206,224,242,0.6)');
+  warm.addColorStop(1, 'rgba(206,224,242,0)');
   g.fillStyle = warm;
   g.fillRect(0, 0, 512, 512);
   const t = new THREE.CanvasTexture(c);
@@ -38,9 +38,9 @@ function contactShadow() {
   c.width = c.height = 128;
   const g = c.getContext('2d');
   const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  r.addColorStop(0, 'rgba(40,22,80,0.55)');
-  r.addColorStop(0.5, 'rgba(40,22,80,0.22)');
-  r.addColorStop(1, 'rgba(40,22,80,0)');
+  r.addColorStop(0, 'rgba(22,42,64,0.55)');
+  r.addColorStop(0.5, 'rgba(22,42,64,0.22)');
+  r.addColorStop(1, 'rgba(22,42,64,0)');
   g.fillStyle = r;
   g.fillRect(0, 0, 128, 128);
   const tex = new THREE.CanvasTexture(c);
@@ -65,7 +65,7 @@ export class CellViewer {
     this.controls.maxDistance = 90;
     this.controls.enabled = false;
 
-    const hemi = new THREE.HemisphereLight('#ffffff', '#c9bde2', 1.5);
+    const hemi = new THREE.HemisphereLight('#ffffff', '#bccad8', 1.5);
     const key = new THREE.DirectionalLight('#fff6ee', 2.6);
     key.position.set(9, 22, 11);
     key.castShadow = true;
@@ -73,18 +73,18 @@ export class CellViewer {
     Object.assign(key.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 80 });
     key.shadow.radius = 6;
     key.shadow.bias = -0.0005;
-    const rim = new THREE.DirectionalLight('#b8a6ff', 1.2);
+    const rim = new THREE.DirectionalLight('#a8c3df', 1.2);
     rim.position.set(-14, 6, -12);
     const under = new THREE.DirectionalLight('#ffd6de', 0.45);
     under.position.set(0, -10, 4);
     this.scene.add(hemi, key, rim, under);
 
     // 5 µm reference grid under the cell, on a floor that catches its shadow.
-    this.grid = new THREE.GridHelper(60, 12, '#a99cd0', '#cfc6e6');
+    this.grid = new THREE.GridHelper(60, 12, '#98aabd', '#c6d1dc');
     this.grid.material.transparent = true;
     this.grid.material.opacity = 0.75;
     this.scene.add(this.grid);
-    this.floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.ShadowMaterial({ color: '#2a1850', opacity: 0.3 }));
+    this.floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.ShadowMaterial({ color: '#1b2f45', opacity: 0.3 }));
     this.floor.rotation.x = -Math.PI / 2;
     this.floor.receiveShadow = true;
     this.scene.add(this.floor);
