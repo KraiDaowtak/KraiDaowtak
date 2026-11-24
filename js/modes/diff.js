@@ -51,7 +51,7 @@ export class DiffMode {
     this.selected = rec;
     this.field.clearMarkers();
     this.marks.forEach((m) => this.field.ring(m.rec, m.ok ? '#1f9d6b' : '#d6455d', 0.35));
-    this.field.ring(rec, '#2c6aa3', 0.6);
+    this.field.ring(rec, '#1f63b4', 0.6);
     const s = this.ui.stage.getBoundingClientRect();
     const x = Math.min(px.x + 14, s.width - 190), y = Math.min(px.y - 10, s.height - 250);
     this.pop.style.transform = `translate(${Math.max(8, x)}px, ${Math.max(8, y)}px)`;
