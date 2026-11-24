@@ -1108,18 +1108,18 @@ function initCaps(){
 var PR={les:"imp",play:true,speed:1,imp:"norm",hgb:14,turb:false,ch:"WDF",mix:"norm",S:null,raf:null,last:0};
 var PW=900,PH=420;
 PR.pit={imp:"none",hgb:"none",flow:"none"};
-var HGB_PIT={lip:{a:.2,sp:"rgba(255,255,255,.8)",cap:"ไขมันสูง: อนุภาคไขมันกระเจิงแสง"},wbc:{a:.1,sp:"rgba(110,70,170,.75)",cap:"WBC สูงมาก: นิวเคลียสที่เหลือทำให้ขุ่น"},ict:{a:.06,tint:1,cap:"บิลิรูบินสูงมาก: สีเหลืองดูดกลืนแสงเพิ่ม"},para:{a:.12,sp:"rgba(190,200,210,.85)",cap:"โปรตีนผิดปกติตกตะกอน ทำให้ขุ่น"}};
+var HGB_PIT={lip:{a:.2,sp:"rgba(255,255,255,.8)",cap:"Lipemia: lipid particles scatter light"},wbc:{a:.1,sp:"rgba(110,70,170,.75)",cap:"Very high WBC: residual nuclei cause turbidity"},ict:{a:.06,tint:1,cap:"Icterus: bilirubin absorbs extra light"},para:{a:.12,sp:"rgba(190,200,210,.85)",cap:"Paraprotein precipitate causes turbidity"}};
 var PITCOL="#f4f4f4";
 var FLOW_PIT={
- WDF:{blast:{lab:"เซลล์ตัวอ่อน (blast)",type:{n:"Blast",col:PITCOL,fsc:75,ssc:42,sfl:38,sd:[7,10],r:17,nu:"round",note:"สัญญาณอยู่ระหว่างกลุ่ม lymphocyte กับ monocyte · เครื่องแยกกลุ่มไม่ได้"}},
-      rrbc:{lab:"เม็ดเลือดแดงที่ไม่แตก",type:{n:"เม็ดเลือดแดงที่ไม่แตก",col:PITCOL,fsc:30,ssc:22,sfl:8,sd:[6,4],r:10,nu:"none",fill:"#e8a3a3",note:"ทนต่อน้ำยา lyse จึงยังเหลืออยู่ · ตำแหน่งใกล้ debris และ lymphocyte"}},
-      pcl:{lab:"เกล็ดเลือดเกาะกลุ่ม",type:{n:"เกล็ดเลือดเกาะกลุ่ม",col:PITCOL,fsc:45,ssc:20,sfl:12,sd:[8,6],r:12,g:"clump",nu:"none",fill:"#f0d98a",note:"กลุ่มเกล็ดเลือดมีขนาดใกล้เม็ดเลือดขาว · อาจถูกนับเป็น WBC"}}},
- WNR:{rrbc:{lab:"เม็ดเลือดแดงที่ไม่แตก",type:{n:"เม็ดเลือดแดงที่ไม่แตก",col:PITCOL,fsc:26,ssc:20,sfl:24,sd:[8,8],r:10,nu:"none",fill:"#e8a3a3",note:"ไม่ถูกทำลายหมด · ซ้อนกับบริเวณ NRBC และ WBC"}},
-      pcl:{lab:"เกล็ดเลือดเกาะกลุ่ม",type:{n:"เกล็ดเลือดเกาะกลุ่ม",col:PITCOL,fsc:22,ssc:20,sfl:26,sd:[9,8],r:12,g:"clump",nu:"none",fill:"#f0d98a",note:"กระจายเหนือบริเวณ debris · อาจถูกนับเป็น WBC"}}},
- RET:{ipf:{lab:"Immature PLT (เกล็ดเลือดตัวอ่อน)",type:{n:"Immature PLT",col:PITCOL,fsc:17,ssc:12,sfl:44,sd:[9,5],r:8,g:"rna",nu:"none",fill:"#f0d98a",note:"มี RNA มากกว่าเกล็ดเลือดตัวแก่ → SFL สูง · ขนาดใหญ่กว่า → FSC สูงขึ้นเล็กน้อย"}},
-      frag:{lab:"Fragmented RBC (เศษเม็ดเลือดแดง)",type:{n:"Fragmented RBC",col:PITCOL,fsc:24,ssc:12,sfl:14,sd:[3,7],r:6,nu:"none",fill:"#e8a3a3",note:"ขนาดเล็กกว่าเม็ดเลือดแดงปกติ → FSC ต่ำ · ไม่มี RNA → SFL ต่ำ"}},
-      incl:{lab:"เม็ดเลือดแดงที่มีสิ่งติดสีภายใน",type:{n:"เม็ดเลือดแดงที่มีสิ่งติดสีภายใน",col:PITCOL,fsc:60,ssc:22,sfl:36,sd:[8,9],r:12,g:"dot",nu:"none",fill:"#e8a3a3",note:"Howell–Jolly body หรือเชื้อมาลาเรียมีกรดนิวคลีอิก → SFL สูงขึ้น · ถูกนับเป็น reticulocyte"}},
-      gplt:{lab:"เกล็ดเลือดขนาดใหญ่",type:{n:"เกล็ดเลือดขนาดใหญ่",col:PITCOL,fsc:38,ssc:14,sfl:26,sd:[6,8],r:9,nu:"none",fill:"#f0d98a",note:"FSC สูงขึ้นจนเข้าใกล้กลุ่มเม็ดเลือดแดง"}}}
+ WDF:{blast:{lab:"Blast",type:{n:"Blast",col:PITCOL,fsc:75,ssc:42,sfl:38,sd:[7,10],r:17,nu:"round",note:"Signals fall between lymphocyte and monocyte clusters · cannot be separated"}},
+      rrbc:{lab:"Lyse-resistant RBC",type:{n:"Lyse-resistant RBC",col:PITCOL,fsc:30,ssc:22,sfl:8,sd:[6,4],r:10,nu:"none",fill:"#e8a3a3",note:"Survives lysis · falls near debris and lymphocyte area"}},
+      pcl:{lab:"PLT clumps",type:{n:"PLT clumps",col:PITCOL,fsc:45,ssc:20,sfl:12,sd:[8,6],r:12,g:"clump",nu:"none",fill:"#f0d98a",note:"Clump size approaches small WBC · may be counted as WBC"}}},
+ WNR:{rrbc:{lab:"Lyse-resistant RBC",type:{n:"Lyse-resistant RBC",col:PITCOL,fsc:26,ssc:20,sfl:24,sd:[8,8],r:10,nu:"none",fill:"#e8a3a3",note:"Incompletely lysed · overlaps NRBC and WBC areas"}},
+      pcl:{lab:"PLT clumps",type:{n:"PLT clumps",col:PITCOL,fsc:22,ssc:20,sfl:26,sd:[9,8],r:12,g:"clump",nu:"none",fill:"#f0d98a",note:"Scatters above the debris band · may be counted as WBC"}}},
+ RET:{ipf:{lab:"Immature PLT",type:{n:"Immature PLT",col:PITCOL,fsc:17,ssc:12,sfl:44,sd:[9,5],r:8,g:"rna",nu:"none",fill:"#f0d98a",note:"More RNA than mature PLT → high SFL · larger → slightly higher FSC"}},
+      frag:{lab:"Fragmented RBC",type:{n:"Fragmented RBC",col:PITCOL,fsc:24,ssc:12,sfl:14,sd:[3,7],r:6,nu:"none",fill:"#e8a3a3",note:"Smaller than normal RBC → low FSC · no RNA → low SFL"}},
+      incl:{lab:"RBC with inclusions",type:{n:"RBC with inclusions",col:PITCOL,fsc:60,ssc:22,sfl:36,sd:[8,9],r:12,g:"dot",nu:"none",fill:"#e8a3a3",note:"Howell–Jolly body or malaria parasite has nucleic acid → higher SFL · counted as reticulocyte"}},
+      gplt:{lab:"Giant PLT",type:{n:"Giant PLT",col:PITCOL,fsc:38,ssc:14,sfl:26,sd:[6,8],r:9,nu:"none",fill:"#f0d98a",note:"Higher FSC, approaching the RBC cluster"}}}
 };
 var PITTXT={
  imp:{agg:"<b>RBC agglutination (เม็ดเลือดแดงเกาะกลุ่ม)</b> เซลล์ 2–3 ตัวที่เกาะกันผ่านช่องเป็นพัลส์เดียวขนาดใหญ่ ผลคือ RBC ต่ำปลอม, MCV สูงปลอม, HCT ต่ำ และ MCHC สูงเกินจริง สังเกตฮิสโตแกรม RBC มีไหล่หรือยอดที่สองทางขวา แก้โดยอุ่นตัวอย่างที่ 37°C แล้ววิเคราะห์ซ้ำ",
@@ -1147,19 +1147,19 @@ function flowPit(){var d=FLOW_PIT[PR.ch]||{};return d[PR.pit.flow]||null;}
 var IMP_S={norm:[{mu:90,sd:.13,w:1}],micro:[{mu:68,sd:.2,w:1}],macro:[{mu:120,sd:.17,w:1}],two:[{mu:72,sd:.12,w:.5},{mu:120,sd:.12,w:.5}]};
 var FT={
  WDF:{ax:["SSC","SFL"],xy:function(c){return [c.ssc,c.sfl];},mix:{norm:[.5,.28,.12,.10],neut:[.78,.12,.06,.04],eo:[.40,.22,.10,.28]},t:[
-  {n:"Neutrophil",col:"#00d8e0",fsc:60,ssc:60,sfl:21,sd:[5,3.5],r:15,g:"fine",nu:"seg",note:"แกรนูลและนิวเคลียสหลายพู → SSC สูง · กรดนิวคลีอิกน้อย → SFL ต่ำ"},
-  {n:"Lymphocyte",col:"#d22bd2",fsc:40,ssc:33,sfl:26,sd:[3,6],r:11,g:"",nu:"round",note:"เซลล์เล็ก ไม่มีแกรนูล → SSC ต่ำ"},
-  {n:"Monocyte",col:"#2fc02f",fsc:72,ssc:50,sfl:47,sd:[3.5,7],r:18,g:"",nu:"kidney",note:"เซลล์ใหญ่ มี RNA มาก → SFL สูง"},
-  {n:"Eosinophil",col:"#e63a1e",fsc:62,ssc:80,sfl:17,sd:[4.5,3],r:15,g:"big",nu:"bi",note:"แกรนูลขนาดใหญ่จำนวนมาก → SSC สูงที่สุด"}]},
+  {n:"Neutrophil",col:"#00d8e0",fsc:60,ssc:60,sfl:21,sd:[5,3.5],r:15,g:"fine",nu:"seg",note:"Granules + segmented nucleus → high SSC · low nucleic acid → low SFL"},
+  {n:"Lymphocyte",col:"#d22bd2",fsc:40,ssc:33,sfl:26,sd:[3,6],r:11,g:"",nu:"round",note:"Small cell, no granules → low SSC"},
+  {n:"Monocyte",col:"#2fc02f",fsc:72,ssc:50,sfl:47,sd:[3.5,7],r:18,g:"",nu:"kidney",note:"Large cell, RNA-rich → high SFL"},
+  {n:"Eosinophil",col:"#e63a1e",fsc:62,ssc:80,sfl:17,sd:[4.5,3],r:15,g:"big",nu:"bi",note:"Many large granules → highest SSC"}]},
  WNR:{ax:["SFL","FSC"],xy:function(c){return [c.sfl,c.fsc];},mix:{norm:[.55,.12,.15,.18],neut:[.55,.12,.15,.18],eo:[.55,.12,.15,.18]},t:[
-  {n:"เม็ดเลือดขาว (ไม่ใช่ basophil)",col:"#00d8e0",fsc:40,ssc:40,sfl:63,sd:[3.8,7],r:12,g:"",nu:"seg",note:"น้ำยาทำให้เซลล์หดเล็กลง → FSC ปานกลาง · นิวเคลียสติดสีมาก → SFL สูง"},
-  {n:"Basophil",col:"#d8c020",fsc:64,ssc:45,sfl:52,sd:[4,4],r:16,g:"baso",nu:"bi",note:"ทนต่อน้ำยา คงขนาดเดิมไว้ → FSC สูงกว่าเม็ดเลือดขาวชนิดอื่น"},
-  {n:"NRBC",col:"#d22bd2",fsc:46,ssc:20,sfl:40,sd:[5,5],r:11,g:"",nu:"round",fill:"#f1c9c9",note:"มีนิวเคลียสแต่ติดสีน้อยกว่าเม็ดเลือดขาว → SFL ต่ำกว่า จึงแยกเป็นอีกกลุ่ม"},
-  {n:"เศษเม็ดเลือดแดงที่แตก",col:"#3a55ff",fsc:4,ssc:5,sfl:11,sd:[7,1.4],r:6,g:"",nu:"none",fill:"#f4e3e3",note:"ไม่มีนิวเคลียสและถูกทำให้แตก → สัญญาณต่ำมาก ชิดแกนล่าง"}]},
+  {n:"WBC (non-basophil)",col:"#00d8e0",fsc:40,ssc:40,sfl:63,sd:[3.8,7],r:12,g:"",nu:"seg",note:"Shrunk by reagent → moderate FSC · nucleus stains strongly → high SFL"},
+  {n:"Basophil",col:"#d8c020",fsc:64,ssc:45,sfl:52,sd:[4,4],r:16,g:"baso",nu:"bi",note:"Resists reagent, keeps its size → FSC higher than other WBC"},
+  {n:"NRBC",col:"#d22bd2",fsc:46,ssc:20,sfl:40,sd:[5,5],r:11,g:"",nu:"round",fill:"#f1c9c9",note:"Nucleated but stains less than WBC → lower SFL · separate cluster"},
+  {n:"RBC ghost / debris",col:"#3a55ff",fsc:4,ssc:5,sfl:11,sd:[7,1.4],r:6,g:"",nu:"none",fill:"#f4e3e3",note:"Lysed, no nucleus → very low signals, along the baseline"}]},
  RET:{ax:["SFL","FSC"],xy:function(c){return [c.sfl,c.fsc];},mix:{norm:[.6,.2,.2],neut:[.6,.2,.2],eo:[.6,.2,.2]},t:[
-  {n:"เม็ดเลือดแดงตัวแก่",col:"#3a55ff",fsc:60,ssc:20,sfl:17,sd:[2.8,9],r:12,g:"",nu:"none",fill:"#e8a3a3",note:"ไม่มี RNA เหลือ → SFL ต่ำ"},
-  {n:"Reticulocyte",col:"#d22bd2",fsc:66,ssc:22,sfl:42,sd:[9,10],r:13,g:"rna",nu:"none",fill:"#d9a6d9",note:"ยังมี RNA → SFL สูงขึ้น ยิ่งอายุน้อยยิ่งอยู่ทางขวา"},
-  {n:"เกล็ดเลือด",col:"#35c9b6",fsc:8,ssc:10,sfl:18,sd:[7,3],r:5,g:"",nu:"none",fill:"#f0d98a",note:"ขนาดเล็กมาก → FSC ต่ำ (ใช้นับ PLT-O)"}]}
+  {n:"Mature RBC",col:"#3a55ff",fsc:60,ssc:20,sfl:17,sd:[2.8,9],r:12,g:"",nu:"none",fill:"#e8a3a3",note:"No RNA left → low SFL"},
+  {n:"Reticulocyte",col:"#d22bd2",fsc:66,ssc:22,sfl:42,sd:[9,10],r:13,g:"rna",nu:"none",fill:"#d9a6d9",note:"Still contains RNA → higher SFL · the younger, the further right"},
+  {n:"Platelet",col:"#35c9b6",fsc:8,ssc:10,sfl:18,sd:[7,3],r:5,g:"",nu:"none",fill:"#f0d98a",note:"Very small → low FSC (counted as PLT-O)"}]}
 };
 function prReset(){
   var r=rng(12345);
@@ -1261,9 +1261,9 @@ function prDraw(){
     function rod(x,c1,c2,c3){g.save();prSh(g,6,3,"rgba(16,35,58,.4)");g.fillStyle=prLG(g,x,0,x+9,0,[[0,c3],[.3,c1],[.55,c2],[1,c3]]);prRR(g,x,68,9,204,4);g.fill();g.restore();}
     rod(57,"#ff9c8f","#d04a40","#7c1f19");rod(453,"#9fbdf2","#3f68b5","#1b356b");
     prText(g,"+",52,64,{b:1,s:18,c:"#b23a3a"});prText(g,"−",452,64,{b:1,s:18,c:"#2c4f8f"});
-    prText(g,"อิเล็กโทรด",44,308,{s:11,c:"#52657c"});prText(g,"อิเล็กโทรด",430,308,{s:11,c:"#52657c"});
-    prText(g,"ช่องรูเล็ก (aperture)",260,40,{s:12,b:1,a:"center",c:"#164a8a"});
-    prText(g,"เซลล์ในสารละลายนำไฟฟ้า →",80,330,{s:12,c:"#52657c"});
+    prText(g,"Electrode",44,308,{s:11,c:"#52657c"});prText(g,"Electrode",430,308,{s:11,c:"#52657c"});
+    prText(g,"Aperture",260,40,{s:12,b:1,a:"center",c:"#164a8a"});
+    prText(g,"Cells in electrolyte diluent →",80,330,{s:12,c:"#52657c"});
     S.cells.forEach(function(c){
       var v1=c.v/c.n,rad=c.k==="P"?(v1>20?2+Math.pow(v1,1/3)*1.3:3.2):3+Math.pow(v1,1/3)*1.55,al=c.x>260?Math.max(0,1-(c.x-260)/230):1;
       g.globalAlpha=al;
@@ -1273,21 +1273,21 @@ function prDraw(){
     var near=S.ev.length&&S.T-S.ev[S.ev.length-1].t<.18;
     if(near){g.save();g.shadowColor="rgba(243,154,23,.9)";g.shadowBlur=14;g.strokeStyle="#f39a17";g.lineWidth=3;g.beginPath();g.arc(260,170,24,0,7);g.stroke();g.restore();}
     /* pulse trace */
-    prPanel(g,530,10,350,112,"สัญญาณไฟฟ้า: 1 เซลล์ = 1 พัลส์ · ความสูง = ปริมาตร");
+    prPanel(g,530,10,350,112,"Pulse signal: 1 cell = 1 pulse · height = volume");
     g.save();g.beginPath();g.rect(531,30,348,91);g.clip();
     var base=114,dl=base-30/250*78;
     g.strokeStyle="#35a035";g.setLineDash([4,4]);g.beginPath();g.moveTo(531,dl);g.lineTo(879,dl);g.stroke();g.setLineDash([]);
-    prText(g,"เส้นประ = discriminator แยก PLT / RBC",872,42,{s:10.5,a:"right",c:"#2a7a2a"});
+    prText(g,"dashed line = PLT / RBC discriminator",872,42,{s:10.5,a:"right",c:"#2a7a2a"});
     g.shadowColor="rgba(31,98,176,.45)";g.shadowBlur=5;g.strokeStyle="#1f62b0";g.lineWidth=1.8;g.lineJoin="round";g.beginPath();g.moveTo(531,base);
     var evs=S.ev.slice().sort(function(a,b){return a.t-b.t;});
     evs.forEach(function(e){var x=870-(S.T-e.t)*70,hh=Math.max(6,e.v/250*78);g.lineTo(x-5,base);g.lineTo(x,base-hh);g.lineTo(x+5,base);});
     g.lineTo(879,base);g.stroke();g.restore();
     /* step 2: pulses sorted by size into bins */
-    prPanel(g,530,130,170,126,"จัดพัลส์ตามขนาด: PLT");prPanel(g,710,130,170,126,"จัดพัลส์ตามขนาด: RBC");
+    prPanel(g,530,130,170,126,"Pulses sorted by size: PLT");prPanel(g,710,130,170,126,"Pulses sorted by size: RBC");
     function hist(x0,arr,col,lab){var m=Math.max(4,Math.max.apply(null,arr)),bw=150/arr.length;arr.forEach(function(n,k){var hh=n/m*78;if(!hh)return;g.fillStyle=prLG(g,0,240-hh,0,240,[[0,col[0]],[1,col[1]]]);g.fillRect(x0+10+k*bw,240-hh,bw-1,hh);g.fillStyle="rgba(255,255,255,.35)";g.fillRect(x0+10+k*bw,240-hh,Math.max(1,(bw-1)*.3),hh);});g.strokeStyle="#52657c";g.lineWidth=1;g.beginPath();g.moveTo(x0+10,240);g.lineTo(x0+160,240);g.stroke();prText(g,lab,x0+160,252,{s:10,a:"right",c:"#52657c"});}
     hist(530,S.hP,["#f7cf4a","#b98600"],"0–40 fL");hist(710,S.hR,["#f0675e","#a8201c"],"0–250 fL");
     /* step 3: the smoothed curve as the instrument displays it */
-    prText(g,"↓ เครื่องปรับให้เรียบและแสดงเป็นเส้นโค้งบนหน้าจอ",705,273,{s:11.5,a:"center",b:1,c:"#164a8a"});
+    prText(g,"↓ Smoothed and displayed as histogram",705,273,{s:11.5,a:"center",b:1,c:"#164a8a"});
     function scr(x0,arr,name,maxLab,discs,span){
       var X=x0+12,Wd=146,Y0=300,Y1=392,n=arr.length,sm=[],m=0,k;
       for(k=0;k<n;k++){var v=(arr[k-2]||0)+2*(arr[k-1]||0)+3*arr[k]+2*(arr[k+1]||0)+(arr[k+2]||0);sm.push(v);if(v>m)m=v;}
@@ -1303,8 +1303,8 @@ function prDraw(){
     scr(530,S.hP,"PLT","40fL",[2,10,20,21,30],40);scr(710,S.hR,"RBC","250fL",[25,50,100,150,200,250],250);
     /* readouts */
     prPanel(g,20,345,480,60,null);
-    prText(g,"RBC นับได้ "+S.nR+" เซลล์",32,368,{b:1});if(PR.pit.imp!=="none")prText(g,"นับคลาดเคลื่อน "+S.bad+" ครั้ง",498,334,{a:"right",b:1,s:12,c:"#d01f1f"});prText(g,"MCV = ค่าเฉลี่ยความสูงพัลส์ = "+(S.nR?(S.sR/S.nR).toFixed(1):"–")+" fL",190,368);
-    prText(g,"PLT นับได้ "+S.nP+" เซลล์",32,392,{b:1});prText(g,"MPV = "+(S.nP?(S.sP/S.nP).toFixed(1):"–")+" fL   ·   HCT ∝ ผลรวมความสูงพัลส์ของ RBC",190,392);
+    prText(g,"RBC count: "+S.nR,32,368,{b:1});if(PR.pit.imp!=="none")prText(g,"Misclassified: "+S.bad,498,334,{a:"right",b:1,s:12,c:"#d01f1f"});prText(g,"MCV = mean pulse height = "+(S.nR?(S.sR/S.nR).toFixed(1):"–")+" fL",190,368);
+    prText(g,"PLT count: "+S.nP,32,392,{b:1});prText(g,"MPV = "+(S.nP?(S.sP/S.nP).toFixed(1):"–")+" fL   ·   HCT ∝ sum of RBC pulse heights",190,392);
   }else if(PR.les==="hgb"){
     var p=Math.max(0,Math.min(1,(S.T-1.4)/3.2)),HP=HGB_PIT[PR.pit.hgb]||null,A=p*(PR.hgb*0.035+(HP?HP.a:0)),Tr=Math.pow(10,-A);
     /* lamp with glow, beam with soft edges */
@@ -1312,7 +1312,7 @@ function prDraw(){
     g.fillStyle=prRG(g,110,225,0,70,[[0,"rgba(255,236,150,.85)"],[1,"rgba(255,236,150,0)"]]);g.beginPath();g.arc(110,225,70,0,7);g.fill();
     g.save();prSh(g,10,5);g.fillStyle=prLG(g,62,0,150,0,[[0,"#2b3a4f"],[.5,"#5c708c"],[1,"#2b3a4f"]]);prRR(g,62,190,60,70,8);g.fill();g.restore();
     g.fillStyle=prRG(g,122,225,0,24,[[0,"#ffffff"],[.4,"#fff0a8"],[1,"#e2a800"]],-6,-6);g.beginPath();g.arc(122,225,22,0,7);g.fill();
-    prText(g,"แหล่งกำเนิดแสง",100,282,{a:"center",s:12,c:"#52657c"});
+    prText(g,"Light source",100,282,{a:"center",s:12,c:"#52657c"});
     function beam(x0,x1,a){g.fillStyle=prLG(g,0,204,0,246,[[0,"rgba(46,200,100,0)"],[.25,"rgba(46,200,100,"+a+")"],[.5,"rgba(170,255,200,"+Math.min(1,a*1.15)+")"],[.75,"rgba(46,200,100,"+a+")"],[1,"rgba(46,200,100,0)"]]);g.fillRect(x0,204,x1-x0,42);}
     beam(144,300,sh);beam(420,570,sh*Tr);
     prText(g,"I₀",215,200,{b:1,a:"center",c:"#1b7a3f"});prText(g,"I",495,200,{b:1,a:"center",c:"#1b7a3f"});
@@ -1328,20 +1328,20 @@ function prDraw(){
     g.strokeStyle=prLG(g,296,0,304,0,[[0,"#7d92ab"],[.5,"#e6eef7"],[1,"#7d92ab"]]);g.lineWidth=6;g.lineJoin="round";g.beginPath();g.moveTo(300,118);g.lineTo(300,320);g.lineTo(420,320);g.lineTo(420,118);g.stroke();
     g.strokeStyle="rgba(255,255,255,.75)";g.lineWidth=2;g.beginPath();g.moveTo(308,132);g.lineTo(308,300);g.stroke();
     g.strokeStyle="rgba(255,255,255,.35)";g.lineWidth=5;g.beginPath();g.moveTo(318,140);g.lineTo(318,250);g.stroke();
-    prText(g,p<=0?"เลือด + น้ำยา lyse":p<1?"เม็ดเลือดแดงแตก ปล่อยฮีโมโกลบิน":"สารละลายฮีโมโกลบินมีสีคงที่",360,345,{a:"center",b:1,c:"#164a8a"});
+    prText(g,p<=0?"Blood + lyse reagent":p<1?"RBC lysis → hemoglobin released":"Stable colored Hb complex",360,345,{a:"center",b:1,c:"#164a8a"});
     prText(g,HP?HP.cap:"",360,366,{a:"center",s:12,c:"#d01f1f"});
     /* detector */
     g.save();prSh(g,10,5);g.fillStyle=prLG(g,0,190,0,260,[[0,"#6b7f9a"],[.4,"#34455c"],[1,"#1e2a3b"]]);prRR(g,570,190,46,70,6);g.fill();g.restore();
     g.fillStyle=prRG(g,574,225,0,14,[[0,"rgba(180,255,210,"+(.3+.7*sh*Tr)+")"],[1,"#10202f"]]);g.beginPath();g.arc(576,225,12,0,7);g.fill();
-    prText(g,"ตัวรับแสง",593,280,{a:"center",s:12,c:"#52657c"});
+    prText(g,"Photodetector",593,280,{a:"center",s:12,c:"#52657c"});
     /* readout */
-    prPanel(g,650,60,230,300,"ผลการวัด");
-    prText(g,"แสงที่ผ่าน I / I₀",664,104,{s:12,c:"#52657c"});g.fillStyle="#dfe7f1";prRR(g,664,112,200,16,4);g.fill();g.fillStyle=prLG(g,0,112,0,128,[[0,"#7be7a3"],[1,"#1f9d4f"]]);prRR(g,664,112,Math.max(8,200*Tr),16,4);g.fill();prText(g,(Tr*100).toFixed(0)+"%",864,150,{a:"right",b:1});
+    prPanel(g,650,60,230,300,"Measurement");
+    prText(g,"Transmittance  I / I₀",664,104,{s:12,c:"#52657c"});g.fillStyle="#dfe7f1";prRR(g,664,112,200,16,4);g.fill();g.fillStyle=prLG(g,0,112,0,128,[[0,"#7be7a3"],[1,"#1f9d4f"]]);prRR(g,664,112,Math.max(8,200*Tr),16,4);g.fill();prText(g,(Tr*100).toFixed(0)+"%",864,150,{a:"right",b:1});
     prText(g,"Absorbance = log(I₀ / I)",664,188,{s:12,c:"#52657c"});prText(g,A.toFixed(3),664,214,{b:1,s:22});
-    prText(g,"HGB = Absorbance × ค่าคงที่",664,254,{s:12,c:"#52657c"});
-    var rep=A/0.035;prText(g,p>=1?rep.toFixed(1)+" g/dL":"กำลังวัด…",664,286,{b:1,s:24,c:HP&&p>=1?"#d01f1f":"#164a8a"});
-    if(HP&&p>=1)prText(g,"สูงปลอม (ค่าจริง "+PR.hgb.toFixed(1)+")",664,312,{s:12,c:"#d01f1f"});
-    prText(g,"ยิ่งฮีโมโกลบินมาก สียิ่งเข้ม แสงผ่านได้น้อยลง",450,80,{a:"center",s:13,c:"#52657c"});
+    prText(g,"HGB = Absorbance × factor",664,254,{s:12,c:"#52657c"});
+    var rep=A/0.035;prText(g,p>=1?rep.toFixed(1)+" g/dL":"Measuring…",664,286,{b:1,s:24,c:HP&&p>=1?"#d01f1f":"#164a8a"});
+    if(HP&&p>=1)prText(g,"Falsely high (true "+PR.hgb.toFixed(1)+")",664,312,{s:12,c:"#d01f1f"});
+    prText(g,"More hemoglobin → darker color → less light transmitted",450,80,{a:"center",s:13,c:"#52657c"});
   }else{
     var F=FT[PR.ch],fl=Math.max(0,1-(S.T-S.flash)/.45),cur=S.cur;
     /* flow cell: glass tube, sheath, core stream */
@@ -1350,11 +1350,11 @@ function prDraw(){
     g.fillStyle="rgba(255,255,255,.6)";g.fillRect(166,10,5,400);
     g.strokeStyle="#7f98b5";g.lineWidth=2;g.beginPath();g.moveTo(160,10);g.lineTo(160,410);g.moveTo(240,10);g.lineTo(240,410);g.stroke();
     for(i=0;i<5;i++){var by=(S.T*90+i*85)%400+10;g.fillStyle="rgba(255,255,255,.5)";g.beginPath();g.arc(i%2?176:226,by,2,0,7);g.fill();}
-    prText(g,"sheath flow บีบให้เซลล์เรียงเดี่ยว",250,26,{s:11,c:"#52657c"});
+    prText(g,"Sheath flow: cells focused into single file",250,26,{s:11,c:"#52657c"});
     /* laser housing and beam with glow */
     g.save();prSh(g,10,5);g.fillStyle=prLG(g,0,188,0,232,[[0,"#72869f"],[.35,"#34455c"],[1,"#1b2634"]]);prRR(g,12,188,68,44,6);g.fill();g.restore();
     g.fillStyle=prRG(g,80,210,0,9,[[0,"#ffd0d0"],[1,"#c81e1e"]]);g.beginPath();g.arc(80,210,6,0,7);g.fill();
-    prText(g,"เลเซอร์",46,250,{a:"center",s:12,c:"#52657c"});
+    prText(g,"Laser",46,250,{a:"center",s:12,c:"#52657c"});
     g.save();g.shadowColor="rgba(255,40,40,.95)";g.shadowBlur=12;g.strokeStyle="rgba(255,70,70,.95)";g.lineWidth=3;g.beginPath();g.moveTo(84,210);g.lineTo(200,210);g.stroke();
     g.strokeStyle="rgba(255,235,235,.9)";g.lineWidth=1;g.shadowBlur=0;g.beginPath();g.moveTo(84,210);g.lineTo(200,210);g.stroke();
     g.shadowColor="rgba(255,40,40,.9)";g.shadowBlur=10*fl+2;g.strokeStyle="rgba(240,50,50,"+(.25+.65*fl)+")";g.lineWidth=2;g.beginPath();g.moveTo(200,210);g.lineTo(398,210);g.stroke();
@@ -1362,12 +1362,12 @@ function prDraw(){
     g.restore();
     if(fl>0){g.fillStyle=prRG(g,200,210,0,34,[[0,"rgba(255,255,255,"+(.85*fl)+")"],[.4,"rgba(255,200,160,"+(.45*fl)+")"],[1,"rgba(255,200,160,0)"]]);g.beginPath();g.arc(200,210,34,0,7);g.fill();}
     function det(x,y,lab,sub,val,col){g.save();prSh(g,8,4);g.fillStyle=prLG(g,0,y,0,y+26,[[0,"#72869f"],[.4,"#34455c"],[1,"#1b2634"]]);prRR(g,x,y,34,26,5);g.fill();g.restore();g.fillStyle=prRG(g,x+4,y+13,0,9,[[0,col],[1,"#0f1a26"]]);g.globalAlpha=.35+.65*fl;g.beginPath();g.arc(x+5,y+13,7,0,7);g.fill();g.globalAlpha=1;prText(g,lab,x+40,y+11,{b:1,s:12});prText(g,sub,x+40,y+25,{s:10,c:"#52657c"});g.fillStyle="#dfe7f1";prRR(g,x+40,y+31,90,7,3);g.fill();if(val){g.fillStyle=col;prRR(g,x+40,y+31,Math.max(6,90*val/100),7,3);g.fill();}}
-    det(398,198,"FSC","ขนาดของเซลล์",cur&&cur.fsc,"#e62828");
-    det(318,62,"SSC","โครงสร้างภายใน",cur&&cur.ssc,"#ff9628");
-    det(398,112,"SFL","กรดนิวคลีอิก",cur&&cur.sfl,"#3cc85a");
+    det(398,198,"FSC","Cell size",cur&&cur.fsc,"#e62828");
+    det(318,62,"SSC","Internal complexity",cur&&cur.ssc,"#ff9628");
+    det(398,112,"SFL","Nucleic acid content",cur&&cur.sfl,"#3cc85a");
     S.cells.forEach(function(c){prCell(g,200,c.y,(c.pt||F.t[c.ti]),.62);});
     /* inset */
-    prPanel(g,14,270,140,140,"เซลล์ที่ผ่านลำแสง");
+    prPanel(g,14,270,140,140,"Cell in laser beam");
     if(cur){var t=(cur.pt||F.t[cur.ti]);prCell(g,84,340,t,2.1);prText(g,t.n,84,402,{a:"center",b:1,s:12,c:"#164a8a"});}
     if(cur){prText(g,(cur.pt||F.t[cur.ti]).n,250,300,{b:1,s:14,c:"#164a8a"});(cur.pt||F.t[cur.ti]).note.split(" · ").forEach(function(ln,k){prText(g,ln,250,322+k*20,{s:12.5});});}
     /* scattergram */
@@ -1377,7 +1377,7 @@ function prDraw(){
     g.font="600 14px 'IBM Plex Mono',monospace";g.fillText(PR.ch,X0+44,Y0+4);
     g.save();g.globalCompositeOperation="lighter";g.globalAlpha=.85;S.dots.forEach(function(d){var q=F.xy(d);g.fillStyle=(d.pt||F.t[d.ti]).col;g.fillRect(X0+q[0]/100*W-1.5,Y0+H-q[1]/100*H-1.5,3,3);});g.restore();
     if(cur&&fl>0){var q=F.xy(cur);g.strokeStyle="rgba(255,255,255,"+fl+")";g.lineWidth=2;g.beginPath();g.arc(X0+q[0]/100*W,Y0+H-q[1]/100*H,9,0,7);g.stroke();}
-    prText(g,"1 เซลล์ = 1 จุด",X0+W/2-6,Y0+H+52,{a:"center",b:1,s:13,c:"#164a8a"});prText(g,"ตำแหน่งมาจากสัญญาณสองชนิด",X0+W/2-6,Y0+H+72,{a:"center",s:12,c:"#52657c"});
+    prText(g,"1 cell = 1 dot",X0+W/2-6,Y0+H+52,{a:"center",b:1,s:13,c:"#164a8a"});prText(g,"position = two signals",X0+W/2-6,Y0+H+72,{a:"center",s:12,c:"#52657c"});
   }
 }
 function prLoop(ts){
