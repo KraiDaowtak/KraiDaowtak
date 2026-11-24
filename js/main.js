@@ -3,6 +3,7 @@ import { CellViewer } from './viewer.js';
 import { AtlasMode } from './modes/atlas.js';
 import { BasicsMode } from './modes/basics.js';
 import { RealPhotos } from './photos.js';
+import { mountRelief } from './relief.js';
 import { StreamMode } from './modes/stream.js';
 import { QuizMode } from './modes/quiz.js';
 import { DiffMode } from './modes/diff.js';
@@ -38,6 +39,7 @@ const ui = {
   },
 };
 
+mountRelief();
 const viewer = new CellViewer(renderer, canvas, ui.labels);
 ui.photos = new RealPhotos(ui);
 const modes = {
