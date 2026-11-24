@@ -447,9 +447,9 @@ function drawPlots(c){
   drawScat("cvRET","RET","SFL","FSC",rc,sd("ret"));
   /* PLT-O: x = SFL, y = FSC (RBC saturate at the top edge) */
   var py=((c.v.MPV||9.5)-9.5)*2.2;
-  var pc=[{n:3600,c:COL.blue,p:function(r){var x=20+gauss(r)*5;return [x,96-Math.abs(gauss(r))*4.5+(x-20)*.15];}},
-          {n:500,c:COL.blue,p:function(r){var t=r();return [9+t*6+gauss(r)*1.5,45+t*45+gauss(r)*4];}},
-          {n:rn*1.6,c:COL.mag,p:function(r){var x=34+r()*64;return [x,96-Math.abs(gauss(r))*2.6,x>62+gauss(r)*8?COL.red:COL.mag];}},
+  var pc=[{n:3600,c:COL.blue,p:function(r){var x=20+gauss(r)*5;return [x,90-Math.abs(gauss(r))*4.5+(x-20)*.15+gauss(r)*1.2];}},
+          {n:500,c:COL.blue,p:function(r){var t=r();return [9+t*6+gauss(r)*1.5,41+t*43+gauss(r)*4];}},
+          {n:rn*1.6,c:COL.mag,p:function(r){var x=34+r()*64;return [x,90-Math.abs(gauss(r))*2.6+gauss(r)*1.2,x>62+gauss(r)*8?COL.red:COL.mag];}},
           {n:Math.max(40,Math.min(1500,pn*3.6)),c:COL.teal,p:function(r){var x=7+Math.abs(gauss(r))*13;return [x+gauss(r)*1.5,26+py+40*(1-Math.exp(-x/22))+gauss(r)*3.5];}}];
   if(clump)pc.push({n:320,c:COL.teal,p:G([48,74,12,8,.3])});
   drawScat("cvPLTO","PLT-O","SFL","FSC",pc,sd("plto"));
