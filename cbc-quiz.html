@@ -341,7 +341,7 @@ h1{color:var(--accent-strong)}
         <label data-les="imp">ตัวอย่าง <select id="prImp"><option value="norm">เม็ดเลือดแดงขนาดปกติ</option><option value="micro">เม็ดเลือดแดงขนาดเล็ก</option><option value="macro">เม็ดเลือดแดงขนาดใหญ่</option><option value="two">มีสองขนาดปนกัน</option></select></label>
         <label data-les="hgb" hidden>HGB ของตัวอย่าง <input type="range" id="prHgb" min="5" max="20" step="0.5" value="14"> <b id="prHgbV">14.0 g/dL</b></label>
         <label data-les="hgb" hidden><input type="checkbox" id="prTurb"> ตัวอย่างขุ่น (ไขมันสูง)</label>
-        <label data-les="flow" hidden>ช่องวัด <select id="prCh"><option value="WDF">WDF (เม็ดเลือดขาว)</option><option value="RET">RET (reticulocyte และ PLT-O)</option></select></label>
+        <label data-les="flow" hidden>ช่องวัด <select id="prCh"><option value="WDF">WDF (แยกชนิดเม็ดเลือดขาว)</option><option value="WNR">WNR (WBC, basophil, NRBC)</option><option value="RET">RET (reticulocyte และ PLT-O)</option></select></label>
         <label data-les="flow" id="prMixL" hidden>ตัวอย่าง <select id="prMix"><option value="norm">สัดส่วนปกติ</option><option value="neut">neutrophil สูง</option><option value="eo">eosinophil สูง</option></select></label>
       </div>
       <div class="scroll prwrap"><canvas id="prCv" role="img" aria-label="ภาพเคลื่อนไหวแสดงหลักการวัด"></canvas></div>
@@ -393,7 +393,7 @@ h1{color:var(--accent-strong)}
           <tr><td>RET</td><td>SFL × FSC</td><td>RET%, RET#, IRF (สัดส่วน reticulocyte ที่มี SFL สูง), RET-He</td></tr>
           <tr><td>PLT-O</td><td>SFL × FSC</td><td>PLT ที่นับด้วยแสง ใช้เมื่อ PLT จาก impedance ถูกรบกวน</td></tr>
         </tbody></table></div>
-        <p style="font-size:.88rem">ลองเปลี่ยนตัวอย่างเป็น “neutrophil สูง” หรือ “eosinophil สูง” แล้วดูว่ากลุ่มใดหนาแน่นขึ้น และเปลี่ยนช่องวัดเป็น RET เพื่อดูว่าแกนเปลี่ยนไปอย่างไร ถ้าเซลล์ผิดปกติมีสัญญาณอยู่ระหว่างสองกลุ่ม เครื่องจะแยกกลุ่มไม่ได้และขึ้นเครื่องหมาย * หรือ suspect message</p></div>
+        <p style="font-size:.88rem">ลองเปลี่ยนตัวอย่างเป็น “neutrophil สูง” หรือ “eosinophil สูง” แล้วดูว่ากลุ่มใดหนาแน่นขึ้น และเปลี่ยนช่องวัดเป็น WNR หรือ RET เพื่อดูว่าแกนและกลุ่มเซลล์เปลี่ยนไปอย่างไร ในช่อง WNR น้ำยาทำให้เม็ดเลือดแดงแตกและเม็ดเลือดขาวส่วนใหญ่หดตัว เหลือ basophil ที่คงขนาดไว้ จึงนับ WBC, basophil และ NRBC แยกกันได้ในกราฟเดียว ถ้าเซลล์ผิดปกติมีสัญญาณอยู่ระหว่างสองกลุ่ม เครื่องจะแยกกลุ่มไม่ได้และขึ้นเครื่องหมาย * หรือ suspect message</p></div>
       </div>
     </div>
   </div>
@@ -1109,6 +1109,11 @@ var FT={
   {n:"Lymphocyte",col:"#d22bd2",fsc:40,ssc:33,sfl:26,sd:[3,6],r:11,g:"",nu:"round",note:"เซลล์เล็ก ไม่มีแกรนูล → SSC ต่ำ"},
   {n:"Monocyte",col:"#2fc02f",fsc:72,ssc:50,sfl:47,sd:[3.5,7],r:18,g:"",nu:"kidney",note:"เซลล์ใหญ่ มี RNA มาก → SFL สูง"},
   {n:"Eosinophil",col:"#e63a1e",fsc:62,ssc:80,sfl:17,sd:[4.5,3],r:15,g:"big",nu:"bi",note:"แกรนูลขนาดใหญ่จำนวนมาก → SSC สูงที่สุด"}]},
+ WNR:{ax:["SFL","FSC"],xy:function(c){return [c.sfl,c.fsc];},mix:{norm:[.55,.12,.15,.18],neut:[.55,.12,.15,.18],eo:[.55,.12,.15,.18]},t:[
+  {n:"เม็ดเลือดขาว (ไม่ใช่ basophil)",col:"#00d8e0",fsc:40,ssc:40,sfl:63,sd:[3.8,7],r:12,g:"",nu:"seg",note:"น้ำยาทำให้เซลล์หดเล็กลง → FSC ปานกลาง · นิวเคลียสติดสีมาก → SFL สูง"},
+  {n:"Basophil",col:"#d8c020",fsc:64,ssc:45,sfl:52,sd:[4,4],r:16,g:"baso",nu:"bi",note:"ทนต่อน้ำยา คงขนาดเดิมไว้ → FSC สูงกว่าเม็ดเลือดขาวชนิดอื่น"},
+  {n:"NRBC",col:"#d22bd2",fsc:46,ssc:20,sfl:40,sd:[5,5],r:11,g:"",nu:"round",fill:"#f1c9c9",note:"มีนิวเคลียสแต่ติดสีน้อยกว่าเม็ดเลือดขาว → SFL ต่ำกว่า จึงแยกเป็นอีกกลุ่ม"},
+  {n:"เศษเม็ดเลือดแดงที่แตก",col:"#3a55ff",fsc:4,ssc:5,sfl:11,sd:[7,1.4],r:6,g:"",nu:"none",fill:"#f4e3e3",note:"ไม่มีนิวเคลียสและถูกทำให้แตก → สัญญาณต่ำมาก ชิดแกนล่าง"}]},
  RET:{ax:["SFL","FSC"],xy:function(c){return [c.sfl,c.fsc];},mix:{norm:[.6,.2,.2],neut:[.6,.2,.2],eo:[.6,.2,.2]},t:[
   {n:"เม็ดเลือดแดงตัวแก่",col:"#3a55ff",fsc:60,ssc:20,sfl:17,sd:[2.8,9],r:12,g:"",nu:"none",fill:"#e8a3a3",note:"ไม่มี RNA เหลือ → SFL ต่ำ"},
   {n:"Reticulocyte",col:"#d22bd2",fsc:66,ssc:22,sfl:42,sd:[9,10],r:13,g:"rna",nu:"none",fill:"#d9a6d9",note:"ยังมี RNA → SFL สูงขึ้น ยิ่งอายุน้อยยิ่งอยู่ทางขวา"},
@@ -1140,7 +1145,8 @@ function prStep(dt){
       c.y+=120*dt;
       if(!c.done&&c.y>=210){c.done=true;var t=F.t[c.ti],g1=gauss(r),g2=gauss(r);
         var m={ti:c.ti,fsc:t.fsc+gauss(r)*3,ssc:t.ssc,sfl:t.sfl};
-        if(PR.ch==="WDF"){m.ssc=t.ssc+t.sd[0]*g1;m.sfl=t.sfl+t.sd[1]*(.4*g1+.9*g2);}else{m.sfl=c.ti===1?t.sfl-8+Math.abs(g1)*14:t.sfl+t.sd[0]*g1;m.fsc=t.fsc+t.sd[1]*g2+(c.ti===2?m.sfl*.15:0);}
+        if(PR.ch==="WDF"){m.ssc=t.ssc+t.sd[0]*g1;m.sfl=t.sfl+t.sd[1]*(.4*g1+.9*g2);}else if(PR.ch==="RET"){m.sfl=c.ti===1?t.sfl-8+Math.abs(g1)*14:t.sfl+t.sd[0]*g1;m.fsc=t.fsc+t.sd[1]*g2+(c.ti===2?m.sfl*.15:0);}
+        else{m.sfl=t.sfl+t.sd[0]*(c.ti===3?Math.abs(g1)-.6:g1);m.fsc=t.fsc+t.sd[1]*(c.ti===0?.45*g1+.9*g2:g2);}
         m.fsc=Math.max(2,Math.min(98,m.fsc));m.ssc=Math.max(2,Math.min(98,m.ssc));m.sfl=Math.max(2,Math.min(98,m.sfl));
         S.cur=m;S.flash=S.T;S.dots.push(m);if(S.dots.length>900)S.dots.shift();}
     });
@@ -1155,8 +1161,8 @@ function prCell(g,x,y,t,sc){
   else if(t.nu==="kidney"){g.beginPath();g.arc(x,y,R*.62,0,7);g.fill();g.fillStyle=t.fill||"#e9e2f3";g.beginPath();g.arc(x+R*.45,y-R*.1,R*.3,0,7);g.fill();}
   else if(t.nu==="seg"){[-.4,0,.4].forEach(function(o,i){g.beginPath();g.arc(x+o*R,y+(i===1?-.25:.2)*R,R*.27,0,7);g.fill();});}
   else if(t.nu==="bi"){g.beginPath();g.arc(x-R*.33,y,R*.3,0,7);g.arc(x+R*.33,y,R*.3,0,7);g.fill();}
-  if(t.g){var rr=rng(7),n=t.g==="big"?16:t.g==="rna"?9:22;g.fillStyle=t.g==="big"?"#f0742a":t.g==="rna"?"#7a2fb8":"#b58fd0";
-    for(var i=0;i<n;i++){var a=rr()*6.283,d=Math.sqrt(rr())*R*.85;g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d,(t.g==="big"?.13:.07)*R+.4,0,7);g.fill();}}
+  if(t.g){var rr=rng(7),n=(t.g==="big"||t.g==="baso")?16:t.g==="rna"?9:22;g.fillStyle=t.g==="big"?"#f0742a":t.g==="baso"?"#2c1f7a":t.g==="rna"?"#7a2fb8":"#b58fd0";
+    for(var i=0;i<n;i++){var a=rr()*6.283,d=Math.sqrt(rr())*R*.85;g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d,((t.g==="big"||t.g==="baso")?.13:.07)*R+.4,0,7);g.fill();}}
   g.restore();
 }
 function prText(g,s,x,y,o){o=o||{};g.font=(o.b?"600 ":"")+(o.s||13)+"px 'IBM Plex Sans Thai',sans-serif";g.fillStyle=o.c||"#10233a";g.textAlign=o.a||"left";g.fillText(s,x,y);}
