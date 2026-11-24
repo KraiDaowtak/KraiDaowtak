@@ -186,6 +186,13 @@ tr.fp td:first-child{box-shadow:inset 3px 0 0 var(--hi);text-decoration:line-thr
 .ttab{font-family:var(--sans);font-size:.88rem} .ttab th{font-size:.74rem;text-align:left;padding:4px 8px} .ttab td{text-align:left;padding:5px 8px;white-space:normal;font-weight:400} .ttab td:first-child{font-weight:600;white-space:nowrap}
 .ttab code,.card code{font-family:var(--mono);font-size:.86em;background:var(--sunken);padding:0 4px;border-radius:4px}
 .savenote{font-size:.8rem;color:var(--muted);margin:0;min-height:1.2em}
+.prctl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:12px 0}
+.prctl label{display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--muted)}
+.prctl select{font:inherit;font-size:.88rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
+.prctl b{font-family:var(--mono);color:var(--ink)}
+.prwrap{border:1px solid var(--line);border-radius:4px;background:#f3f7fb}
+#prCv{display:block;width:100%;min-width:680px;aspect-ratio:900/420;height:auto}
+.card ol{margin:0;padding-left:1.3em} .card ol li{margin-bottom:4px}
 /* ---- analyzer body: moulded casing, recessed screen, light and shadow ---- */
 body{background:
   radial-gradient(1100px 620px at 12% -120px,rgba(255,255,255,.95) 0,rgba(255,255,255,0) 62%),
@@ -277,6 +284,7 @@ h1{color:var(--accent-strong)}
   <div class="bar">
     <div class="seg" id="nav" role="group" aria-label="หน้า">
       <button type="button" data-p="practice" aria-pressed="true">ฝึกแปลผล</button>
+      <button type="button" data-p="prin" aria-pressed="false">หลักการวัด</button>
       <button type="button" data-p="ref" aria-pressed="false">ทบทวนพื้นฐาน</button>
       <button type="button" data-p="teach" id="navTeach" aria-pressed="false" hidden>ผลของผู้เรียน</button>
     </div>
@@ -313,6 +321,78 @@ h1{color:var(--accent-strong)}
           </section>
         </div>
         <section class="quiz" id="quiz" aria-label="คำถาม"></section>
+      </div>
+    </div>
+  </div>
+
+  <div id="pgPrin" hidden>
+    <div class="card">
+      <div class="qhead"><h2>หลักการวัดของเครื่องวิเคราะห์</h2>
+        <div class="seg" id="prLes" role="group" aria-label="เลือกบทเรียน" style="margin-left:0">
+          <button type="button" data-l="imp" aria-pressed="true">Impedance: RBC / PLT</button>
+          <button type="button" data-l="hgb" aria-pressed="false">การวัด HGB</button>
+          <button type="button" data-l="flow" aria-pressed="false">Flow cytometry</button>
+        </div>
+      </div>
+      <div class="prctl">
+        <button type="button" class="pbtn" id="prPlay">หยุดชั่วคราว</button>
+        <button type="button" class="linkbtn" id="prReset">เริ่มใหม่</button>
+        <label>ความเร็ว <select id="prSpeed"><option value="0.4">ช้า</option><option value="1" selected>ปกติ</option><option value="3">เร็ว</option></select></label>
+        <label data-les="imp">ตัวอย่าง <select id="prImp"><option value="norm">เม็ดเลือดแดงขนาดปกติ</option><option value="micro">เม็ดเลือดแดงขนาดเล็ก</option><option value="macro">เม็ดเลือดแดงขนาดใหญ่</option><option value="two">มีสองขนาดปนกัน</option></select></label>
+        <label data-les="hgb" hidden>HGB ของตัวอย่าง <input type="range" id="prHgb" min="5" max="20" step="0.5" value="14"> <b id="prHgbV">14.0 g/dL</b></label>
+        <label data-les="hgb" hidden><input type="checkbox" id="prTurb"> ตัวอย่างขุ่น (ไขมันสูง)</label>
+        <label data-les="flow" hidden>ช่องวัด <select id="prCh"><option value="WDF">WDF (เม็ดเลือดขาว)</option><option value="RET">RET (reticulocyte และ PLT-O)</option></select></label>
+        <label data-les="flow" id="prMixL" hidden>ตัวอย่าง <select id="prMix"><option value="norm">สัดส่วนปกติ</option><option value="neut">neutrophil สูง</option><option value="eo">eosinophil สูง</option></select></label>
+      </div>
+      <div class="scroll prwrap"><canvas id="prCv" role="img" aria-label="ภาพเคลื่อนไหวแสดงหลักการวัด"></canvas></div>
+
+      <div class="refgrid" data-les="imp" style="margin-top:16px">
+        <div><h3>เกิดอะไรขึ้นทีละขั้น</h3><ol>
+          <li>เลือดถูกเจือจางในสารละลายที่นำไฟฟ้า แล้วดูดผ่านช่องรูเล็กที่มีกระแสไฟฟ้าคงที่ไหลผ่าน</li>
+          <li>เซลล์นำไฟฟ้าได้แย่กว่าสารละลาย เมื่อเซลล์ผ่านช่อง ความต้านทานจึงเพิ่มขึ้นชั่วขณะ เกิดเป็นพัลส์ 1 ลูก</li>
+          <li>จำนวนพัลส์คือจำนวนเซลล์ ความสูงของพัลส์แปรตามปริมาตรของเซลล์</li>
+          <li>เส้น discriminator แยกพัลส์เล็ก (เกล็ดเลือด) ออกจากพัลส์ใหญ่ (เม็ดเลือดแดง)</li>
+          <li>พัลส์ทั้งหมดถูกจัดเรียงตามขนาด กลายเป็นฮิสโตแกรม RBC และ PLT</li>
+        </ol></div>
+        <div><h3>พารามิเตอร์ที่ได้</h3><div class="scroll"><table class="ttab"><thead><tr><th>ค่า</th><th>ได้มาจาก</th></tr></thead><tbody>
+          <tr><td>RBC, PLT</td><td>จำนวนพัลส์ในช่วงขนาดของแต่ละชนิด</td></tr>
+          <tr><td>MCV, MPV</td><td>ค่าเฉลี่ยของความสูงพัลส์ (ตำแหน่งยอดของฮิสโตแกรม)</td></tr>
+          <tr><td>HCT</td><td>ผลรวมความสูงพัลส์ของ RBC หรือคำนวณจาก RBC × MCV ÷ 10 ขึ้นกับเครื่อง</td></tr>
+          <tr><td>RDW-SD, RDW-CV, PDW</td><td>ความกว้างของฮิสโตแกรม</td></tr>
+          <tr><td>P-LCR</td><td>สัดส่วนของเกล็ดเลือดที่ใหญ่กว่า 12 fL</td></tr>
+          <tr><td>PCT</td><td>คำนวณจาก PLT × MPV ÷ 10,000</td></tr>
+        </tbody></table></div>
+        <p style="font-size:.88rem">ลองเปลี่ยนตัวอย่างเป็น “มีสองขนาดปนกัน” แล้วสังเกตว่า MCV ออกมาใกล้ค่าปกติ ทั้งที่ฮิสโตแกรมมีสองยอด และลองคิดว่าถ้าเซลล์สองตัวผ่านช่องพร้อมกันหรือเกาะกัน พัลส์จะเป็นอย่างไร</p></div>
+      </div>
+      <div class="refgrid" data-les="hgb" style="margin-top:16px" hidden>
+        <div><h3>เกิดอะไรขึ้นทีละขั้น</h3><ol>
+          <li>น้ำยา lyse ทำให้เม็ดเลือดแดงแตก ปล่อยฮีโมโกลบินออกมาในสารละลาย</li>
+          <li>น้ำยาเปลี่ยนฮีโมโกลบินทุกรูปแบบให้เป็นสารประกอบสีเดียวที่คงตัว (เช่น SLS-hemoglobin)</li>
+          <li>ฉายแสงความยาวคลื่นจำเพาะผ่านสารละลาย ตัวรับแสงวัดแสงที่เหลือ</li>
+          <li>คำนวณ absorbance จากแสงก่อนและหลังผ่านสารละลาย ค่า absorbance แปรตรงกับความเข้มข้นของฮีโมโกลบิน (กฎของ Beer–Lambert)</li>
+        </ol></div>
+        <div><h3>พารามิเตอร์ที่ได้</h3><div class="scroll"><table class="ttab"><thead><tr><th>ค่า</th><th>ได้มาจาก</th></tr></thead><tbody>
+          <tr><td>HGB</td><td>วัดโดยตรงจาก absorbance</td></tr>
+          <tr><td>MCH</td><td>คำนวณ: HGB × 10 ÷ RBC</td></tr>
+          <tr><td>MCHC</td><td>คำนวณ: HGB × 100 ÷ HCT</td></tr>
+        </tbody></table></div>
+        <p style="font-size:.88rem">ลองติ๊ก “ตัวอย่างขุ่น” แล้วดูว่าอนุภาคไขมันกระเจิงแสงจนตัวรับแสงได้รับแสงน้อยลง เครื่องจึงรายงาน HGB สูงกว่าจริง และ MCH กับ MCHC ที่คำนวณต่อก็สูงตามไปด้วย การวัดนี้ไม่ขึ้นกับการนับเซลล์ จึงยังถูกต้องแม้เม็ดเลือดแดงเกาะกลุ่ม</p></div>
+      </div>
+      <div class="refgrid" data-les="flow" style="margin-top:16px" hidden>
+        <div><h3>เกิดอะไรขึ้นทีละขั้น</h3><ol>
+          <li>น้ำยาเจาะเยื่อหุ้มเซลล์และสีฟลูออเรสเซนต์เข้าไปจับกรดนิวคลีอิก (DNA, RNA) ในเซลล์</li>
+          <li>Sheath flow บีบกระแสตัวอย่างให้แคบ เซลล์จึงผ่านลำแสงเลเซอร์ทีละเซลล์</li>
+          <li>แต่ละเซลล์ให้สัญญาณสามชนิดพร้อมกัน: FSC (ขนาด), SSC (โครงสร้างภายใน) และ SFL (ปริมาณกรดนิวคลีอิก)</li>
+          <li>เครื่องนำสัญญาณสองชนิดมาเป็นแกนนอนและแกนตั้ง เซลล์หนึ่งเซลล์จึงเป็นหนึ่งจุดบน scattergram</li>
+          <li>เซลล์ชนิดเดียวกันมีสัญญาณใกล้เคียงกัน จึงรวมเป็นกลุ่ม เครื่องนับจำนวนจุดในแต่ละกลุ่มเป็นจำนวนเซลล์ชนิดนั้น</li>
+        </ol></div>
+        <div><h3>พารามิเตอร์ที่ได้</h3><div class="scroll"><table class="ttab"><thead><tr><th>ช่อง</th><th>แกน</th><th>ค่าที่ได้</th></tr></thead><tbody>
+          <tr><td>WDF</td><td>SSC × SFL</td><td>NEUT, LYMPH, MONO, EO และ IG (ร้อยละและจำนวน)</td></tr>
+          <tr><td>WNR</td><td>SFL × FSC</td><td>WBC, BASO, NRBC</td></tr>
+          <tr><td>RET</td><td>SFL × FSC</td><td>RET%, RET#, IRF (สัดส่วน reticulocyte ที่มี SFL สูง), RET-He</td></tr>
+          <tr><td>PLT-O</td><td>SFL × FSC</td><td>PLT ที่นับด้วยแสง ใช้เมื่อ PLT จาก impedance ถูกรบกวน</td></tr>
+        </tbody></table></div>
+        <p style="font-size:.88rem">ลองเปลี่ยนตัวอย่างเป็น “neutrophil สูง” หรือ “eosinophil สูง” แล้วดูว่ากลุ่มใดหนาแน่นขึ้น และเปลี่ยนช่องวัดเป็น RET เพื่อดูว่าแกนเปลี่ยนไปอย่างไร ถ้าเซลล์ผิดปกติมีสัญญาณอยู่ระหว่างสองกลุ่ม เครื่องจะแยกกลุ่มไม่ได้และขึ้นเครื่องหมาย * หรือ suspect message</p></div>
       </div>
     </div>
   </div>
@@ -1018,6 +1098,195 @@ function initCaps(){
   });
 }
 
+/* ---------- principle lessons (animated) ---------- */
+var PR={les:"imp",play:true,speed:1,imp:"norm",hgb:14,turb:false,ch:"WDF",mix:"norm",S:null,raf:null,last:0};
+var PW=900,PH=420;
+var IMP_S={norm:[{mu:90,sd:.13,w:1}],micro:[{mu:68,sd:.2,w:1}],macro:[{mu:120,sd:.17,w:1}],two:[{mu:72,sd:.12,w:.5},{mu:120,sd:.12,w:.5}]};
+var FT={
+ WDF:{ax:["SSC","SFL"],xy:function(c){return [c.ssc,c.sfl];},mix:{norm:[.5,.28,.12,.10],neut:[.78,.12,.06,.04],eo:[.40,.22,.10,.28]},t:[
+  {n:"Neutrophil",col:"#00d8e0",fsc:60,ssc:60,sfl:21,sd:[5,3.5],r:15,g:"fine",nu:"seg",note:"แกรนูลและนิวเคลียสหลายพู → SSC สูง · กรดนิวคลีอิกน้อย → SFL ต่ำ"},
+  {n:"Lymphocyte",col:"#d22bd2",fsc:40,ssc:33,sfl:26,sd:[3,6],r:11,g:"",nu:"round",note:"เซลล์เล็ก ไม่มีแกรนูล → SSC ต่ำ"},
+  {n:"Monocyte",col:"#2fc02f",fsc:72,ssc:50,sfl:47,sd:[3.5,7],r:18,g:"",nu:"kidney",note:"เซลล์ใหญ่ มี RNA มาก → SFL สูง"},
+  {n:"Eosinophil",col:"#e63a1e",fsc:62,ssc:80,sfl:17,sd:[4.5,3],r:15,g:"big",nu:"bi",note:"แกรนูลขนาดใหญ่จำนวนมาก → SSC สูงที่สุด"}]},
+ RET:{ax:["SFL","FSC"],xy:function(c){return [c.sfl,c.fsc];},mix:{norm:[.6,.2,.2],neut:[.6,.2,.2],eo:[.6,.2,.2]},t:[
+  {n:"เม็ดเลือดแดงตัวแก่",col:"#3a55ff",fsc:60,ssc:20,sfl:17,sd:[2.8,9],r:12,g:"",nu:"none",fill:"#e8a3a3",note:"ไม่มี RNA เหลือ → SFL ต่ำ"},
+  {n:"Reticulocyte",col:"#d22bd2",fsc:66,ssc:22,sfl:42,sd:[9,10],r:13,g:"rna",nu:"none",fill:"#d9a6d9",note:"ยังมี RNA → SFL สูงขึ้น ยิ่งอายุน้อยยิ่งอยู่ทางขวา"},
+  {n:"เกล็ดเลือด",col:"#35c9b6",fsc:8,ssc:10,sfl:18,sd:[7,3],r:5,g:"",nu:"none",fill:"#f0d98a",note:"ขนาดเล็กมาก → FSC ต่ำ (ใช้นับ PLT-O)"}]}
+};
+function prReset(){
+  var r=rng(12345);
+  if(PR.les==="imp")PR.S={T:0,acc:0,cells:[],ev:[],hR:new Array(25).fill(0),hP:new Array(20).fill(0),nR:0,nP:0,sR:0,sP:0,r:r};
+  else if(PR.les==="hgb"){var cs=[];for(var i=0;i<34;i++)cs.push({x:312+r()*96,y:150+r()*150,t:1.4+r()*3});var sp=[];for(i=0;i<60;i++)sp.push({x:306+r()*108,y:140+r()*166});PR.S={T:0,cells:cs,sp:sp,r:r};}
+  else PR.S={T:0,acc:0,cells:[],dots:[],cur:null,flash:-9,r:r};
+}
+function lognS(comps,r){var u=r(),k=comps[0],a=0,i;var tw=0;comps.forEach(function(c){tw+=c.w;});for(i=0;i<comps.length;i++){a+=comps[i].w/tw;if(u<=a){k=comps[i];break;}}return Math.exp(Math.log(k.mu)+k.sd*gauss(r));}
+function prStep(dt){
+  var S=PR.S,r=S.r;S.T+=dt;
+  if(PR.les==="imp"){
+    S.acc+=dt;
+    while(S.acc>0.24){S.acc-=0.24;var isP=r()<.3;S.cells.push({x:26,y:70+r()*200,k:isP?"P":"R",v:isP?Math.exp(Math.log(9)+.4*gauss(r)):lognS(IMP_S[PR.imp],r),done:false});}
+    S.cells.forEach(function(c){
+      c.x+=115*dt;var pull=Math.max(0,Math.min(1,(c.x-110)/130));
+      if(c.x<260)c.y+=(170-c.y)*pull*dt*7;else c.y+=(c.y0-170)*dt*.9;
+      if(!c.done&&c.x>=260){c.done=true;c.y0=170+(r()-.5)*160;S.ev.push({t:S.T,v:c.v,k:c.k});
+        if(c.k==="R"){S.nR++;S.sR+=c.v;var b=Math.min(24,Math.floor(c.v/10));S.hR[b]++;}else{S.nP++;S.sP+=c.v;var b2=Math.min(19,Math.floor(c.v/2));S.hP[b2]++;}}
+    });
+    S.cells=S.cells.filter(function(c){return c.x<500;});S.ev=S.ev.filter(function(e){return S.T-e.t<5;});
+  }else if(PR.les==="flow"){
+    var F=FT[PR.ch],mx=F.mix[PR.mix];S.acc+=dt;
+    while(S.acc>0.42){S.acc-=0.42;var u=r(),a=0,ti=0;for(var i=0;i<mx.length;i++){a+=mx[i];if(u<=a){ti=i;break;}}S.cells.push({y:14,ti:ti,done:false});}
+    S.cells.forEach(function(c){
+      c.y+=120*dt;
+      if(!c.done&&c.y>=210){c.done=true;var t=F.t[c.ti],g1=gauss(r),g2=gauss(r);
+        var m={ti:c.ti,fsc:t.fsc+gauss(r)*3,ssc:t.ssc,sfl:t.sfl};
+        if(PR.ch==="WDF"){m.ssc=t.ssc+t.sd[0]*g1;m.sfl=t.sfl+t.sd[1]*(.4*g1+.9*g2);}else{m.sfl=c.ti===1?t.sfl-8+Math.abs(g1)*14:t.sfl+t.sd[0]*g1;m.fsc=t.fsc+t.sd[1]*g2+(c.ti===2?m.sfl*.15:0);}
+        m.fsc=Math.max(2,Math.min(98,m.fsc));m.ssc=Math.max(2,Math.min(98,m.ssc));m.sfl=Math.max(2,Math.min(98,m.sfl));
+        S.cur=m;S.flash=S.T;S.dots.push(m);if(S.dots.length>900)S.dots.shift();}
+    });
+    S.cells=S.cells.filter(function(c){return c.y<410;});
+  }
+}
+function prCell(g,x,y,t,sc){
+  var R=t.r*sc;g.save();
+  g.fillStyle=t.fill||"#e9e2f3";g.strokeStyle="#6b5a8a";g.lineWidth=1.2;g.beginPath();g.arc(x,y,R,0,7);g.fill();g.stroke();
+  g.fillStyle="#5b3f9a";
+  if(t.nu==="round"){g.beginPath();g.arc(x,y,R*.72,0,7);g.fill();}
+  else if(t.nu==="kidney"){g.beginPath();g.arc(x,y,R*.62,0,7);g.fill();g.fillStyle=t.fill||"#e9e2f3";g.beginPath();g.arc(x+R*.45,y-R*.1,R*.3,0,7);g.fill();}
+  else if(t.nu==="seg"){[-.4,0,.4].forEach(function(o,i){g.beginPath();g.arc(x+o*R,y+(i===1?-.25:.2)*R,R*.27,0,7);g.fill();});}
+  else if(t.nu==="bi"){g.beginPath();g.arc(x-R*.33,y,R*.3,0,7);g.arc(x+R*.33,y,R*.3,0,7);g.fill();}
+  if(t.g){var rr=rng(7),n=t.g==="big"?16:t.g==="rna"?9:22;g.fillStyle=t.g==="big"?"#f0742a":t.g==="rna"?"#7a2fb8":"#b58fd0";
+    for(var i=0;i<n;i++){var a=rr()*6.283,d=Math.sqrt(rr())*R*.85;g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d,(t.g==="big"?.13:.07)*R+.4,0,7);g.fill();}}
+  g.restore();
+}
+function prText(g,s,x,y,o){o=o||{};g.font=(o.b?"600 ":"")+(o.s||13)+"px 'IBM Plex Sans Thai',sans-serif";g.fillStyle=o.c||"#10233a";g.textAlign=o.a||"left";g.fillText(s,x,y);}
+function prPanel(g,x,y,w,h,title){g.fillStyle="#fff";g.strokeStyle="#aebfd4";g.lineWidth=1;g.beginPath();g.rect(x,y,w,h);g.fill();g.stroke();if(title)prText(g,title,x+8,y+17,{b:1,s:12,c:"#164a8a"});}
+function prDraw(){
+  var cv=document.getElementById("prCv");if(!cv)return;var dpr=Math.min(2,window.devicePixelRatio||1);
+  if(cv.width!==PW*dpr){cv.width=PW*dpr;cv.height=PH*dpr;}
+  var g=cv.getContext("2d"),S=PR.S,i;g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle="#f3f7fb";g.fillRect(0,0,PW,PH);
+  if(PR.les==="imp"){
+    /* chamber */
+    g.fillStyle="#dcebf9";g.strokeStyle="#7f98b5";g.lineWidth=2;g.beginPath();g.rect(20,50,480,240);g.fill();g.stroke();
+    g.fillStyle="#6f86a3";g.fillRect(252,50,16,100);g.fillRect(252,190,16,100);
+    g.strokeStyle="rgba(31,98,176,.35)";g.setLineDash([5,5]);g.lineWidth=1.2;
+    [[-40,0],[0,0],[40,0]].forEach(function(o){g.beginPath();g.moveTo(70,170+o[0]);g.quadraticCurveTo(200,170+o[0]*.3,260,170);g.quadraticCurveTo(320,170+o[0]*.3,450,170+o[0]);g.stroke();});
+    g.setLineDash([]);
+    g.fillStyle="#b23a3a";g.fillRect(58,70,8,200);g.fillStyle="#2c4f8f";g.fillRect(454,70,8,200);
+    prText(g,"+",52,64,{b:1,s:18,c:"#b23a3a"});prText(g,"−",452,64,{b:1,s:18,c:"#2c4f8f"});
+    prText(g,"อิเล็กโทรด",44,308,{s:11,c:"#52657c"});prText(g,"อิเล็กโทรด",430,308,{s:11,c:"#52657c"});
+    prText(g,"ช่องรูเล็ก (aperture)",260,40,{s:12,b:1,a:"center",c:"#164a8a"});
+    prText(g,"เซลล์ในสารละลายนำไฟฟ้า →",80,330,{s:12,c:"#52657c"});
+    S.cells.forEach(function(c){
+      var rad=c.k==="P"?3.2:3+Math.pow(c.v,1/3)*1.55,al=c.x>260?Math.max(0,1-(c.x-260)/230):1;
+      g.globalAlpha=al;g.fillStyle=c.k==="P"?"#e0a800":"#d8433b";g.strokeStyle=c.k==="P"?"#9a7200":"#8f1f1a";g.lineWidth=1;g.beginPath();g.arc(c.x,c.y,rad,0,7);g.fill();g.stroke();g.globalAlpha=1;
+    });
+    var near=S.ev.length&&S.T-S.ev[S.ev.length-1].t<.18;
+    if(near){g.strokeStyle="#f39a17";g.lineWidth=3;g.beginPath();g.arc(260,170,24,0,7);g.stroke();}
+    /* pulse trace */
+    prPanel(g,530,20,350,170,"สัญญาณไฟฟ้า: 1 เซลล์ = 1 พัลส์ · ความสูง = ปริมาตร");
+    g.save();g.beginPath();g.rect(531,40,348,149);g.clip();
+    var base=176,dl=base-30/250*125;
+    g.strokeStyle="#35a035";g.setLineDash([4,4]);g.beginPath();g.moveTo(531,dl);g.lineTo(879,dl);g.stroke();g.setLineDash([]);
+    prText(g,"เส้นประ = discriminator แยก PLT / RBC",872,54,{s:10.5,a:"right",c:"#2a7a2a"});
+    g.strokeStyle="#1f62b0";g.lineWidth=1.6;g.beginPath();g.moveTo(531,base);
+    var evs=S.ev.slice().sort(function(a,b){return a.t-b.t;});
+    evs.forEach(function(e){var x=870-(S.T-e.t)*70,hh=Math.max(7,e.v/250*125);g.lineTo(x-5,base);g.lineTo(x,base-hh);g.lineTo(x+5,base);});
+    g.lineTo(879,base);g.stroke();g.restore();
+    /* histograms */
+    prPanel(g,530,205,170,195,"ฮิสโตแกรม PLT");prPanel(g,710,205,170,195,"ฮิสโตแกรม RBC");
+    function hist(x0,arr,col,lab){var m=Math.max(4,Math.max.apply(null,arr)),bw=150/arr.length;g.fillStyle=col;arr.forEach(function(n,k){var hh=n/m*135;g.fillRect(x0+10+k*bw,380-hh,bw-1,hh);});g.strokeStyle="#52657c";g.lineWidth=1;g.beginPath();g.moveTo(x0+10,380);g.lineTo(x0+160,380);g.stroke();prText(g,lab,x0+160,394,{s:10,a:"right",c:"#52657c"});}
+    hist(530,S.hP,"#e0a800","0–40 fL");hist(710,S.hR,"#d8433b","0–250 fL");
+    /* readouts */
+    prPanel(g,20,345,480,60,null);
+    prText(g,"RBC นับได้ "+S.nR+" เซลล์",32,368,{b:1});prText(g,"MCV = ค่าเฉลี่ยความสูงพัลส์ = "+(S.nR?(S.sR/S.nR).toFixed(1):"–")+" fL",190,368);
+    prText(g,"PLT นับได้ "+S.nP+" เซลล์",32,392,{b:1});prText(g,"MPV = "+(S.nP?(S.sP/S.nP).toFixed(1):"–")+" fL   ·   HCT ∝ ผลรวมความสูงพัลส์ของ RBC",190,392);
+  }else if(PR.les==="hgb"){
+    var p=Math.max(0,Math.min(1,(S.T-1.4)/3.2)),A=p*(PR.hgb*0.035+(PR.turb?0.2:0)),Tr=Math.pow(10,-A);
+    /* lamp */
+    g.fillStyle="#fff3c4";g.strokeStyle="#b98a00";g.lineWidth=2;g.beginPath();g.arc(110,225,26,0,7);g.fill();g.stroke();prText(g,"แหล่งกำเนิดแสง",110,275,{a:"center",s:12,c:"#52657c"});
+    var sh=.75+.06*Math.sin(S.T*9);
+    g.fillStyle="rgba(46,190,96,"+sh+")";g.fillRect(138,208,162,34);
+    g.fillStyle="rgba(46,190,96,"+(sh*Tr)+")";g.fillRect(420,208,150,34);
+    prText(g,"I₀",215,200,{b:1,a:"center",c:"#1b7a3f"});prText(g,"I",495,200,{b:1,a:"center",c:"#1b7a3f"});
+    /* cuvette */
+    var red=Math.min(1,PR.hgb/20)*p;
+    g.fillStyle="rgb("+Math.round(244-70*red)+","+Math.round(248-190*red)+","+Math.round(252-190*red)+")";g.fillRect(300,130,120,190);
+    if(PR.turb){g.fillStyle="rgba(255,255,255,.75)";S.sp.forEach(function(s){g.beginPath();g.arc(s.x,s.y+Math.sin(S.T*2+s.x)*2,2.2,0,7);g.fill();});}
+    S.cells.forEach(function(c){var q=(S.T-c.t)/.5;if(q<0){g.fillStyle="#d8433b";g.strokeStyle="#8f1f1a";g.lineWidth=1;g.beginPath();g.arc(c.x,c.y,7,0,7);g.fill();g.stroke();}else if(q<1){g.strokeStyle="rgba(216,67,59,"+(1-q)+")";g.lineWidth=2;g.beginPath();g.arc(c.x,c.y,7+q*12,0,7);g.stroke();}});
+    g.strokeStyle="#52657c";g.lineWidth=3;g.beginPath();g.moveTo(300,120);g.lineTo(300,320);g.lineTo(420,320);g.lineTo(420,120);g.stroke();
+    prText(g,p<=0?"เลือด + น้ำยา lyse":p<1?"เม็ดเลือดแดงแตก ปล่อยฮีโมโกลบิน":"สารละลายฮีโมโกลบินมีสีคงที่",360,345,{a:"center",b:1,c:"#164a8a"});
+    prText(g,PR.turb?"ตัวอย่างขุ่น: อนุภาคไขมันกระเจิงแสงเพิ่ม":"",360,366,{a:"center",s:12,c:"#d01f1f"});
+    /* detector */
+    g.fillStyle="#34455c";g.fillRect(570,195,40,60);prText(g,"ตัวรับแสง",590,275,{a:"center",s:12,c:"#52657c"});
+    /* readout */
+    prPanel(g,650,60,230,300,"ผลการวัด");
+    prText(g,"แสงที่ผ่าน I / I₀",664,104,{s:12,c:"#52657c"});g.fillStyle="#e3ebf4";g.fillRect(664,112,200,16);g.fillStyle="#2ebe60";g.fillRect(664,112,200*Tr,16);prText(g,(Tr*100).toFixed(0)+"%",864,150,{a:"right",b:1});
+    prText(g,"Absorbance = log(I₀ / I)",664,188,{s:12,c:"#52657c"});prText(g,A.toFixed(3),664,214,{b:1,s:22});
+    prText(g,"HGB = Absorbance × ค่าคงที่",664,254,{s:12,c:"#52657c"});
+    var rep=A/0.035;prText(g,p>=1?rep.toFixed(1)+" g/dL":"กำลังวัด…",664,286,{b:1,s:24,c:PR.turb&&p>=1?"#d01f1f":"#164a8a"});
+    if(PR.turb&&p>=1)prText(g,"สูงปลอม (ค่าจริง "+PR.hgb.toFixed(1)+")",664,312,{s:12,c:"#d01f1f"});
+    prText(g,"ยิ่งฮีโมโกลบินมาก สียิ่งเข้ม แสงผ่านได้น้อยลง",450,80,{a:"center",s:13,c:"#52657c"});
+  }else{
+    var F=FT[PR.ch],fl=Math.max(0,1-(S.T-S.flash)/.45),cur=S.cur;
+    /* sheath + stream */
+    g.fillStyle="#dcebf9";g.fillRect(160,10,80,400);g.fillStyle="#c3daf2";g.fillRect(190,10,20,400);
+    g.strokeStyle="#7f98b5";g.lineWidth=2;g.beginPath();g.moveTo(160,10);g.lineTo(160,410);g.moveTo(240,10);g.lineTo(240,410);g.stroke();
+    prText(g,"sheath flow บีบให้เซลล์เรียงเดี่ยว",250,26,{s:11,c:"#52657c"});
+    /* laser */
+    g.fillStyle="#34455c";g.fillRect(14,192,64,36);prText(g,"เลเซอร์",46,246,{a:"center",s:12,c:"#52657c"});
+    g.strokeStyle="rgba(230,40,40,.85)";g.lineWidth=3;g.beginPath();g.moveTo(78,210);g.lineTo(200,210);g.stroke();
+    g.strokeStyle="rgba(230,40,40,"+(.2+.6*fl)+")";g.lineWidth=2;g.beginPath();g.moveTo(200,210);g.lineTo(398,210);g.stroke();
+    if(fl>0&&cur){g.strokeStyle="rgba(255,150,40,"+fl+")";g.beginPath();g.moveTo(200,210);g.lineTo(318,92);g.stroke();g.strokeStyle="rgba(60,200,90,"+fl+")";g.beginPath();g.moveTo(200,210);g.lineTo(398,128);g.stroke();}
+    function det(x,y,lab,sub,val,col){g.fillStyle="#34455c";g.fillRect(x,y,34,26);prText(g,lab,x+40,y+11,{b:1,s:12});prText(g,sub,x+40,y+25,{s:10,c:"#52657c"});g.fillStyle="#e3ebf4";g.fillRect(x+40,y+31,90,7);g.fillStyle=col;g.fillRect(x+40,y+31,90*(val||0)/100,7);}
+    det(398,198,"FSC","ขนาดของเซลล์",cur&&cur.fsc,"#e62828");
+    det(318,62,"SSC","โครงสร้างภายใน",cur&&cur.ssc,"#ff9628");
+    det(398,112,"SFL","กรดนิวคลีอิก",cur&&cur.sfl,"#3cc85a");
+    S.cells.forEach(function(c){prCell(g,200,c.y,F.t[c.ti],.62);});
+    /* inset */
+    prPanel(g,14,270,140,140,"เซลล์ที่ผ่านลำแสง");
+    if(cur){var t=F.t[cur.ti];prCell(g,84,340,t,2.1);prText(g,t.n,84,402,{a:"center",b:1,s:12,c:"#164a8a"});}
+    if(cur){prText(g,F.t[cur.ti].n,250,300,{b:1,s:14,c:"#164a8a"});F.t[cur.ti].note.split(" · ").forEach(function(ln,k){prText(g,ln,250,322+k*20,{s:12.5});});}
+    /* scattergram */
+    var X0=612,Y0=40,W=270,H=270;g.fillStyle="#000";g.fillRect(X0-24,Y0-14,W+38,H+44);
+    g.strokeStyle="#b02fb0";g.lineWidth=1.5;g.beginPath();g.moveTo(X0,Y0);g.lineTo(X0,Y0+H);g.lineTo(X0+W,Y0+H);g.stroke();
+    g.font="12px 'IBM Plex Mono',monospace";g.fillStyle="#e6e6e6";g.textAlign="right";g.fillText(F.ax[0],X0+W,Y0+H+18);g.textAlign="left";g.fillText(F.ax[1],X0+6,Y0+4);
+    g.font="600 14px 'IBM Plex Mono',monospace";g.fillText(PR.ch,X0+44,Y0+4);
+    S.dots.forEach(function(d){var q=F.xy(d);g.fillStyle=F.t[d.ti].col;g.fillRect(X0+q[0]/100*W-1.5,Y0+H-q[1]/100*H-1.5,3,3);});
+    if(cur&&fl>0){var q=F.xy(cur);g.strokeStyle="rgba(255,255,255,"+fl+")";g.lineWidth=2;g.beginPath();g.arc(X0+q[0]/100*W,Y0+H-q[1]/100*H,9,0,7);g.stroke();}
+    prText(g,"1 เซลล์ = 1 จุด",X0+W/2-6,Y0+H+52,{a:"center",b:1,s:13,c:"#164a8a"});prText(g,"ตำแหน่งมาจากสัญญาณสองชนิด",X0+W/2-6,Y0+H+72,{a:"center",s:12,c:"#52657c"});
+  }
+}
+function prLoop(ts){
+  if(st.page!=="prin"){PR.raf=null;return;}
+  var dt=Math.min(.05,(ts-PR.last)/1000);PR.last=ts;
+  if(PR.play)prStep(dt*PR.speed);
+  prDraw();PR.raf=requestAnimationFrame(prLoop);
+}
+function prSync(){
+  document.querySelectorAll("#prLes button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.l===PR.les);});
+  document.querySelectorAll("[data-les]").forEach(function(e){e.hidden=e.dataset.les!==PR.les;});
+  document.getElementById("prPlay").textContent=PR.play?"หยุดชั่วคราว":"เล่น";
+  document.getElementById("prHgbV").textContent=PR.hgb.toFixed(1)+" g/dL";
+  document.getElementById("prMixL").hidden=PR.ch!=="WDF";
+}
+function prStart(){if(!PR.S)prReset();prSync();prDraw();if(!PR.raf){PR.last=performance.now();PR.raf=requestAnimationFrame(prLoop);}}
+(function(){
+  var red=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function fresh(){prReset();if(red||!PR.play){for(var i=0;i<700;i++)prStep(.033);}prSync();prDraw();}
+  if(red)PR.play=false;
+  document.querySelectorAll("#prLes button").forEach(function(b){b.onclick=function(){PR.les=b.dataset.l;fresh();};});
+  document.getElementById("prPlay").onclick=function(){PR.play=!PR.play;prSync();};
+  document.getElementById("prReset").onclick=function(){prReset();prDraw();};
+  document.getElementById("prSpeed").onchange=function(){PR.speed=+this.value;};
+  document.getElementById("prImp").onchange=function(){PR.imp=this.value;fresh();};
+  document.getElementById("prHgb").oninput=function(){PR.hgb=+this.value;prSync();if(!PR.play)prDraw();};
+  document.getElementById("prTurb").onchange=function(){PR.turb=this.checked;if(!PR.play)prDraw();};
+  document.getElementById("prCh").onchange=function(){PR.ch=this.value;fresh();};
+  document.getElementById("prMix").onchange=function(){PR.mix=this.value;fresh();};
+  PR.fresh=fresh;
+})();
+
 /* ---------- render: quiz ---------- */
 function qCard(c,q,qi){
   var a=ansOf(c),chosen=a[qi],answered=chosen!=null,rev=answered&&revealed(c,qi),live=canAnswer(c,qi),h="";
@@ -1139,7 +1408,7 @@ function tick(){
 function go(i){st.cur=i;viewRerun=false;delArm=null;spotArm=null;submitArm=false;save();renderAll();}
 function renderAll(){
   var pr=st.page==="practice",needStart=st.mode==="exam"&&!st.exam;
-  document.getElementById("pgPractice").hidden=!pr;document.getElementById("pgRef").hidden=st.page!=="ref";document.getElementById("pgTeach").hidden=st.page!=="teach";
+  document.getElementById("pgPractice").hidden=!pr;document.getElementById("pgRef").hidden=st.page!=="ref";document.getElementById("pgTeach").hidden=st.page!=="teach";document.getElementById("pgPrin").hidden=st.page!=="prin";if(st.page==="prin"){if(!PR.S)PR.fresh();prStart();}
   document.querySelectorAll("#nav button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.p===st.page);});
   document.querySelectorAll("#modeSeg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.m===st.mode);});
   document.getElementById("modeSeg").hidden=!pr;document.getElementById("scoreBox").hidden=!pr||needStart;
