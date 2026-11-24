@@ -81,7 +81,7 @@ export class DiffMode {
       this.renderResult();
     } else {
       this.renderPanel();
-      if (!this.pending.length) this.ui.toast('นับครบทุกเซลล์ในฟิลด์นี้แล้ว เลื่อนสไลด์ไปฟิลด์ถัดไปได้เลย');
+      if (!this.pending.length) this.ui.toast('นับครบทุกเซลล์ใน field นี้แล้ว เลื่อนสไลด์ไป field ถัดไปได้เลย');
     }
     this.renderHud();
   }
@@ -89,12 +89,12 @@ export class DiffMode {
   renderHud() {
     const left = this.pending.length;
     this.hud.innerHTML = `
-      <div class="fieldchip"><small>ฟิลด์</small><b>${this.fieldNo}</b></div>
-      <div class="fieldchip"><small>WBC ในฟิลด์นี้ที่ยังไม่นับ</small><b>${left}</b></div>
+      <div class="fieldchip"><small>Field</small><b>${this.fieldNo}</b></div>
+      <div class="fieldchip"><small>WBC ใน field นี้ที่ยังไม่นับ</small><b>${left}</b></div>
       <button class="btn primary" id="dNext">เลื่อนสไลด์ →</button>`;
     this.hud.querySelector('#dNext').addEventListener('click', () => {
       if (this.done) return;
-      if (this.pending.length) this.ui.toast(`ข้าม ${this.pending.length} เซลล์ที่ยังไม่นับในฟิลด์นี้`, 'warn');
+      if (this.pending.length) this.ui.toast(`ข้าม ${this.pending.length} เซลล์ที่ยังไม่นับใน field นี้`, 'warn');
       this.newField();
     });
   }

@@ -1,6 +1,6 @@
 import { buildTeachingCell, spotlight, pulse, ncPercent, diameterUm } from '../teach.js';
 import { ATTRS, MORPH, STEPS, DEFAULT_STATE, DRILL_CELLS, DRILL_ROWS, ROW_STEP } from '../basics-data.js';
-import { byId } from '../data.js';
+import { byId, enOf } from '../data.js';
 
 const optTh = (attr, id) => ATTRS[attr].options.find((o) => o.id === id)?.th ?? id;
 const shuffle = (a) => {
@@ -70,14 +70,14 @@ export class BasicsMode {
     const L = (p, th, en) => (p ? [{ p, th, en }] : []);
     const labels = {
       size: L(a.ruler, `เส้นผ่านศูนย์กลาง ≈ ${diameterUm(c)} µm`, `${optTh('size', s.size)} · RBC = 7.5 µm`),
-      nc: [...L(a.nucleusTop, `นิวเคลียสกินพื้นที่ ~${ncPercent(c)}%`, 'Nucleus'), ...L(a.cytoEdge, 'ไซโทพลาซึม', 'Cytoplasm')],
-      nshape: L(a.nucleusTop, `นิวเคลียส${optTh('nshape', s.nshape)}`, 'Nuclear shape'),
-      chromatin: L(a.nucleusSide, `โครมาติน${optTh('chromatin', s.chromatin)}`, 'Chromatin pattern'),
-      nucleoli: s.nucleoli === 'present' ? L(a.nucleolus, 'นิวคลีโอลัส 3 อัน สีฟ้าอ่อน', 'Nucleoli') : L(a.nucleusTop, 'ไม่พบนิวคลีโอลัส', 'No nucleoli'),
+      nc: [...L(a.nucleusTop, `Nucleus กินพื้นที่ ~${ncPercent(c)}%`, 'N/C ratio'), ...L(a.cytoEdge, 'Cytoplasm', '')],
+      nshape: L(a.nucleusTop, `Nucleus ${optTh('nshape', s.nshape)}`, 'Nuclear shape'),
+      chromatin: L(a.nucleusSide, `Chromatin ${optTh('chromatin', s.chromatin)}`, 'Chromatin pattern'),
+      nucleoli: s.nucleoli === 'present' ? L(a.nucleolus, 'Nucleoli 3 อัน สีฟ้าอ่อน', '') : L(a.nucleusTop, 'ไม่พบ nucleolus', ''),
       cyto: [...L(a.cytoTop, `สี${optTh('cyto', s.cyto)}`, 'Cytoplasm color'), ...L(a.cytoEdge, `ขอบ${optTh('margin', s.margin)}`, 'Marginal shape'),
-        ...(s.hof === 'present' ? L(a.hof, 'Hof: บริเวณใสข้างนิวเคลียส', 'Juxtanuclear light area') : [])],
-      granules: s.granules === 'none' ? L(a.cytoTop, 'ไม่มีแกรนูล', 'Agranular') : L(a.granules, `แกรนูล${optTh('granules', s.granules)}`, 'Granules'),
-      vacuoles: s.vacuoles === 'present' ? L(a.vacuole, 'แวคิวโอล', 'Vacuole') : L(a.cytoTop, 'ไม่พบแวคิวโอล', 'No vacuoles'),
+        ...(s.hof === 'present' ? L(a.hof, 'Hof: บริเวณใสข้าง nucleus', 'Juxtanuclear light area') : [])],
+      granules: s.granules === 'none' ? L(a.cytoTop, 'ไม่มี granule', 'Agranular') : L(a.granules, `Granule ${optTh('granules', s.granules)}`, 'Granules'),
+      vacuoles: s.vacuoles === 'present' ? L(a.vacuole, 'Vacuole', '') : L(a.cytoTop, 'ไม่พบ vacuole', 'No vacuoles'),
       inclusion: s.inclusion === 'none' ? L(a.cytoTop, 'ไม่พบ inclusion body', 'None') : L(a.inclusion, optTh('inclusion', s.inclusion), 'Inclusion body'),
     }[st.id];
     this.viewer.setLabelList(labels);
@@ -93,10 +93,10 @@ export class BasicsMode {
 
   renderNav() {
     const btn = (i, label, cls = '') => `<button class="kp ${cls}" data-step="${i}" aria-current="${i === this.step}" title="${i < STEPS.length ? STEPS[i].th : 'สรุป'}">${label}</button>`;
-    const cytoLabels = { cyto: 'สี · ขอบ · hof', granules: 'แกรนูล', vacuoles: 'แวคิวโอล', inclusion: 'Inclusion' };
+    const cytoLabels = { cyto: 'สี · ขอบ · hof', granules: 'Granule', vacuoles: 'Vacuole', inclusion: 'Inclusion' };
     return `<div class="kp-nav">
       <div class="kp-group"><small>หลัก 5 ข้อ</small><div>${STEPS.filter((s) => s.no).map((s) => btn(STEPS.indexOf(s), s.no, 'num')).join('')}</div></div>
-      <div class="kp-group"><small>ลักษณะไซโทพลาซึม</small><div>${STEPS.filter((s) => !s.no).map((s) => btn(STEPS.indexOf(s), cytoLabels[s.id])).join('')}${btn(STEPS.length, 'สรุป', 'sum')}</div></div>
+      <div class="kp-group"><small>ลักษณะ cytoplasm</small><div>${STEPS.filter((s) => !s.no).map((s) => btn(STEPS.indexOf(s), cytoLabels[s.id])).join('')}${btn(STEPS.length, 'สรุป', 'sum')}</div></div>
     </div>`;
   }
 
@@ -123,9 +123,9 @@ export class BasicsMode {
     } else {
       const st = this.cur;
       const readout = st.id === 'size' ? `<p class="readout">เส้นผ่านศูนย์กลาง <b>${diameterUm(this.cell)} µm</b> · ประมาณ <b>${(diameterUm(this.cell) / 7.5).toFixed(1)}×</b> ของ RBC</p>`
-        : st.id === 'nc' ? `<p class="readout">นิวเคลียสกินพื้นที่ <b>${ncPercent(this.cell)}%</b> ของเซลล์เมื่อมองจากด้านบน</p>` : '';
+        : st.id === 'nc' ? `<p class="readout">Nucleus กินพื้นที่ <b>${ncPercent(this.cell)}%</b> ของเซลล์เมื่อมองจากด้านบน</p>` : '';
       body = `
-        <p class="eyebrow">${st.no ? `หลักข้อ ${st.no} จาก 5` : 'ลักษณะของไซโทพลาซึม'}</p>
+        <p class="eyebrow">${st.no ? `หลักข้อ ${st.no} จาก 5` : 'ลักษณะของ cytoplasm'}</p>
         <h2>${st.th}</h2>
         <p class="en">${st.en}</p>
         <p class="lead">${st.lead}</p>
@@ -220,10 +220,10 @@ export class BasicsMode {
         <div class="options">${d.options.map((id, i) => {
           let cls = '';
           if (d.picked) cls = id === d.id ? 'right' : id === d.picked ? 'wrong' : 'dim';
-          return `<button class="opt ${cls}" data-pick="${id}" ${d.picked ? 'disabled' : ''}><kbd>${i + 1}</kbd><span>${byId[id].th}<small>${byId[id].en}</small></span></button>`;
+          return `<button class="opt ${cls}" data-pick="${id}" ${d.picked ? 'disabled' : ''}><kbd>${i + 1}</kbd><span>${byId[id].th}${enOf(byId[id]) ? `<small>${enOf(byId[id])}</small>` : ''}</span></button>`;
         }).join('')}</div>
         ${d.picked ? `<div class="feedback ${d.picked === d.id ? 'ok' : 'bad'}"><b>${d.picked === d.id ? 'ถูกต้อง' : `คำตอบคือ ${byId[d.id].th}`}</b>
-          <p>${byId[d.id].th}: ${DRILL_ROWS.map((k) => `${ATTRS[k].th}${optTh(k, truth[k])}`).join(' · ')}</p></div>
+          <p>${byId[d.id].th}: ${DRILL_ROWS.map((k) => `${ATTRS[k].th} ${optTh(k, truth[k])}`).join(' · ')}</p></div>
           <div class="row"><button class="btn primary" data-next>เซลล์ถัดไป →</button><button class="btn ghost" data-atlas="${d.id}">เปิดใน Atlas</button></div>` : ''}`}
       <p class="credit">กรอบแนวคิด: Shiro Miwa, <i>Atlas of Blood Cells</i></p>`;
   }

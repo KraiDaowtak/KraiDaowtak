@@ -1,5 +1,5 @@
 import { SmearField } from '../smear.js';
-import { CASES, byId } from '../data.js';
+import { CASES, byId, enOf } from '../data.js';
 
 const shuffle = (a) => {
   for (let i = a.length - 1; i > 0; i--) {
@@ -65,7 +65,7 @@ export class CasesMode {
 
   renderHud() {
     this.hud.innerHTML = `
-      <div class="fieldchip"><small>ฟิลด์</small><b>${this.fieldNo}</b></div>
+      <div class="fieldchip"><small>Field</small><b>${this.fieldNo}</b></div>
       <button class="btn tool" id="cMag" aria-pressed="${this.magnifier}">แว่นขยาย: คลิกเซลล์เพื่อดูชื่อ</button>
       <button class="btn primary" id="cNext">เลื่อนสไลด์ →</button>`;
     this.hud.querySelector('#cNext').addEventListener('click', () => this.newField());
@@ -115,7 +115,7 @@ export class CasesMode {
     this.panel.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => {
       const n = this.mark(b.dataset.f);
       this.panel.querySelectorAll('[data-f]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      this.ui.toast(n ? `พบ ${byId[b.dataset.f].th} ${n} เซลล์ในฟิลด์นี้` : 'ฟิลด์นี้ไม่มีเซลล์ชนิดนี้ ลองเลื่อนสไลด์');
+      this.ui.toast(n ? `พบ ${byId[b.dataset.f].th} ${n} เซลล์ใน field นี้` : 'field นี้ไม่มีเซลล์ชนิดนี้ ลองเลื่อนสไลด์');
     }));
     this.panel.querySelector('#cNextCase')?.addEventListener('click', () => { this.highlight = null; this.open(this.idx + 1); });
     this.panel.querySelector('#cAtlas')?.addEventListener('click', () => this.ui.goto('atlas', c.findings[0]));
@@ -133,7 +133,7 @@ export class CasesMode {
       this.renderPanel();
     }
     const cell = byId[rec.id] || byId.rbc;
-    this.peek.innerHTML = `<b>${cell.th}</b><small>${cell.en}</small>`;
+    this.peek.innerHTML = `<b>${cell.th}</b><small>${enOf(cell) || cell.size}</small>`;
     this.peek.style.transform = `translate(${px.x + 12}px, ${px.y + 12}px)`;
     this.peek.hidden = false;
   }

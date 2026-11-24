@@ -107,7 +107,7 @@ export class RealPhotos {
         <label for="pcFile">ไฟล์ภาพ (JPG, PNG, WebP ไม่เกิน 20 MB)</label>
         <input id="pcFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required>
         <label for="pcCaption">คำอธิบายภาพ</label>
-        <input id="pcCaption" type="text" maxlength="200" placeholder="เช่น นิวเคลียส 4 lobe แกรนูลละเอียด">
+        <input id="pcCaption" type="text" maxlength="200" placeholder="เช่น nucleus 4 lobe granule ละเอียด">
         <label for="pcCredit">ที่มา / การย้อม / กำลังขยาย</label>
         <input id="pcCredit" type="text" maxlength="120" placeholder="เช่น Wright stain, 100× oil, อ.สมชาย">
         <div class="row"><button class="btn primary" type="submit" ${this.busy ? 'disabled' : ''}>${this.busy ? 'กำลังอัปโหลด…' : 'อัปโหลด'}</button><button class="btn ghost" type="button" data-cancel>ยกเลิก</button></div>

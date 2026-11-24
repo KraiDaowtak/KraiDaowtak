@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { buildCell, rbcGeometry, rbcMaterial } from '../cells.js';
 import { mulberry32 } from '../noise.js';
-import { byId } from '../data.js';
+import { byId, enOf } from '../data.js';
 
 const VESSEL_R = 24;
 const TARGETS = ['rbc', 'platelet', 'neutrophil', 'band', 'lymphocyte', 'monocyte', 'eosinophil', 'basophil'];
@@ -150,13 +150,13 @@ export class StreamMode {
       <p class="muted">ลากเพื่อหันมอง คลิกเซลล์ที่ลอยผ่านเพื่อระบุชนิดและเก็บเข้าสมุดสะสม</p>
       <div class="progress big"><i style="width:${(this.found.size / TARGETS.length) * 100}%"></i></div>
       <ul class="collect">${slots}</ul>
-      ${c ? `<div class="found-card"><p class="eyebrow">เพิ่งพบ</p><h3>${c.th}</h3><p class="en">${c.en} · ${c.size}</p><p>${c.desc}</p>
+      ${c ? `<div class="found-card"><p class="eyebrow">เพิ่งพบ</p><h3>${c.th}</h3><p class="en">${enOf(c) ? enOf(c) + ' · ' : ''}${c.size}</p><p>${c.desc}</p>
         <button class="btn ghost" id="sAtlas">ดูโมเดลละเอียดใน Atlas</button></div>` : ''}
       <h3>สังเกตการไหล</h3>
       <ul class="keys">
         <li>เม็ดเลือดแดงเกาะกลุ่มไหลเร็วตรงกลาง (axial streaming) ส่วนขอบไหลช้ากว่า ตามกฎการไหลแบบ Poiseuille</li>
         <li>เกล็ดเลือดและเม็ดเลือดขาวถูกดันไปชิดผนัง (margination) พร้อมทำหน้าที่ทันทีเมื่อผนังหลอดเลือดบาดเจ็บ</li>
-        <li>เม็ดเลือดขาวกลิ้งช้า ๆ บนเอนโดทีเลียม (rolling) ด้วย selectin ก่อนเกาะแน่นและลอดออกนอกหลอดเลือด (diapedesis)</li>
+        <li>เม็ดเลือดขาวกลิ้งช้า ๆ บน endothelium (rolling) ด้วย selectin ก่อนเกาะแน่นและลอดออกนอกหลอดเลือด (diapedesis)</li>
       </ul>`;
     this.panel.querySelector('#sAtlas')?.addEventListener('click', () => this.ui.goto('atlas', info));
   }

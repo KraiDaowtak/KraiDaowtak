@@ -12,13 +12,13 @@ export const ATTRS = {
   },
   nc: {
     th: 'N/C ratio', options: [
-      { id: 'high', th: 'สูง', note: 'นิวเคลียสเกือบเต็มเซลล์' },
+      { id: 'high', th: 'สูง', note: 'Nucleus เกือบเต็มเซลล์' },
       { id: 'moderate', th: 'ปานกลาง', note: 'ราวครึ่งหนึ่ง' },
-      { id: 'low', th: 'ต่ำ', note: 'ไซโทพลาซึมมาก' },
+      { id: 'low', th: 'ต่ำ', note: 'Cytoplasm มาก' },
     ],
   },
   nshape: {
-    th: 'รูปร่างนิวเคลียส', options: [
+    th: 'รูปร่าง nucleus', options: [
       { id: 'round', th: 'กลม/รี' },
       { id: 'kidney', th: 'รูปไต/พับ' },
       { id: 'band', th: 'เกือกม้า (band)' },
@@ -28,27 +28,27 @@ export const ATTRS = {
     ],
   },
   chromatin: {
-    th: 'โครมาติน', options: [
+    th: 'Chromatin', options: [
       { id: 'fine', th: 'ละเอียดโปร่ง', note: 'เซลล์ตัวอ่อน' },
       { id: 'lacy', th: 'ลายลูกไม้', note: 'หลวม เป็นร่างแห' },
       { id: 'clumped', th: 'จับเป็นก้อนหยาบ', note: 'เซลล์ตัวแก่' },
-      { id: 'pyknotic', th: 'ทึบเข้มมาก', note: 'pyknotic' },
+      { id: 'pyknotic', th: 'ทึบเข้มมาก', note: 'Pyknotic' },
     ],
   },
   nucleoli: {
-    th: 'นิวคลีโอลัส', options: [
+    th: 'Nucleolus', options: [
       { id: 'absent', th: 'ไม่พบ' },
       { id: 'present', th: 'พบ' },
     ],
   },
   cyto: {
-    th: 'สีไซโทพลาซึม', options: [
+    th: 'สี cytoplasm', options: [
       { id: 'pink', th: 'ชมพูอ่อน', swatch: '#ecc9d8' },
       { id: 'skyblue', th: 'ฟ้าใส', swatch: '#9cc8ef' },
       { id: 'greyblue', th: 'เทาอมฟ้า', swatch: '#b3b4d4' },
       { id: 'deepblue', th: 'น้ำเงินเข้ม', swatch: '#3e68b6' },
       { id: 'skirt', th: 'ซีดกลาง ขอบน้ำเงินเข้ม', swatch: 'linear-gradient(90deg,#2f62b8,#dfe9f6 45%,#dfe9f6 55%,#2f62b8)' },
-      { id: 'salmon', th: 'ชมพูส้ม (มีฮีโมโกลบิน)', swatch: '#d9a3a8' },
+      { id: 'salmon', th: 'ชมพูส้ม (มี hemoglobin)', swatch: '#d9a3a8' },
     ],
   },
   margin: {
@@ -59,13 +59,13 @@ export const ATTRS = {
     ],
   },
   hof: {
-    th: 'บริเวณใสข้างนิวเคลียส (hof)', options: [
+    th: 'บริเวณใสข้าง nucleus (hof)', options: [
       { id: 'absent', th: 'ไม่พบ' },
       { id: 'present', th: 'พบ' },
     ],
   },
   granules: {
-    th: 'แกรนูล', options: [
+    th: 'Granule', options: [
       { id: 'none', th: 'ไม่มี' },
       { id: 'fine', th: 'ละเอียด สีชมพูม่วง' },
       { id: 'azur', th: 'Azurophilic ไม่กี่เม็ด', note: 'สีแดงม่วง' },
@@ -74,7 +74,7 @@ export const ATTRS = {
     ],
   },
   vacuoles: {
-    th: 'แวคิวโอล', options: [
+    th: 'Vacuole', options: [
       { id: 'absent', th: 'ไม่พบ' },
       { id: 'present', th: 'พบ' },
     ],
@@ -120,52 +120,52 @@ export const STEPS = [
     examples: ['lymphocyte', 'neutrophil', 'monocyte'],
   },
   {
-    id: 'nc', no: 2, th: 'สัดส่วนนิวเคลียสต่อไซโทพลาซึม', en: 'Ratio of nucleus to cytoplasm (N/C ratio)',
+    id: 'nc', no: 2, th: 'สัดส่วน nucleus ต่อ cytoplasm', en: 'Ratio of nucleus to cytoplasm (N/C ratio)',
     focus: ['nucleus', 'cyto'], controls: ['nc'],
-    lead: 'เทียบพื้นที่ที่นิวเคลียสกินในเซลล์เมื่อมองจากด้านบน N/C ratio สูงบอกว่าเซลล์ยังอ่อนหรือไซโทพลาซึมยังสร้างไม่มาก เมื่อเซลล์เจริญขึ้น ไซโทพลาซึมจะเพิ่มและ N/C ลดลง',
+    lead: 'เทียบพื้นที่ที่ nucleus กินในเซลล์เมื่อมองจากด้านบน N/C ratio สูงบอกว่าเซลล์ยังอ่อนหรือ cytoplasm ยังสร้างไม่มาก เมื่อเซลล์เจริญขึ้น cytoplasm จะเพิ่มและ N/C ลดลง',
     keys: ['สูง: blast, small lymphocyte', 'ปานกลาง: monocyte, plasma cell', 'ต่ำ: neutrophil, eosinophil, reactive lymphocyte'],
     examples: ['myeloblast', 'lymphocyte', 'neutrophil'],
   },
   {
-    id: 'nshape', no: 3, th: 'รูปร่างของนิวเคลียส', en: 'Shape of nucleus',
+    id: 'nshape', no: 3, th: 'รูปร่างของ nucleus', en: 'Shape of nucleus',
     focus: ['nucleus'], controls: ['nshape'],
-    lead: 'รูปร่างนิวเคลียสบอกทั้งสายเซลล์และระยะการเจริญ สายนิวโทรฟิลเริ่มจากนิวเคลียสกลม เว้าเป็นรูปไต เป็นเกือกม้า แล้วจึงแบ่งเป็น lobe ดูตำแหน่งด้วยว่าอยู่กลางเซลล์หรือชิดขอบ (eccentric)',
-    keys: ['กลมชิดขอบ: plasma cell', 'รูปไตหรือพับไปมา: monocyte', 'เกือกม้า → 3–5 lobe: band → segmented neutrophil', '≥ 6 lobe: hypersegmented (ขาด B12/โฟเลต)'],
+    lead: 'รูปร่าง nucleus บอกทั้งสายเซลล์และระยะการเจริญ สาย neutrophil เริ่มจาก nucleus กลม เว้าเป็นรูปไต เป็นเกือกม้า แล้วจึงแบ่งเป็น lobe ดูตำแหน่งด้วยว่าอยู่กลางเซลล์หรือชิดขอบ (eccentric)',
+    keys: ['กลมชิดขอบ: plasma cell', 'รูปไตหรือพับไปมา: monocyte', 'เกือกม้า → 3–5 lobe: band → segmented neutrophil', '≥ 6 lobe: hypersegmented (ขาด B12/folate)'],
     examples: ['band', 'neutrophil', 'monocyte', 'plasma_cell'],
   },
   {
-    id: 'chromatin', no: 4, th: 'ลักษณะโครงสร้างโครมาติน', en: 'Characteristics of nuclear chromatin structure',
+    id: 'chromatin', no: 4, th: 'ลักษณะโครงสร้าง chromatin', en: 'Characteristics of nuclear chromatin structure',
     focus: ['nucleus'], controls: ['chromatin'],
-    lead: 'โครมาตินจะหดตัวแน่นขึ้นเมื่อเซลล์แก่ตัว จากละเอียดโปร่งในเซลล์ตัวอ่อน เป็นลายลูกไม้ แล้วจับเป็นก้อนหยาบ จนทึบเข้มทั้งก้อน (pyknotic) ในเซลล์ที่ใกล้หมดอายุหรือ NRBC',
+    lead: 'Chromatin จะหดตัวแน่นขึ้นเมื่อเซลล์แก่ตัว จากละเอียดโปร่งในเซลล์ตัวอ่อน เป็นลายลูกไม้ แล้วจับเป็นก้อนหยาบ จนทึบเข้มทั้งก้อน (pyknotic) ในเซลล์ที่ใกล้หมดอายุหรือ NRBC',
     keys: ['ละเอียดโปร่ง: blast', 'ลายลูกไม้: monocyte', 'ก้อนหยาบ: lymphocyte, neutrophil, plasma cell (แบบหน้าปัดนาฬิกา)', 'ทึบเข้ม: orthochromic normoblast (NRBC)'],
     examples: ['myeloblast', 'monocyte', 'lymphocyte', 'nrbc'],
   },
   {
-    id: 'nucleoli', no: 5, th: 'นิวคลีโอลัส: มีหรือไม่ ขนาด จำนวน สี', en: 'Presence or absence, size, number and color of nucleoli',
+    id: 'nucleoli', no: 5, th: 'Nucleolus: มีหรือไม่ ขนาด จำนวน สี', en: 'Presence or absence, size, number and color of nucleoli',
     focus: ['nucleoli', 'nucleus'], dim: ['nucleus'], controls: ['nucleoli'],
-    lead: 'นิวคลีโอลัสเป็นแหล่งสร้างไรโบโซม จึงเห็นชัดในเซลล์ที่กำลังแบ่งตัวและสังเคราะห์โปรตีนมาก มองเป็นวงสีฟ้าอ่อนในนิวเคลียส ให้บันทึกทั้งจำนวน ขนาด และสี',
-    keys: ['พบนิวคลีโอลัสชัด: บอกว่าเป็นเซลล์ตัวอ่อน (blast)', 'Myeloblast มักมี 2–5 อัน ขนาดเล็กถึงกลาง', 'เซลล์ตัวแก่ในเลือดปกติไม่ควรเห็นนิวคลีโอลัส'],
+    lead: 'Nucleolus เป็นแหล่งสร้าง ribosome จึงเห็นชัดในเซลล์ที่กำลังแบ่งตัวและสังเคราะห์โปรตีนมาก มองเป็นวงสีฟ้าอ่อนใน nucleus ให้บันทึกทั้งจำนวน ขนาด และสี',
+    keys: ['พบ nucleolus ชัด: บอกว่าเป็นเซลล์ตัวอ่อน (blast)', 'Myeloblast มักมี 2–5 อัน ขนาดเล็กถึงกลาง', 'เซลล์ตัวแก่ในเลือดปกติไม่ควรเห็น nucleolus'],
     examples: ['myeloblast'],
   },
   {
-    id: 'cyto', no: null, th: 'สี ขอบ และบริเวณใสข้างนิวเคลียส', en: 'Color, marginal shape and juxtanuclear light area of cytoplasm',
+    id: 'cyto', no: null, th: 'สี ขอบ และบริเวณใสข้าง nucleus', en: 'Color, marginal shape and juxtanuclear light area of cytoplasm',
     focus: ['cyto', 'hof'], controls: ['cyto', 'margin', 'hof'],
-    lead: 'สีน้ำเงินมาจาก RNA ยิ่งน้ำเงินเข้มยิ่งสร้างโปรตีนมาก ส่วนสีชมพูส้มมาจากฮีโมโกลบินหรือแกรนูล ดูขอบว่าเรียบ มีชายครุย หรือเว้าโอบเซลล์ข้างเคียง และหาบริเวณใสข้างนิวเคลียส (hof) ซึ่งคือ Golgi apparatus',
+    lead: 'สีน้ำเงินมาจาก RNA ยิ่งน้ำเงินเข้มยิ่งสร้างโปรตีนมาก ส่วนสีชมพูส้มมาจาก hemoglobin หรือ granule ดูขอบว่าเรียบ มีชายครุย หรือเว้าโอบเซลล์ข้างเคียง และหาบริเวณใสข้าง nucleus (hof) ซึ่งคือ Golgi apparatus',
     keys: ['น้ำเงินเข้ม + hof: plasma cell', 'ฟ้าใส: lymphocyte', 'เทาอมฟ้าแบบกระจกฝ้า ขอบไม่เรียบ: monocyte', 'ซีดกลาง ขอบน้ำเงินเข้มโอบ RBC: reactive lymphocyte'],
     examples: ['plasma_cell', 'monocyte', 'reactive_lymph'],
   },
   {
-    id: 'granules', no: null, th: 'มีหรือไม่มีแกรนูล', en: 'Presence or absence of granules',
+    id: 'granules', no: null, th: 'มีหรือไม่มี granule', en: 'Presence or absence of granules',
     focus: ['granules'], controls: ['granules'],
-    lead: 'ดูว่ามีแกรนูลไหม แล้วจึงดูขนาด สี และความหนาแน่น แกรนูลเป็นตัวแยกเซลล์สาย granulocyte ทั้งสามชนิดออกจากกันได้ชัดที่สุด',
-    keys: ['ละเอียดสีชมพูม่วง: neutrophil', 'ใหญ่กลมสีส้มแดง: eosinophil', 'ใหญ่สีน้ำเงินดำบังนิวเคลียส: basophil', 'Azurophilic ไม่กี่เม็ด: promyelocyte, large granular lymphocyte'],
+    lead: 'ดูว่ามี granule ไหม แล้วจึงดูขนาด สี และความหนาแน่น granule เป็นตัวแยกเซลล์สาย granulocyte ทั้งสามชนิดออกจากกันได้ชัดที่สุด',
+    keys: ['ละเอียดสีชมพูม่วง: neutrophil', 'ใหญ่กลมสีส้มแดง: eosinophil', 'ใหญ่สีน้ำเงินดำบัง nucleus: basophil', 'Azurophilic ไม่กี่เม็ด: promyelocyte, large granular lymphocyte'],
     examples: ['neutrophil', 'eosinophil', 'basophil'],
   },
   {
-    id: 'vacuoles', no: null, th: 'มีหรือไม่มีแวคิวโอล', en: 'Presence or absence of vacuoles',
+    id: 'vacuoles', no: null, th: 'มีหรือไม่มี vacuole', en: 'Presence or absence of vacuoles',
     focus: ['vacuoles'], controls: ['vacuoles'],
-    lead: 'แวคิวโอลเป็นช่องใสในไซโทพลาซึม พบได้ใน monocyte ปกติ แต่ถ้าพบใน neutrophil จำนวนมากร่วมกับ toxic granulation บ่งถึงการติดเชื้อรุนแรงหรือ sepsis',
-    keys: ['Monocyte: พบได้ปกติ', 'Neutrophil มีแวคิวโอล: toxic change, sepsis', 'แวคิวโอลจาก EDTA ค้างนานเป็น artifact ได้'],
+    lead: 'Vacuole เป็นช่องใสใน cytoplasm พบได้ใน monocyte ปกติ แต่ถ้าพบใน neutrophil จำนวนมากร่วมกับ toxic granulation บ่งถึงการติดเชื้อรุนแรงหรือ sepsis',
+    keys: ['Monocyte: พบได้ปกติ', 'Neutrophil มี vacuole: toxic change, sepsis', 'Vacuole จาก EDTA ค้างนานเป็น artifact ได้'],
     examples: ['monocyte'],
   },
   {

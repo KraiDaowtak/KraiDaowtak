@@ -1,4 +1,4 @@
-import { CELLS, GROUPS, byId } from '../data.js';
+import { CELLS, GROUPS, byId, enOf } from '../data.js';
 
 const RBC_UM = 7.8;
 
@@ -17,7 +17,7 @@ export function cellCard(cell) {
   return `
     <p class="eyebrow">${GROUPS.find((g) => g.id === cell.group).th}</p>
     <h2>${cell.th}</h2>
-    <p class="en">${cell.en}</p>
+    ${enOf(cell) ? `<p class="en">${enOf(cell)}</p>` : ''}
     ${sizeBar(cell)}
     <p class="lead">${cell.desc}</p>
     <h3>ลักษณะสำคัญที่ต้องจำ</h3>
@@ -64,7 +64,7 @@ export class AtlasMode {
       const items = CELLS.filter((c) => c.group === g.id && (!q || (c.th + ' ' + c.en).toLowerCase().includes(q)));
       if (!items.length) return '';
       return `<div class="grp"><p class="grp-h">${g.th}<small>${g.en}</small></p>${items
-        .map((c) => `<button class="cell-btn" data-id="${c.id}" aria-current="${c.id === this.id}"><span>${c.th}</span><small>${c.en}</small></button>`)
+        .map((c) => `<button class="cell-btn" data-id="${c.id}" aria-current="${c.id === this.id}"><span>${c.th}</span>${enOf(c) ? `<small>${enOf(c)}</small>` : ''}</button>`)
         .join('')}</div>`;
     }).join('') || '<p class="empty">ไม่พบเซลล์ที่ตรงกับคำค้น</p>';
     this.list.querySelectorAll('.cell-btn').forEach((b) => b.addEventListener('click', () => this.select(b.dataset.id)));

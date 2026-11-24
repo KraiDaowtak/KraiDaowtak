@@ -11,53 +11,53 @@ export const CELLS = [
   // ---------------- Normal
   {
     id: 'rbc', group: 'normal', th: 'เม็ดเลือดแดงปกติ', en: 'Normal erythrocyte (discocyte)', size: '7–8 µm', um: 7.8,
-    desc: 'แผ่นกลมเว้าสองด้าน (biconcave disc) ไม่มีนิวเคลียส รูปทรงนี้เพิ่มพื้นที่ผิวต่อปริมาตรให้แลกเปลี่ยนก๊าซได้ดีและยืดหยุ่นพอจะผ่านเส้นเลือดฝอยขนาด 3 µm',
-    keys: ['Central pallor ประมาณ 1/3 ของเส้นผ่านศูนย์กลาง', 'ขนาดใกล้เคียงนิวเคลียสของ small lymphocyte', 'อายุขัย ~120 วัน'],
+    desc: 'แผ่นกลมเว้าสองด้าน (biconcave disc) ไม่มี nucleus รูปทรงนี้เพิ่มพื้นที่ผิวต่อปริมาตรให้แลกเปลี่ยนก๊าซได้ดีและยืดหยุ่นพอจะผ่านเส้นเลือดฝอยขนาด 3 µm',
+    keys: ['Central pallor ประมาณ 1/3 ของเส้นผ่านศูนย์กลาง', 'ขนาดใกล้เคียง nucleus ของ small lymphocyte', 'อายุขัย ~120 วัน'],
     clinic: 'ใช้เป็น "ไม้บรรทัด" เทียบขนาดเซลล์อื่นบนสไลด์',
     tip: 'รูปทรงในโมเดลนี้คำนวณจากสมการ Evans–Fung ซึ่งวัดจากเม็ดเลือดแดงมนุษย์จริง',
   },
   {
-    id: 'neutrophil', group: 'normal', th: 'นิวโทรฟิล', en: 'Segmented neutrophil', size: '10–15 µm', um: 12.5,
+    id: 'neutrophil', group: 'normal', th: 'Neutrophil', en: 'Segmented neutrophil', size: '10–15 µm', um: 12.5,
     desc: 'เม็ดเลือดขาวที่พบมากที่สุดในผู้ใหญ่ ทำหน้าที่จับกินแบคทีเรีย (phagocytosis) เป็นด่านแรกของภูมิคุ้มกัน',
-    keys: ['นิวเคลียส 3–5 lobe เชื่อมด้วยเส้นใยโครมาตินบาง', 'ไซโทพลาซึมสีชมพูอ่อน แกรนูลละเอียดสีชมพูม่วง', 'โครมาตินจับกลุ่มหนา'],
+    keys: ['Nucleus 3–5 lobe เชื่อมด้วยเส้นใย chromatin บาง', 'Cytoplasm สีชมพูอ่อน granule ละเอียดสีชมพูม่วง', 'Chromatin จับกลุ่มหนา'],
     clinic: 'ปกติ 40–75% (2.0–7.5 ×10⁹/L) เพิ่มในการติดเชื้อแบคทีเรีย การอักเสบ ความเครียด',
     tip: 'ในผู้หญิงอาจเห็น "drumstick" (Barr body) ติดที่ lobe',
   },
   {
-    id: 'band', group: 'normal', th: 'แบนด์นิวโทรฟิล', en: 'Band neutrophil', size: '10–15 µm', um: 12,
-    desc: 'นิวโทรฟิลที่ยังไม่แบ่ง lobe สมบูรณ์ นิวเคลียสโค้งเป็นรูปเกือกม้าหรือตัว C ความกว้างใกล้เคียงกันตลอด',
-    keys: ['นิวเคลียสไม่มีเส้นใยคอด', 'ส่วนที่แคบที่สุดกว้างกว่า 1/3 ของส่วนที่กว้างที่สุด', 'แกรนูลเหมือน segmented neutrophil'],
+    id: 'band', group: 'normal', th: 'Band neutrophil', en: 'Band neutrophil', size: '10–15 µm', um: 12,
+    desc: 'Neutrophil ที่ยังไม่แบ่ง lobe สมบูรณ์ nucleus โค้งเป็นรูปเกือกม้าหรือตัว C ความกว้างใกล้เคียงกันตลอด',
+    keys: ['Nucleus ไม่มีเส้นใยคอด', 'ส่วนที่แคบที่สุดกว้างกว่า 1/3 ของส่วนที่กว้างที่สุด', 'Granule เหมือน segmented neutrophil'],
     clinic: 'ปกติ 0–5% เพิ่มขึ้นเรียกว่า "shift to the left" พบในการติดเชื้อแบคทีเรียรุนแรง',
   },
   {
-    id: 'eosinophil', group: 'normal', th: 'อีโอซิโนฟิล', en: 'Eosinophil', size: '12–17 µm', um: 14,
-    desc: 'เม็ดเลือดขาวที่มีแกรนูลใหญ่สีส้มแดงเต็มไซโทพลาซึม เกี่ยวข้องกับภูมิแพ้และการกำจัดพยาธิ',
-    keys: ['นิวเคลียส 2 lobe คล้ายแว่นตา', 'แกรนูลกลมใหญ่ขนาดเท่า ๆ กัน สีส้มแดง หักเหแสง', 'แกรนูลไม่บังนิวเคลียส'],
+    id: 'eosinophil', group: 'normal', th: 'Eosinophil', en: 'Eosinophil', size: '12–17 µm', um: 14,
+    desc: 'เม็ดเลือดขาวที่มี granule ใหญ่สีส้มแดงเต็ม cytoplasm เกี่ยวข้องกับภูมิแพ้และการกำจัดพยาธิ',
+    keys: ['Nucleus 2 lobe คล้ายแว่นตา', 'Granule กลมใหญ่ขนาดเท่า ๆ กัน สีส้มแดง หักเหแสง', 'Granule ไม่บัง nucleus'],
     clinic: 'ปกติ 1–6% เพิ่มในโรคภูมิแพ้ หอบหืด การติดพยาธิ (พบบ่อยในไทย) และ drug reaction',
-    tip: 'จำง่าย: Eosin = สีย้อมกรด แกรนูลมีประจุบวกจึงจับสีแดงส้ม',
+    tip: 'จำง่าย: Eosin = สีย้อมกรด granule มีประจุบวกจึงจับสีแดงส้ม',
   },
   {
-    id: 'basophil', group: 'normal', th: 'เบโซฟิล', en: 'Basophil', size: '10–14 µm', um: 12,
-    desc: 'พบน้อยที่สุดในเลือด แกรนูลสีน้ำเงินดำขนาดไม่เท่ากันบังนิวเคลียสจนมองแทบไม่เห็น',
-    keys: ['แกรนูลหยาบสีม่วงดำ ทับอยู่บนนิวเคลียส', 'นิวเคลียส 2 lobe มักมองไม่ชัด', 'มีฮีสตามีนและเฮพาริน'],
+    id: 'basophil', group: 'normal', th: 'Basophil', en: 'Basophil', size: '10–14 µm', um: 12,
+    desc: 'พบน้อยที่สุดในเลือด granule สีน้ำเงินดำขนาดไม่เท่ากันบัง nucleus จนมองแทบไม่เห็น',
+    keys: ['Granule หยาบสีม่วงดำ ทับอยู่บน nucleus', 'Nucleus 2 lobe มักมองไม่ชัด', 'มี histamine และ heparin'],
     clinic: 'ปกติ 0–1% ถ้าสูงควรคิดถึง myeloproliferative neoplasm โดยเฉพาะ CML',
   },
   {
-    id: 'lymphocyte', group: 'normal', th: 'ลิมโฟไซต์', en: 'Small lymphocyte', size: '7–10 µm', um: 8.5,
-    desc: 'เซลล์หลักของภูมิคุ้มกันจำเพาะ (T, B, NK cell) นิวเคลียสกลมใหญ่เกือบเต็มเซลล์',
-    keys: ['นิวเคลียสกลม โครมาตินหนาแน่นจับเป็นก้อน', 'ขอบไซโทพลาซึมบางสีฟ้าใส', 'ขนาดใกล้เคียงเม็ดเลือดแดง'],
-    clinic: 'ปกติ 20–45% เพิ่มในการติดเชื้อไวรัส ไอกรน CLL; ในเด็กเล็กลิมโฟไซต์อาจมากกว่านิวโทรฟิล',
+    id: 'lymphocyte', group: 'normal', th: 'Lymphocyte', en: 'Small lymphocyte', size: '7–10 µm', um: 8.5,
+    desc: 'เซลล์หลักของภูมิคุ้มกันจำเพาะ (T, B, NK cell) nucleus กลมใหญ่เกือบเต็มเซลล์',
+    keys: ['Nucleus กลม chromatin หนาแน่นจับเป็นก้อน', 'ขอบ cytoplasm บางสีฟ้าใส', 'ขนาดใกล้เคียงเม็ดเลือดแดง'],
+    clinic: 'ปกติ 20–45% เพิ่มในการติดเชื้อไวรัส ไอกรน CLL; ในเด็กเล็ก lymphocyte อาจมากกว่า neutrophil',
   },
   {
-    id: 'monocyte', group: 'normal', th: 'โมโนไซต์', en: 'Monocyte', size: '15–20 µm', um: 18,
-    desc: 'เม็ดเลือดขาวขนาดใหญ่ที่สุดในเลือดปกติ เมื่อเข้าเนื้อเยื่อจะเปลี่ยนเป็นแมโครฟาจ',
-    keys: ['นิวเคลียสรูปไต เกือกม้า หรือพับไปมา', 'โครมาตินละเอียดเป็นลายลูกไม้', 'ไซโทพลาซึมสีเทาอมฟ้า (ground-glass) อาจมีแวคิวโอล'],
+    id: 'monocyte', group: 'normal', th: 'Monocyte', en: 'Monocyte', size: '15–20 µm', um: 18,
+    desc: 'เม็ดเลือดขาวขนาดใหญ่ที่สุดในเลือดปกติ เมื่อเข้าเนื้อเยื่อจะเปลี่ยนเป็น macrophage',
+    keys: ['Nucleus รูปไต เกือกม้า หรือพับไปมา', 'Chromatin ละเอียดเป็นลายลูกไม้', 'Cytoplasm สีเทาอมฟ้า (ground-glass) อาจมี vacuole'],
     clinic: 'ปกติ 2–10% เพิ่มในวัณโรค การติดเชื้อเรื้อรัง ระยะฟื้นตัวจากการติดเชื้อ CMML',
   },
   {
     id: 'platelet', group: 'normal', th: 'เกล็ดเลือด', en: 'Platelet (thrombocyte)', size: '2–4 µm', um: 2.8,
-    desc: 'ชิ้นส่วนไซโทพลาซึมของ megakaryocyte ไม่มีนิวเคลียส ทำหน้าที่ห้ามเลือดขั้นแรก',
-    keys: ['เป็นแผ่นเล็กสีฟ้าม่วงอ่อน', 'แกรนูลสีม่วงตรงกลาง (granulomere)', 'ปกติพบ 8–20 ตัวต่อ oil field'],
+    desc: 'ชิ้นส่วน cytoplasm ของ megakaryocyte ไม่มี nucleus ทำหน้าที่ห้ามเลือดขั้นแรก',
+    keys: ['เป็นแผ่นเล็กสีฟ้าม่วงอ่อน', 'Granule สีม่วงตรงกลาง (granulomere)', 'ปกติพบ 8–20 ตัวต่อ oil field'],
     clinic: 'ประเมินจำนวนคร่าว ๆ: จำนวนต่อ oil field × 15,000–20,000 ≈ /µL',
     tip: 'Giant platelet ใหญ่เท่าเม็ดเลือดแดง พบใน ITP และ Bernard-Soulier syndrome',
   },
@@ -65,20 +65,20 @@ export const CELLS = [
   // ---------------- RBC shape & size
   {
     id: 'microcyte_hypo', group: 'rbc-shape', th: 'Microcytic hypochromic RBC', en: 'Microcytic hypochromic cell', size: '< 6 µm', um: 6,
-    desc: 'เม็ดเลือดแดงขนาดเล็กและติดสีจาง เพราะสร้างฮีโมโกลบินได้ไม่พอ',
-    keys: ['Central pallor กว้างกว่า 1/2 ของเซลล์', 'เล็กกว่านิวเคลียสของ small lymphocyte', 'MCV < 80 fL, MCH ต่ำ'],
-    clinic: 'ภาวะขาดธาตุเหล็ก, ธาลัสซีเมีย, anemia of chronic disease, sideroblastic anemia',
+    desc: 'เม็ดเลือดแดงขนาดเล็กและติดสีจาง เพราะสร้าง hemoglobin ได้ไม่พอ',
+    keys: ['Central pallor กว้างกว่า 1/2 ของเซลล์', 'เล็กกว่า nucleus ของ small lymphocyte', 'MCV < 80 fL, MCH ต่ำ'],
+    clinic: 'ภาวะขาดธาตุเหล็ก, thalassemia, anemia of chronic disease, sideroblastic anemia',
   },
   {
     id: 'macrocyte', group: 'rbc-shape', th: 'Macro-ovalocyte', en: 'Oval macrocyte', size: '> 9 µm', um: 10,
-    desc: 'เม็ดเลือดแดงขนาดใหญ่รูปไข่ เกิดจากการสังเคราะห์ DNA บกพร่อง นิวเคลียสแบ่งตัวช้ากว่าไซโทพลาซึม',
-    keys: ['ใหญ่กว่า 9 µm รูปไข่', 'MCV > 100 fL', 'มักพบร่วมกับนิวโทรฟิล hypersegmented'],
-    clinic: 'Megaloblastic anemia (ขาดวิตามิน B12 / โฟเลต), MDS; macrocyte ทรงกลมพบในโรคตับ แอลกอฮอล์',
+    desc: 'เม็ดเลือดแดงขนาดใหญ่รูปไข่ เกิดจากการสังเคราะห์ DNA บกพร่อง nucleus แบ่งตัวช้ากว่า cytoplasm',
+    keys: ['ใหญ่กว่า 9 µm รูปไข่', 'MCV > 100 fL', 'มักพบร่วมกับ hypersegmented neutrophil'],
+    clinic: 'Megaloblastic anemia (ขาดวิตามิน B12 / folate), MDS; macrocyte ทรงกลมพบในโรคตับ แอลกอฮอล์',
   },
   {
     id: 'polychromatophil', group: 'rbc-shape', th: 'Polychromatophilic RBC', en: 'Polychromasia', size: '8–9 µm', um: 8.8,
     desc: 'เม็ดเลือดแดงตัวอ่อนที่ยังมี RNA ตกค้าง จึงติดสีเทาอมฟ้า เมื่อย้อม new methylene blue คือ reticulocyte',
-    keys: ['สีเทาม่วงหรือฟ้าอ่อน', 'ใหญ่กว่าเม็ดเลือดแดงปกติเล็กน้อย', 'central pallor ไม่ชัด'],
+    keys: ['สีเทาม่วงหรือฟ้าอ่อน', 'ใหญ่กว่าเม็ดเลือดแดงปกติเล็กน้อย', 'Central pallor ไม่ชัด'],
     clinic: 'ไขกระดูกตอบสนองต่อภาวะซีด: hemolysis, หลังเสียเลือด, หลังเริ่มรักษาด้วยธาตุเหล็ก',
   },
   {
@@ -91,7 +91,7 @@ export const CELLS = [
     id: 'target', group: 'rbc-shape', th: 'Target cell (Codocyte)', en: 'Target cell', size: '7–9 µm', um: 8,
     desc: 'มีเยื่อหุ้มเซลล์มากเกินปริมาตร ส่วนเกินจึงโป่งเป็นจุดเข้มตรงกลาง มองเหมือนเป้ายิงธนู',
     keys: ['จุดติดสีตรงกลาง', 'วงซีดล้อมรอบ', 'ขอบนอกติดสีเข้ม'],
-    clinic: 'ธาลัสซีเมีย/HbE (พบบ่อยในไทย), HbC, โรคตับ, หลังตัดม้าม',
+    clinic: 'Thalassemia/HbE (พบบ่อยในไทย), HbC, โรคตับ, หลังตัดม้าม',
     tip: 'ในโมเดล ลองกด "มุมกล้องจุลทรรศน์" จะเห็นวงสีเกิดจากความหนาที่ต่างกันจริง ๆ',
   },
   {
@@ -102,7 +102,7 @@ export const CELLS = [
   },
   {
     id: 'schistocyte', group: 'rbc-shape', th: 'Schistocyte (Helmet cell)', en: 'Schistocyte', size: '3–6 µm', um: 5,
-    desc: 'เศษเม็ดเลือดแดงที่ถูกตัดโดยเส้นใยไฟบรินในหลอดเลือดเล็ก หรือลิ้นหัวใจเทียม',
+    desc: 'เศษเม็ดเลือดแดงที่ถูกตัดโดยเส้นใย fibrin ในหลอดเลือดเล็ก หรือลิ้นหัวใจเทียม',
     keys: ['มีขอบตรงหรือมุมแหลม', 'รูปหมวกเกราะ สามเหลี่ยม หรือชิ้นเล็ก', 'ไม่มี central pallor'],
     clinic: 'ภาวะเร่งด่วน: TTP, HUS, DIC, HELLP, malignant hypertension, ลิ้นหัวใจเทียม (> 1% มีนัยสำคัญ)',
   },
@@ -116,7 +116,7 @@ export const CELLS = [
     id: 'teardrop', group: 'rbc-shape', th: 'Teardrop cell (Dacrocyte)', en: 'Teardrop cell', size: '6–10 µm', um: 9,
     desc: 'เม็ดเลือดแดงรูปหยดน้ำ มีหางข้างเดียว เกิดเมื่อถูกบีบออกจากไขกระดูกที่มีพังผืดหรือถูกแทรกที่',
     keys: ['หางแหลมหรือมนข้างเดียว', 'หางทุกเซลล์ชี้ไปคนละทิศ (ถ้าชี้ทางเดียวกันอาจเป็น artifact)'],
-    clinic: 'Primary myelofibrosis, มะเร็งแพร่กระจายสู่ไขกระดูก, ธาลัสซีเมีย, megaloblastic anemia',
+    clinic: 'Primary myelofibrosis, มะเร็งแพร่กระจายสู่ไขกระดูก, thalassemia, megaloblastic anemia',
   },
   {
     id: 'echinocyte', group: 'rbc-shape', th: 'Echinocyte (Burr cell)', en: 'Echinocyte', size: '7–8 µm', um: 7.8,
@@ -139,7 +139,7 @@ export const CELLS = [
   },
   {
     id: 'bite', group: 'rbc-shape', th: 'Bite cell (Degmacyte)', en: 'Bite cell', size: '7–8 µm', um: 7.8,
-    desc: 'รอยแหว่งครึ่งวงกลมที่ขอบเซลล์ เกิดจากแมโครฟาจในม้ามตัด Heinz body ออกไป',
+    desc: 'รอยแหว่งครึ่งวงกลมที่ขอบเซลล์ เกิดจาก macrophage ในม้ามตัด Heinz body ออกไป',
     keys: ['รอยแหว่งรูปครึ่งวงกลม 1 จุดหรือมากกว่า', 'อาจพบ blister cell และ spherocyte ร่วม'],
     clinic: 'G6PD deficiency (พบบ่อยในไทย ~12% ของชาย) หลังได้ยา oxidant, ถั่วปากอ้า หรือติดเชื้อ',
   },
@@ -147,44 +147,44 @@ export const CELLS = [
   // ---------------- RBC inclusions & arrangement
   {
     id: 'howell_jolly', group: 'rbc-incl', th: 'Howell-Jolly body', en: 'Howell-Jolly body', size: '1 µm', um: 7.8,
-    desc: 'เศษ DNA ของนิวเคลียสที่หลงเหลือ ปกติม้ามจะกำจัดออก ถ้าพบแปลว่าม้ามทำงานไม่ดี',
+    desc: 'เศษ DNA ของ nucleus ที่หลงเหลือ ปกติม้ามจะกำจัดออก ถ้าพบแปลว่าม้ามทำงานไม่ดี',
     keys: ['จุดกลมสีม่วงเข้ม ขนาด ~1 µm', 'มักมี 1 จุดต่อเซลล์ อยู่นอกศูนย์กลาง'],
     clinic: 'หลังตัดม้าม, functional asplenia (sickle cell), megaloblastic anemia',
   },
   {
     id: 'basophilic_stippling', group: 'rbc-incl', th: 'Basophilic stippling', en: 'Basophilic stippling', size: 'จุดละเอียด', um: 7.8,
-    desc: 'ไรโบโซมที่จับกลุ่มกันเป็นจุดสีน้ำเงินกระจายทั่วเซลล์',
+    desc: 'Ribosome ที่จับกลุ่มกันเป็นจุดสีน้ำเงินกระจายทั่วเซลล์',
     keys: ['จุดสีน้ำเงินขนาดเล็กจำนวนมาก', 'กระจายทั่วทั้งเซลล์ (ต่างจาก Pappenheimer)'],
-    clinic: 'พิษตะกั่ว (ยับยั้ง pyrimidine 5′-nucleotidase), ธาลัสซีเมีย, megaloblastic anemia',
+    clinic: 'พิษตะกั่ว (ยับยั้ง pyrimidine 5′-nucleotidase), thalassemia, megaloblastic anemia',
   },
   {
     id: 'pappenheimer', group: 'rbc-incl', th: 'Pappenheimer bodies', en: 'Pappenheimer bodies', size: '< 1 µm', um: 7.8,
-    desc: 'แกรนูลธาตุเหล็ก (siderotic granules) ที่อยู่ในไมโทคอนเดรียหรือไลโซโซม ย้อม Prussian blue ให้ผลบวก',
+    desc: 'Granule ธาตุเหล็ก (siderotic granules) ที่อยู่ใน mitochondria หรือ lysosome ย้อม Prussian blue ให้ผลบวก',
     keys: ['จุดสีม่วงน้ำเงินกลุ่มเล็ก 1–5 จุด', 'มักอยู่ชิดขอบเซลล์'],
     clinic: 'Sideroblastic anemia, หลังตัดม้าม, hemoglobinopathy',
   },
   {
     id: 'heinz', group: 'rbc-incl', th: 'Heinz bodies', en: 'Heinz bodies', size: '1–3 µm', um: 7.8,
-    desc: 'ฮีโมโกลบินที่ถูกออกซิไดซ์จนเสียสภาพ ตกตะกอนเกาะใต้เยื่อหุ้มเซลล์ มองไม่เห็นใน Wright stain ต้องย้อม supravital (crystal violet / new methylene blue)',
+    desc: 'Hemoglobin ที่ถูก oxidize จนเสียสภาพ ตกตะกอนเกาะใต้เยื่อหุ้มเซลล์ มองไม่เห็นใน Wright stain ต้องย้อม supravital (crystal violet / new methylene blue)',
     keys: ['ก้อนกลมสีม่วงเกาะที่ขอบเซลล์', 'เห็นเฉพาะ supravital stain'],
     clinic: 'G6PD deficiency, unstable hemoglobin (เช่น HbH)',
   },
   {
-    id: 'malaria_ring', group: 'rbc-incl', th: 'เชื้อมาลาเรีย ระยะวงแหวน', en: 'Plasmodium falciparum ring form', size: 'วง ~1/5 ของเซลล์', um: 7.8,
-    desc: 'Trophozoite ระยะต้นของเชื้อมาลาเรีย เห็นเป็นวงไซโทพลาซึมสีฟ้าบางพร้อมจุดโครมาตินสีแดงม่วง คล้ายแหวนหัวพลอย',
-    keys: ['วงแหวนบางเล็ก + จุดโครมาติน 1–2 จุด', 'P. falciparum: ติดหลายวงในเซลล์เดียว, เกาะขอบ (appliqué)', 'เซลล์ที่ติดเชื้อไม่ขยายใหญ่'],
+    id: 'malaria_ring', group: 'rbc-incl', th: 'เชื้อมาลาเรีย ระยะ ring form', en: 'Plasmodium falciparum ring form', size: 'วง ~1/5 ของเซลล์', um: 7.8,
+    desc: 'Trophozoite ระยะต้นของเชื้อมาลาเรีย เห็นเป็นวง cytoplasm สีฟ้าบางพร้อมจุด chromatin สีแดงม่วง คล้ายแหวนหัวพลอย',
+    keys: ['วงแหวนบางเล็ก + จุด chromatin 1–2 จุด', 'P. falciparum: ติดหลายวงในเซลล์เดียว, เกาะขอบ (appliqué)', 'เซลล์ที่ติดเชื้อไม่ขยายใหญ่'],
     clinic: 'พบในพื้นที่ป่าชายแดนไทย (ตาก, กาญจนบุรี, ยะลา) ต้องรายงาน % parasitemia ทันที',
   },
   {
-    id: 'nrbc', group: 'rbc-incl', th: 'เม็ดเลือดแดงมีนิวเคลียส', en: 'Nucleated RBC (orthochromic normoblast)', size: '8–10 µm', um: 9,
-    desc: 'เม็ดเลือดแดงตัวอ่อนที่ยังไม่ขับนิวเคลียสออก ปกติไม่พบในเลือดของผู้ใหญ่',
-    keys: ['นิวเคลียสกลมเล็กติดสีเข้มมาก', 'ไซโทพลาซึมสีชมพูเทาเหมือนเม็ดเลือดแดง', 'รายงานเป็นจำนวน /100 WBC'],
+    id: 'nrbc', group: 'rbc-incl', th: 'Nucleated RBC (NRBC)', en: 'Orthochromic normoblast', size: '8–10 µm', um: 9,
+    desc: 'เม็ดเลือดแดงตัวอ่อนที่ยังไม่ขับ nucleus ออก ปกติไม่พบในเลือดของผู้ใหญ่',
+    keys: ['Nucleus กลมเล็กติดสีเข้มมาก', 'Cytoplasm สีชมพูเทาเหมือนเม็ดเลือดแดง', 'รายงานเป็นจำนวน /100 WBC'],
     clinic: 'Thalassemia major, hemolysis รุนแรง, myelofibrosis, ภาวะขาดออกซิเจนรุนแรง; ปกติในทารกแรกเกิด',
     tip: 'NRBC ทำให้เครื่องนับ WBC สูงเกินจริง ต้องแก้ค่า (corrected WBC)',
   },
   {
     id: 'rouleaux', group: 'rbc-incl', th: 'Rouleaux formation', en: 'Rouleaux', size: '–', um: 12,
-    desc: 'เม็ดเลือดแดงเรียงซ้อนกันเหมือนเหรียญ เพราะโปรตีนในพลาสมา (globulin, fibrinogen) สูง ลดแรงผลักระหว่างเซลล์',
+    desc: 'เม็ดเลือดแดงเรียงซ้อนกันเหมือนเหรียญ เพราะโปรตีนใน plasma (globulin, fibrinogen) สูง ลดแรงผลักระหว่างเซลล์',
     keys: ['เรียงเป็นแถวยาวคล้ายกองเหรียญ', 'ดูบริเวณที่เซลล์เรียงชั้นเดียว (ถ้าบริเวณหนาเป็นปกติ)'],
     clinic: 'Multiple myeloma, Waldenström macroglobulinemia, การอักเสบเรื้อรัง; สัมพันธ์กับ ESR สูง',
     tip: 'แยกจาก agglutination: rouleaux หายเมื่อเจือจางด้วย saline',
@@ -193,38 +193,41 @@ export const CELLS = [
   // ---------------- Abnormal WBC
   {
     id: 'hypersegmented', group: 'wbc-abn', th: 'Hypersegmented neutrophil', en: 'Hypersegmented neutrophil', size: '12–17 µm', um: 14,
-    desc: 'นิวโทรฟิลที่มีนิวเคลียส ≥ 6 lobe เป็นสัญญาณแรก ๆ ของการสังเคราะห์ DNA บกพร่อง',
-    keys: ['≥ 1 ตัวที่มี 6 lobe หรือ ≥ 5% ที่มี 5 lobe', 'ขนาดใหญ่กว่านิวโทรฟิลปกติ'],
+    desc: 'Neutrophil ที่มี nucleus ≥ 6 lobe เป็นสัญญาณแรก ๆ ของการสังเคราะห์ DNA บกพร่อง',
+    keys: ['≥ 1 ตัวที่มี 6 lobe หรือ ≥ 5% ที่มี 5 lobe', 'ขนาดใหญ่กว่า neutrophil ปกติ'],
     clinic: 'Megaloblastic anemia (B12 / folate), ยา methotrexate, hydroxyurea',
   },
   {
     id: 'myeloblast', group: 'wbc-abn', th: 'Myeloblast พร้อม Auer rod', en: 'Myeloblast with Auer rod', size: '14–20 µm', um: 17,
-    desc: 'เซลล์ตัวอ่อนที่สุดของสายนิวโทรฟิล ถ้ามี Auer rod (แกรนูล MPO เรียงเป็นแท่ง) ยืนยันว่าเป็น myeloid blast',
-    keys: ['N:C ratio สูงมาก', 'โครมาตินละเอียดมาก มี nucleoli 2–5 อัน', 'Auer rod: แท่งสีแดงชมพูในไซโทพลาซึม'],
+    desc: 'เซลล์ตัวอ่อนที่สุดของสาย neutrophil ถ้ามี Auer rod (granule MPO เรียงเป็นแท่ง) ยืนยันว่าเป็น myeloid blast',
+    keys: ['N:C ratio สูงมาก', 'Chromatin ละเอียดมาก มี nucleoli 2–5 อัน', 'Auer rod: แท่งสีแดงชมพูใน cytoplasm'],
     clinic: 'Acute myeloid leukemia (blast ≥ 20%); Auer rod หลายแท่ง (faggot cell) พบใน APL เสี่ยงเกิด DIC',
-    tip: 'ลองใช้ตัวเลื่อน "ตัดขวาง" ส่องเข้าไปดู nucleoli ในนิวเคลียส',
+    tip: 'ลองใช้ตัวเลื่อน "ตัดขวาง" ส่องเข้าไปดู nucleoli ใน nucleus',
   },
   {
     id: 'reactive_lymph', group: 'wbc-abn', th: 'Reactive lymphocyte', en: 'Reactive (atypical) lymphocyte', size: '10–25 µm', um: 16,
-    desc: 'ลิมโฟไซต์ที่ถูกกระตุ้นโดยไวรัส ขยายใหญ่ ไซโทพลาซึมมากและโอบรอบเม็ดเลือดแดงข้างเคียง',
-    keys: ['ไซโทพลาซึมมาก ขอบติดสีน้ำเงินเข้ม (Downey II)', 'ขอบเว้าตามเม็ดเลือดแดงที่อยู่ติดกัน', 'รูปร่างหลากหลายในสไลด์เดียวกัน'],
+    desc: 'Lymphocyte ที่ถูกกระตุ้นโดยไวรัส ขยายใหญ่ cytoplasm มากและโอบรอบเม็ดเลือดแดงข้างเคียง',
+    keys: ['Cytoplasm มาก ขอบติดสีน้ำเงินเข้ม (Downey II)', 'ขอบเว้าตามเม็ดเลือดแดงที่อยู่ติดกัน', 'รูปร่างหลากหลายในสไลด์เดียวกัน'],
     clinic: 'Infectious mononucleosis (EBV), CMV, ไข้เลือดออก (พบบ่อยในไทย), ไวรัสตับอักเสบ',
   },
   {
-    id: 'plasma_cell', group: 'wbc-abn', th: 'พลาสมาเซลล์', en: 'Plasma cell', size: '8–15 µm', um: 12,
-    desc: 'B lymphocyte ที่เจริญเต็มที่เพื่อผลิตแอนติบอดี ปกติอยู่ในไขกระดูกและต่อมน้ำเหลือง ไม่พบในเลือด',
-    keys: ['นิวเคลียสกลมอยู่ชิดขอบ โครมาตินแบบหน้าปัดนาฬิกา', 'ไซโทพลาซึมสีน้ำเงินเข้ม', 'Perinuclear hof: บริเวณใสข้างนิวเคลียส (Golgi)'],
+    id: 'plasma_cell', group: 'wbc-abn', th: 'Plasma cell', en: 'Plasma cell', size: '8–15 µm', um: 12,
+    desc: 'B lymphocyte ที่เจริญเต็มที่เพื่อผลิต antibody ปกติอยู่ในไขกระดูกและต่อมน้ำเหลือง ไม่พบในเลือด',
+    keys: ['Nucleus กลมอยู่ชิดขอบ chromatin แบบหน้าปัดนาฬิกา', 'Cytoplasm สีน้ำเงินเข้ม', 'Perinuclear hof: บริเวณใสข้าง nucleus (Golgi)'],
     clinic: 'Multiple myeloma, plasma cell leukemia, การติดเชื้อรุนแรง',
   },
   {
     id: 'smudge', group: 'wbc-abn', th: 'Smudge cell', en: 'Smudge (basket) cell', size: '–', um: 12,
-    desc: 'ลิมโฟไซต์ที่เปราะแตกระหว่างการป้ายสไลด์ เหลือแต่เงานิวเคลียสแผ่กระจาย',
-    keys: ['เงาโครมาตินแผ่ ไม่มีขอบเขตชัด', 'ไม่มีไซโทพลาซึม'],
+    desc: 'Lymphocyte ที่เปราะแตกระหว่างการป้ายสไลด์ เหลือแต่เงา nucleus แผ่กระจาย',
+    keys: ['เงา chromatin แผ่ ไม่มีขอบเขตชัด', 'ไม่มี cytoplasm'],
     clinic: 'Chronic lymphocytic leukemia (CLL) พบจำนวนมาก; ใส่ albumin ลดการแตกได้',
   },
 ];
 
 export const byId = Object.fromEntries(CELLS.map((c) => [c.id, c]));
+
+// English subtitle, or '' when the main name is already the same English term.
+export const enOf = (c) => (c.en.toLowerCase() === c.th.toLowerCase() ? '' : c.en);
 
 // White cell classes used by the differential counter.
 export const DIFF_CLASSES = [
@@ -244,15 +247,15 @@ export const DIFF_SAMPLES = [
     wbc: { neutrophil: 58, band: 3, lymphocyte: 30, monocyte: 6, eosinophil: 2.5, basophil: 0.5 },
   },
   {
-    id: 'bacterial', th: 'ติดเชื้อแบคทีเรีย (left shift)', note: 'นิวโทรฟิลและแบนด์เพิ่มสูง',
+    id: 'bacterial', th: 'ติดเชื้อแบคทีเรีย (left shift)', note: 'Neutrophil และ band เพิ่มสูง',
     wbc: { neutrophil: 74, band: 14, lymphocyte: 8, monocyte: 4 },
   },
   {
-    id: 'parasite', th: 'ติดพยาธิ / ภูมิแพ้', note: 'อีโอซิโนฟิลเพิ่ม',
+    id: 'parasite', th: 'ติดพยาธิ / ภูมิแพ้', note: 'Eosinophil เพิ่ม',
     wbc: { neutrophil: 50, band: 2, lymphocyte: 24, monocyte: 5, eosinophil: 18, basophil: 1 },
   },
   {
-    id: 'dengue', th: 'ไข้เลือดออก ระยะวิกฤต', note: 'ลิมโฟไซต์และ reactive lymphocyte เพิ่ม',
+    id: 'dengue', th: 'ไข้เลือดออก ระยะวิกฤต', note: 'Lymphocyte และ reactive lymphocyte เพิ่ม',
     wbc: { neutrophil: 30, band: 2, lymphocyte: 40, monocyte: 8, reactive_lymph: 20 },
   },
 ];
@@ -266,7 +269,7 @@ export const CASES = [
     options: ['Iron deficiency anemia', 'β-thalassemia trait', 'Anemia of chronic disease', 'Megaloblastic anemia'],
     answer: 0,
     findings: ['microcyte_hypo', 'elliptocyte'],
-    explain: 'Microcytic hypochromic ร่วมกับ pencil cell และ RDW สูง เข้าได้กับการขาดธาตุเหล็กจากการเสียเลือดเรื้อรัง ธาลัสซีเมียแฝงมักมี RDW ปกติ ค่า RBC สูง และ Mentzer index (MCV/RBC) < 13 เกล็ดเลือดสูงเล็กน้อยพบได้ในภาวะขาดเหล็ก ยืนยันด้วย serum ferritin ต่ำ',
+    explain: 'Microcytic hypochromic ร่วมกับ pencil cell และ RDW สูง เข้าได้กับการขาดธาตุเหล็กจากการเสียเลือดเรื้อรัง thalassemia แฝงมักมี RDW ปกติ ค่า RBC สูง และ Mentzer index (MCV/RBC) < 13 เกล็ดเลือดสูงเล็กน้อยพบได้ในภาวะขาดเหล็ก ยืนยันด้วย serum ferritin ต่ำ',
   },
   {
     id: 'thal', title: 'เด็กซีด ตับม้ามโต',
@@ -276,7 +279,7 @@ export const CASES = [
     options: ['β-thalassemia/HbE disease', 'Iron deficiency anemia', 'Hereditary spherocytosis', 'Sickle cell disease'],
     answer: 0,
     findings: ['target', 'nrbc', 'microcyte_hypo', 'basophilic_stippling'],
-    explain: 'Microcytic hypochromic อย่างรุนแรงร่วมกับ target cell, NRBC จำนวนมาก, basophilic stippling และ teardrop บ่งถึง ineffective erythropoiesis ของธาลัสซีเมีย β-thal/HbE พบได้บ่อยในภาคอีสาน ลักษณะใบหน้า (thalassemic facies) เกิดจากไขกระดูกขยายตัว',
+    explain: 'Microcytic hypochromic อย่างรุนแรงร่วมกับ target cell, NRBC จำนวนมาก, basophilic stippling และ teardrop บ่งถึง ineffective erythropoiesis ของ β-thalassemia/HbE พบได้บ่อยในภาคอีสาน ลักษณะใบหน้า (thalassemic facies) เกิดจากไขกระดูกขยายตัว',
   },
   {
     id: 'hs', title: 'เด็กตัวเหลืองเป็นระยะ',
@@ -316,7 +319,7 @@ export const CASES = [
     options: ['G6PD deficiency (acute hemolysis)', 'Hereditary spherocytosis', 'β-thalassemia major', 'Malaria'],
     answer: 0,
     findings: ['bite', 'heinz'],
-    explain: 'Bite cell และ Heinz body หลังสัมผัสสาร oxidant (primaquine, ถั่วปากอ้า) ในเด็กชาย บ่งชี้ G6PD deficiency (X-linked) ซึ่งพบได้ราว 1 ใน 8 ของชายไทย ควรตรวจระดับเอนไซม์ซ้ำหลังพ้นระยะ hemolysis เพราะ reticulocyte มีเอนไซม์สูงอาจให้ผลลบลวง',
+    explain: 'Bite cell และ Heinz body หลังสัมผัสสาร oxidant (primaquine, ถั่วปากอ้า) ในเด็กชาย บ่งชี้ G6PD deficiency (X-linked) ซึ่งพบได้ราว 1 ใน 8 ของชายไทย ควรตรวจระดับ enzyme ซ้ำหลังพ้นระยะ hemolysis เพราะ reticulocyte มี enzyme สูงอาจให้ผลลบลวง',
   },
   {
     id: 'malaria', title: 'ชายไข้หนาวสั่นหลังเข้าป่า',
@@ -336,7 +339,7 @@ export const CASES = [
     options: ['Acute myeloid leukemia (AML)', 'Chronic myeloid leukemia (CML)', 'Acute lymphoblastic leukemia (ALL)', 'Leukemoid reaction'],
     answer: 0,
     findings: ['myeloblast'],
-    explain: 'Blast ≥ 20% และพบ Auer rod ซึ่งยืนยันว่าเป็น myeloid lineage จึงเป็น AML ALL ไม่มี Auer rod; CML จะเห็นเซลล์สายนิวโทรฟิลครบทุกระยะ (myelocyte peak) ร่วมกับ basophilia; leukemoid reaction มีเซลล์ตัวแก่เป็นส่วนใหญ่',
+    explain: 'Blast ≥ 20% และพบ Auer rod ซึ่งยืนยันว่าเป็น myeloid lineage จึงเป็น AML ALL ไม่มี Auer rod; CML จะเห็นเซลล์สาย neutrophil ครบทุกระยะ (myelocyte peak) ร่วมกับ basophilia; leukemoid reaction มีเซลล์ตัวแก่เป็นส่วนใหญ่',
   },
   {
     id: 'cll', title: 'ชายสูงอายุ ต่อมน้ำเหลืองโต',
@@ -356,7 +359,7 @@ export const CASES = [
     options: ['Infectious mononucleosis (EBV)', 'Chronic lymphocytic leukemia', 'Streptococcal pharyngitis', 'Acute myeloid leukemia'],
     answer: 0,
     findings: ['reactive_lymph'],
-    explain: 'Reactive lymphocyte > 10% ที่มีไซโทพลาซึมมาก ขอบสีน้ำเงินเข้มโอบเม็ดเลือดแดง (Downey type II) ในวัยรุ่นที่มีไข้ เจ็บคอ ต่อมน้ำเหลืองโต เข้าได้กับ EBV ควรเลี่ยงกีฬาปะทะเพราะม้ามอาจแตก',
+    explain: 'Reactive lymphocyte > 10% ที่มี cytoplasm มาก ขอบสีน้ำเงินเข้มโอบเม็ดเลือดแดง (Downey type II) ในวัยรุ่นที่มีไข้ เจ็บคอ ต่อมน้ำเหลืองโต เข้าได้กับ EBV ควรเลี่ยงกีฬาปะทะเพราะม้ามอาจแตก',
   },
   {
     id: 'pmf', title: 'ม้ามโตมากจนถึงสะดือ',
@@ -366,7 +369,7 @@ export const CASES = [
     options: ['Primary myelofibrosis', 'Iron deficiency anemia', 'Hereditary spherocytosis', 'Chronic lymphocytic leukemia'],
     answer: 0,
     findings: ['teardrop', 'nrbc'],
-    explain: 'Teardrop cell จำนวนมาก + leukoerythroblastic picture (NRBC + เซลล์สายนิวโทรฟิลตัวอ่อน) + ม้ามโตมาก + dry tap บ่งชี้ primary myelofibrosis จากพังผืดในไขกระดูก',
+    explain: 'Teardrop cell จำนวนมาก + leukoerythroblastic picture (NRBC + เซลล์สาย neutrophil ตัวอ่อน) + ม้ามโตมาก + dry tap บ่งชี้ primary myelofibrosis จากพังผืดในไขกระดูก',
   },
   {
     id: 'myeloma', title: 'ชายปวดหลัง ไตเสื่อม',

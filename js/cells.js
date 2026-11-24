@@ -354,10 +354,10 @@ function neutrophilLike(seed, lobes, extraLabel) {
   }));
   const mid = nuc.centers[0].clone().lerp(nuc.centers[1], 0.5);
   const labels = [
-    { p: nuc.centers[Math.floor(lobes / 2)].clone().add(new THREE.Vector3(0, 1, 0)), th: `นิวเคลียส ${lobes} lobe`, en: 'Segmented nucleus' },
-    { p: mid, th: 'เส้นใยโครมาตินเชื่อม lobe', en: 'Chromatin filament' },
-    { p: new THREE.Vector3(-3.8, 1.8, 2.8), th: 'แกรนูลละเอียดสีชมพูม่วง', en: 'Specific granules' },
-    { p: new THREE.Vector3(5.9, 0, -1), th: 'ไซโทพลาซึมสีชมพูอ่อน', en: 'Cytoplasm' },
+    { p: nuc.centers[Math.floor(lobes / 2)].clone().add(new THREE.Vector3(0, 1, 0)), th: `Nucleus ${lobes} lobe`, en: 'Segmented nucleus' },
+    { p: mid, th: 'เส้นใย chromatin เชื่อม lobe', en: 'Chromatin filament' },
+    { p: new THREE.Vector3(-3.8, 1.8, 2.8), th: 'Granule ละเอียดสีชมพูม่วง', en: 'Specific granules' },
+    { p: new THREE.Vector3(5.9, 0, -1), th: 'Cytoplasm สีชมพูอ่อน', en: 'Cytoplasm' },
   ];
   if (extraLabel) labels.unshift(extraLabel);
   return { group: g, labels, radius: 6.5 };
@@ -392,9 +392,9 @@ function bandNeutrophil(seed) {
   return {
     group: g, radius: 6.3,
     labels: [
-      { p: curve.getPoint(0.5).add(new THREE.Vector3(0, 0.9, 0)), th: 'นิวเคลียสรูปเกือกม้า ไม่มีรอยคอด', en: 'Band / horseshoe nucleus' },
+      { p: curve.getPoint(0.5).add(new THREE.Vector3(0, 0.9, 0)), th: 'Nucleus รูปเกือกม้า ไม่มีรอยคอด', en: 'Band / horseshoe nucleus' },
       { p: curve.getPoint(0.05), th: 'ส่วนที่แคบที่สุด > 1/3 ของส่วนกว้าง', en: 'No filament' },
-      { p: new THREE.Vector3(-3, 1.8, -3), th: 'แกรนูลละเอียด', en: 'Fine granules' },
+      { p: new THREE.Vector3(-3, 1.8, -3), th: 'Granule ละเอียด', en: 'Fine granules' },
     ],
   };
 }
@@ -411,8 +411,8 @@ function eosinophil(seed) {
   return {
     group: g, radius: 6.7,
     labels: [
-      { p: nuc.centers[0].clone().add(new THREE.Vector3(0, 1.2, 0)), th: 'นิวเคลียส 2 lobe (แว่นตา)', en: 'Bilobed nucleus' },
-      { p: new THREE.Vector3(3.5, 2.2, 2.5), th: 'แกรนูลใหญ่สีส้มแดง หักเหแสง', en: 'Eosinophilic granules' },
+      { p: nuc.centers[0].clone().add(new THREE.Vector3(0, 1.2, 0)), th: 'Nucleus 2 lobe (แว่นตา)', en: 'Bilobed nucleus' },
+      { p: new THREE.Vector3(3.5, 2.2, 2.5), th: 'Granule ใหญ่สีส้มแดง หักเหแสง', en: 'Eosinophilic granules' },
       { p: new THREE.Vector3(-4.2, 1.4, 3.8), th: 'มี major basic protein', en: 'MBP, peroxidase' },
     ],
   };
@@ -429,9 +429,9 @@ function basophil(seed) {
   return {
     group: g, radius: 5.8,
     labels: [
-      { p: new THREE.Vector3(1.2, 2.6, 1), th: 'แกรนูลใหญ่สีน้ำเงินดำ บังนิวเคลียส', en: 'Basophilic granules' },
-      { p: nuc.centers[1].clone(), th: 'นิวเคลียส 2 lobe (มองเห็นยาก)', en: 'Obscured nucleus' },
-      { p: new THREE.Vector3(-4.6, 0.5, -2), th: 'มีฮีสตามีน & เฮพาริน', en: 'Histamine, heparin' },
+      { p: new THREE.Vector3(1.2, 2.6, 1), th: 'Granule ใหญ่สีน้ำเงินดำ บัง nucleus', en: 'Basophilic granules' },
+      { p: nuc.centers[1].clone(), th: 'Nucleus 2 lobe (มองเห็นยาก)', en: 'Obscured nucleus' },
+      { p: new THREE.Vector3(-4.6, 0.5, -2), th: 'มี histamine & heparin', en: 'Histamine, heparin' },
     ],
   };
 }
@@ -445,8 +445,8 @@ function lymphocyte(seed) {
   return {
     group: g, radius: 4.6,
     labels: [
-      { p: new THREE.Vector3(0, 2.7, 0), th: 'นิวเคลียสกลมใหญ่ โครมาตินหนาแน่น', en: 'Round nucleus, clumped chromatin' },
-      { p: new THREE.Vector3(4.1, 0.2, 0.8), th: 'ขอบไซโทพลาซึมบาง สีฟ้า', en: 'Scant sky-blue cytoplasm' },
+      { p: new THREE.Vector3(0, 2.7, 0), th: 'Nucleus กลมใหญ่ chromatin หนาแน่น', en: 'Round nucleus, clumped chromatin' },
+      { p: new THREE.Vector3(4.1, 0.2, 0.8), th: 'ขอบ cytoplasm บาง สีฟ้า', en: 'Scant sky-blue cytoplasm' },
       { p: new THREE.Vector3(-3.4, 0.4, -2.4), th: 'N:C ratio สูง', en: 'High N:C ratio' },
     ],
   };
@@ -478,8 +478,8 @@ function reactiveLymph(seed) {
     group: g, radius: 8,
     labels: [
       { p: new THREE.Vector3(6.4, 0.3, 2.5), th: 'ขอบสีน้ำเงินเข้ม โอบเม็ดเลือดแดง', en: 'Basophilic skirt' },
-      { p: new THREE.Vector3(2.5, 1.2, -1.5), th: 'ไซโทพลาซึมมากขึ้น', en: 'Abundant cytoplasm' },
-      { p: new THREE.Vector3(-1.8, 2.2, -0.6), th: 'นิวเคลียสใหญ่ โครมาตินหลวมขึ้น', en: 'Larger, looser nucleus' },
+      { p: new THREE.Vector3(2.5, 1.2, -1.5), th: 'Cytoplasm มากขึ้น', en: 'Abundant cytoplasm' },
+      { p: new THREE.Vector3(-1.8, 2.2, -0.6), th: 'Nucleus ใหญ่ chromatin หลวมขึ้น', en: 'Larger, looser nucleus' },
     ],
   };
 }
@@ -510,10 +510,10 @@ function monocyte(seed) {
   return {
     group: g, radius: 8.6,
     labels: [
-      { p: new THREE.Vector3(1.0, 1.6, 0), th: 'นิวเคลียสรูปไต / พับไปมา', en: 'Kidney-shaped, folded nucleus' },
-      { p: new THREE.Vector3(-3.2, 1.8, -1.5), th: 'โครมาตินละเอียดเป็นลูกไม้', en: 'Lacy chromatin' },
-      { p: new THREE.Vector3(5.5, 1.2, 3.2), th: 'แวคิวโอล', en: 'Vacuoles' },
-      { p: new THREE.Vector3(-5.5, 1, 4), th: 'ไซโทพลาซึมเทาอมฟ้า ground-glass', en: 'Grey-blue cytoplasm' },
+      { p: new THREE.Vector3(1.0, 1.6, 0), th: 'Nucleus รูปไต / พับไปมา', en: 'Kidney-shaped, folded nucleus' },
+      { p: new THREE.Vector3(-3.2, 1.8, -1.5), th: 'Chromatin ละเอียดเป็นลูกไม้', en: 'Lacy chromatin' },
+      { p: new THREE.Vector3(5.5, 1.2, 3.2), th: 'Vacuole', en: '' },
+      { p: new THREE.Vector3(-5.5, 1, 4), th: 'Cytoplasm เทาอมฟ้า ground-glass', en: 'Grey-blue cytoplasm' },
     ],
   };
 }
@@ -536,9 +536,9 @@ function plasmaCell(seed) {
   return {
     group: g, radius: 7,
     labels: [
-      { p: new THREE.Vector3(-3.6, 2.2, 0), th: 'นิวเคลียสอยู่ชิดขอบ โครมาตินแบบหน้าปัดนาฬิกา', en: 'Eccentric, clock-face nucleus' },
+      { p: new THREE.Vector3(-3.6, 2.2, 0), th: 'Nucleus อยู่ชิดขอบ chromatin แบบหน้าปัดนาฬิกา', en: 'Eccentric, clock-face nucleus' },
       { p: new THREE.Vector3(-0.4, 1.7, 0), th: 'Perinuclear hof (Golgi)', en: 'Perinuclear clear zone' },
-      { p: new THREE.Vector3(4.5, 0.8, 1.5), th: 'ไซโทพลาซึมสีน้ำเงินเข้ม (RNA มาก)', en: 'Deep basophilic cytoplasm' },
+      { p: new THREE.Vector3(4.5, 0.8, 1.5), th: 'Cytoplasm สีน้ำเงินเข้ม (RNA มาก)', en: 'Deep basophilic cytoplasm' },
     ],
   };
 }
@@ -568,8 +568,8 @@ function myeloblast(seed) {
     labels: [
       { p: new THREE.Vector3(4.9, 0.9, 1.3), th: 'Auer rod: แท่งสีแดงชมพู (MPO)', en: 'Auer rod' },
       { p: new THREE.Vector3(-2.2, 3.2, 1.2), th: 'Nucleoli 2–5 อัน', en: 'Prominent nucleoli' },
-      { p: new THREE.Vector3(-4.5, 1.8, 2.2), th: 'โครมาตินละเอียดมาก', en: 'Fine open chromatin' },
-      { p: new THREE.Vector3(5.5, 0.2, -3), th: 'ไซโทพลาซึมน้อย N:C สูง', en: 'Scant blue cytoplasm' },
+      { p: new THREE.Vector3(-4.5, 1.8, 2.2), th: 'Chromatin ละเอียดมาก', en: 'Fine open chromatin' },
+      { p: new THREE.Vector3(5.5, 0.2, -3), th: 'Cytoplasm น้อย N:C สูง', en: 'Scant blue cytoplasm' },
     ],
   };
 }
@@ -591,7 +591,7 @@ function smudgeCell(seed) {
   return {
     group: g, radius: 6,
     labels: [
-      { p: new THREE.Vector3(0, 0.8, 0), th: 'นิวเคลียสแตกกระจาย ไม่มีไซโทพลาซึม', en: 'Crushed nucleus, no cytoplasm' },
+      { p: new THREE.Vector3(0, 0.8, 0), th: 'Nucleus แตกกระจาย ไม่มี cytoplasm', en: 'Crushed nucleus, no cytoplasm' },
       { p: new THREE.Vector3(4.5, 0.4, 2), th: 'เซลล์เปราะ แตกขณะป้ายสไลด์', en: 'Fragile lymphocyte' },
     ],
   };
@@ -605,7 +605,7 @@ function platelet(seed, scale = 1) {
   return {
     group: g, radius: 1.6 * scale,
     labels: [
-      { p: new THREE.Vector3(0, 0.5, 0), th: 'Granulomere: แกรนูลสีม่วงตรงกลาง', en: 'Granulomere' },
+      { p: new THREE.Vector3(0, 0.5, 0), th: 'Granulomere: granule สีม่วงตรงกลาง', en: 'Granulomere' },
       { p: new THREE.Vector3(1.25, 0, 0), th: 'Hyalomere: ขอบใส สีฟ้าอ่อน', en: 'Hyalomere' },
     ],
   };
@@ -622,8 +622,8 @@ function nrbc(seed) {
   return {
     group: g, radius: 4.6,
     labels: [
-      { p: new THREE.Vector3(1.0, 2.0, -0.3), th: 'นิวเคลียสกลมเล็ก ติดสีเข้มมาก (pyknotic)', en: 'Small dense nucleus' },
-      { p: new THREE.Vector3(-3, 0.6, 1.5), th: 'ไซโทพลาซึมสีชมพูเทาเหมือนเม็ดเลือดแดง', en: 'Hemoglobinised cytoplasm' },
+      { p: new THREE.Vector3(1.0, 2.0, -0.3), th: 'Nucleus กลมเล็ก ติดสีเข้มมาก (pyknotic)', en: 'Small dense nucleus' },
+      { p: new THREE.Vector3(-3, 0.6, 1.5), th: 'Cytoplasm สีชมพูเทาเหมือนเม็ดเลือดแดง', en: 'Hemoglobinised cytoplasm' },
     ],
   };
 }
@@ -643,7 +643,7 @@ function rouleaux(seed) {
     group: g, radius: 7.5,
     labels: [
       { p: new THREE.Vector3(0, 4.2, 0), th: 'เม็ดเลือดแดงเรียงซ้อนแบบเหรียญ', en: 'Stacked like coins' },
-      { p: new THREE.Vector3(-6, 0, 3), th: 'globulin ในพลาสมาสูงลดประจุลบ (zeta potential)', en: 'High plasma protein' },
+      { p: new THREE.Vector3(-6, 0, 3), th: 'Globulin ใน plasma สูงลดประจุลบ (zeta potential)', en: 'High plasma protein' },
     ],
   };
 }
@@ -675,7 +675,7 @@ function withInclusions(type, seed) {
       m.position.copy(onSurface(geo, 0.72 + rand() * 0.12, -0.15 + rand() * 0.3, 0.02));
       g.add(m);
     }
-    labels.push({ p: onSurface(geo, 0.78, 0, 0).add(new THREE.Vector3(0, 0.5, 0)), th: 'แกรนูลเหล็กกลุ่มเล็ก ชิดขอบเซลล์', en: 'Iron (siderotic) granules' });
+    labels.push({ p: onSurface(geo, 0.78, 0, 0).add(new THREE.Vector3(0, 0.5, 0)), th: 'Granule เหล็กกลุ่มเล็ก ชิดขอบเซลล์', en: 'Iron (siderotic) granules' });
   } else if (type === 'heinz') {
     const hm = dotMat('#6d5a86', 0.5);
     [0.4, 2.4, 4.3].forEach((a) => {
@@ -700,7 +700,7 @@ function withInclusions(type, seed) {
     };
     const c1 = addRing(-0.25, 0.1, 1);
     addRing(0.55, -0.35, 0.75);
-    labels.push({ p: c1.clone().add(new THREE.Vector3(0, 0.6, 0)), th: 'Ring form: วงไซโทพลาซึมบาง + จุดโครมาติน', en: 'Signet-ring trophozoite' });
+    labels.push({ p: c1.clone().add(new THREE.Vector3(0, 0.6, 0)), th: 'Ring form: วง cytoplasm บาง + จุด chromatin', en: 'Signet-ring trophozoite' });
     labels.push({ p: onSurface(geo, 0.55, -0.35, 0).add(new THREE.Vector3(0.6, 0.5, 0)), th: 'ติดเชื้อหลายตัวในเซลล์เดียว (P. falciparum)', en: 'Multiple infection' });
   }
   return { group: g, labels, radius: 4.3 };
@@ -710,7 +710,7 @@ const RBC_LABELS = {
   normal: [
     { p: [0, 0.6, 0], th: 'Central pallor ~1/3 ของเส้นผ่านศูนย์กลาง', en: 'Central pallor' },
     { p: [3.3, 1.3, 0], th: 'ขอบหนา ~2.5 µm', en: 'Thick rim' },
-    { p: [-2, 0.5, 3], th: 'ไม่มีนิวเคลียส', en: 'Anucleate' },
+    { p: [-2, 0.5, 3], th: 'ไม่มี nucleus', en: 'Anucleate' },
   ],
   microcyte_hypo: [
     { p: [0, 0.4, 0], th: 'Central pallor กว้าง > 1/2', en: 'Enlarged pallor' },
@@ -748,7 +748,7 @@ const RBC_LABELS = {
   schistocyte: [
     { p: [0.4, 1.1, 2.5], th: 'ขอบตรงถูกตัด (helmet cell)', en: 'Straight cut edge' },
     { p: [0.4, 0.4, -3.3], th: 'มุมแหลม (horn)', en: 'Horn' },
-    { p: [-2, 1.1, 0], th: 'เศษเซลล์จากการถูกไฟบรินตัด', en: 'Fibrin-sheared fragment' },
+    { p: [-2, 1.1, 0], th: 'เศษเซลล์จากการถูก fibrin ตัด', en: 'Fibrin-sheared fragment' },
   ],
   bite: [
     { p: [2.5, 0.8, 0], th: 'รอยแหว่งครึ่งวงกลม', en: 'Semicircular bite' },
@@ -768,7 +768,7 @@ export function buildCell(id, seed = 7) {
   let out;
   switch (id) {
     case 'neutrophil': out = neutrophilLike(seed, 3); break;
-    case 'hypersegmented': out = neutrophilLike(seed, 6, { p: new THREE.Vector3(0, 2.5, 0), th: 'นิวเคลียส ≥ 6 lobe', en: '≥ 6 lobes' }); break;
+    case 'hypersegmented': out = neutrophilLike(seed, 6, { p: new THREE.Vector3(0, 2.5, 0), th: 'Nucleus ≥ 6 lobe', en: '≥ 6 lobes' }); break;
     case 'band': out = bandNeutrophil(seed); break;
     case 'eosinophil': out = eosinophil(seed); break;
     case 'basophil': out = basophil(seed); break;

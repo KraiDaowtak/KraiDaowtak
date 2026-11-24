@@ -183,7 +183,7 @@ export class CellViewer {
     this.labels = (this.current?.labels || []).map((l) => {
       const el = document.createElement('div');
       el.className = 'tag';
-      el.innerHTML = `<i></i><span><b>${l.th}</b><em>${l.en}</em></span>`;
+      el.innerHTML = `<i></i><span><b>${l.th}</b>${l.en ? `<em>${l.en}</em>` : ''}</span>`;
       this.labelLayer.appendChild(el);
       return { ...l, el };
     });

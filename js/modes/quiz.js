@@ -1,4 +1,4 @@
-import { CELLS, byId } from '../data.js';
+import { CELLS, byId, enOf } from '../data.js';
 
 const LEVELS = {
   basic: { th: 'พื้นฐาน', note: 'เซลล์ปกติ 8 ชนิด', pool: () => CELLS.filter((c) => c.group === 'normal') },
@@ -104,11 +104,11 @@ export class QuizMode {
         <div><small>ถูกติดกัน</small><b>${s.streak}</b></div>
       </div>
       <div class="progress"><i style="width:${(s.i / ROUND) * 100}%"></i></div>
-      <p class="muted">หมุนและซูมโมเดลเพื่อสังเกตนิวเคลียส แกรนูล และรูปทรง จากนั้นเลือกคำตอบ (กดปุ่ม 1–4 ได้)</p>
+      <p class="muted">หมุนและซูมโมเดลเพื่อสังเกต nucleus granule และรูปทรง จากนั้นเลือกคำตอบ (กดปุ่ม 1–4 ได้)</p>
       <div class="options">${s.options.map((o, i) => {
         let cls = '';
         if (s.answered) cls = o.id === cell.id ? 'right' : i === s.picked ? 'wrong' : 'dim';
-        return `<button class="opt ${cls}" data-i="${i}" ${s.answered ? 'disabled' : ''}><kbd>${letters[i]}</kbd><span>${o.th}<small>${o.en}</small></span></button>`;
+        return `<button class="opt ${cls}" data-i="${i}" ${s.answered ? 'disabled' : ''}><kbd>${letters[i]}</kbd><span>${o.th}${enOf(o) ? `<small>${enOf(o)}</small>` : ''}</span></button>`;
       }).join('')}</div>
       ${s.answered ? `
         <div class="feedback ${s.options[s.picked].id === cell.id ? 'ok' : 'bad'}">
