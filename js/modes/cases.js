@@ -83,8 +83,8 @@ export class CasesMode {
     const res = this.results[c.id];
     this.panel.innerHTML = `
       <div class="case-top">
-        <p class="eyebrow">เคสคลินิก · คะแนนรวม ${total}/${CASES.length * 3}</p>
-        <div class="case-nav" role="tablist" aria-label="เลือกเคส">${CASES.map((k, i) => {
+        <p class="eyebrow">กรณีศึกษา · คะแนนรวม ${total}/${CASES.length * 3}</p>
+        <div class="case-nav" role="tablist" aria-label="เลือกกรณีศึกษา">${CASES.map((k, i) => {
           const r = this.results[k.id];
           return `<button role="tab" data-i="${i}" aria-selected="${i === this.idx}" class="${r ? (r.ok ? 'ok' : 'bad') : ''}" title="${k.title}">${i + 1}</button>`;
         }).join('')}</div>
@@ -98,7 +98,7 @@ export class CasesMode {
         if (answered) cls = k === c.answer ? 'right' : k === this.picked ? 'wrong' : 'dim';
         return `<button class="opt ${cls}" data-k="${k}" ${answered ? 'disabled' : ''}><kbd>${n + 1}</kbd><span>${c.options[k]}</span></button>`;
       }).join('')}</div>
-      ${!answered && res ? `<p class="muted">เคยทำเคสนี้แล้ว (${res.ok ? 'ถูก' : 'ผิด'}) ตอบใหม่เพื่อทบทวนได้</p>` : ''}
+      ${!answered && res ? `<p class="muted">เคยทำกรณีศึกษานี้แล้ว (${res.ok ? 'ถูก' : 'ผิด'}) ตอบใหม่เพื่อทบทวนได้</p>` : ''}
       ${!answered ? `<p class="muted">คะแนน: ตอบถูก 3 คะแนน หักคะแนนละ 1 ทุกครั้งที่ใช้แว่นขยายก่อนตอบ (ใช้ไปแล้ว ${this.hints} ครั้ง)</p>` : `
         <div class="feedback ${this.picked === c.answer ? 'ok' : 'bad'}">
           <b>${this.picked === c.answer ? `ถูกต้อง +${res.score} คะแนน` : `คำตอบคือ ${c.options[c.answer]}`}</b>
@@ -107,7 +107,7 @@ export class CasesMode {
         <h3>ลักษณะสำคัญบนสไลด์นี้ (คลิกเพื่อไฮไลต์ในกล้อง)</h3>
         <div class="chips">${c.findings.map((id) => `<button class="chip" data-f="${id}" aria-pressed="${this.highlight === id}">${byId[id].th}</button>`).join('')}</div>
         <div class="row">
-          ${this.idx < CASES.length - 1 ? '<button class="btn primary" id="cNextCase">เคสถัดไป →</button>' : ''}
+          ${this.idx < CASES.length - 1 ? '<button class="btn primary" id="cNextCase">กรณีศึกษาถัดไป →</button>' : ''}
           <button class="btn ghost" id="cAtlas">ดูเซลล์ใน Atlas 3D</button>
         </div>`}`;
     this.panel.querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => { this.highlight = null; this.open(+b.dataset.i); }));
