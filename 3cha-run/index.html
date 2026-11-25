@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,600;0,800;1,900&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme:dark;
     --blue:#21409a; --navy:#14245f; --pink:#ec1e8c; --yellow:#ffe600;
     --orange:#ff8a1f; --cream:#fff6dc;
   }
@@ -23,7 +24,7 @@
     background-size:28px 28px; -webkit-tap-highlight-color:transparent;
     overflow-x:hidden;
   }
-  .screen{display:none;min-height:100dvh;padding:20px 16px 28px;max-width:560px;margin:0 auto;
+  .screen{display:none;min-height:100dvh;padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:560px;margin:0 auto;
     flex-direction:column;align-items:center;gap:16px}
   .screen.on{display:flex}
   .retro{
@@ -69,7 +70,7 @@
   .skins button[aria-pressed=true]{outline:4px solid var(--yellow);outline-offset:2px}
 
   /* run */
-  #run{padding:0;max-width:none;gap:0}
+  #run{padding:0!important;max-width:none;gap:0}
   #stageWrap{position:relative;width:100%;height:100dvh;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
   #scene{width:100%;height:100%;display:block}
   .hud{position:absolute;left:0;right:0;top:0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -85,7 +86,7 @@
   #count .retro{font-size:min(40vw,220px)}
 
   /* done */
-  #card{width:min(100%,380px);height:auto;border:4px solid var(--yellow);box-shadow:8px 8px 0 var(--pink)}
+  #cardImg{width:min(100%,380px);height:auto;border:4px solid var(--yellow);box-shadow:8px 8px 0 var(--pink)}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -150,7 +151,9 @@
 <!-- ============ เข้าเส้นชัย ============ -->
 <main class="screen" id="done">
   <h2 class="retro">เข้าเส้นชัย!</h2>
-  <canvas id="card" width="1080" height="1350" aria-label="การ์ดผู้พิชิต 5 กิโลเมตร"></canvas>
+  <canvas id="card" width="1080" height="1350" hidden></canvas>
+  <img id="cardImg" alt="การ์ดผู้พิชิต 5 กิโลเมตร พร้อมหน้าและชื่อของคุณ">
+  <p class="small">กดค้างที่รูป (หรือคลิกขวา) แล้วเลือก "บันทึกรูปภาพ" เพื่อเก็บไว้แชร์</p>
   <div class="row">
     <button class="btn" id="save">⬇ บันทึกรูป</button>
     <button class="btn" id="share" hidden>แชร์</button>
@@ -731,7 +734,7 @@ function drawCard(){
   g.fillStyle = '#fff'; g.font = FONT(32,'600');
   g.fillText('สมัครได้ที่ www.life.ahs.nu.ac.th/ahs_run',W/2,1310);
 }
-function finish(){ drawCard(); show('done'); }
+function finish(){ drawCard(); $('cardImg').src = $('card').toDataURL('image/png'); show('done'); }
 const cardBlob = () => new Promise(r => $('card').toBlob(r,'image/png'));
 $('save').onclick = async () => {
   const b = await cardBlob(), a = document.createElement('a');
@@ -754,7 +757,7 @@ $('goRun').onclick = startRun;
 $('again').onclick = startRun;
 $('reface').onclick = () => { show('make'); drawEditor(); };
 
-const paintStatic = () => { const g = $('shirtPrev').getContext('2d'); g.clearRect(0,0,240,240); drawShirt(g,120,122,220); drawEditor(); if ($('done').classList.contains('on')) drawCard(); };
+const paintStatic = () => { const g = $('shirtPrev').getContext('2d'); g.clearRect(0,0,240,240); drawShirt(g,120,122,220); drawEditor(); if ($('done').classList.contains('on')) finish(); };
 paintStatic();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(paintStatic);
 })();
