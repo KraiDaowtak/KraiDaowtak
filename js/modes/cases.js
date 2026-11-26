@@ -49,7 +49,7 @@ export class CasesMode {
     this.highlight = id;
     this.field.clearMarkers();
     const hits = this.field.cells.filter((c) => c.id === id);
-    hits.forEach((c) => this.field.ring(c, '#1f63b4', 0.45));
+    hits.forEach((c) => this.field.ring(c, '#a3182c', 0.45));
     return hits.length;
   }
 

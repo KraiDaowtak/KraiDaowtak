@@ -9,7 +9,7 @@ const EF = (r) => Math.sqrt(Math.max(0, 1 - r * r)) * (0.81 + 7.83 * r * r - 4.3
 const BASE = [214, 217, 221];
 const HIGH = [250, 251, 252];
 const SHADE = [150, 156, 165];
-const TINT = { rbc: [224, 219, 222], wbc: [206, 216, 230], plt: [214, 220, 228] };
+const TINT = { rbc: [232, 212, 215], wbc: [216, 213, 219], plt: [222, 215, 219] };
 
 function build(W, H, seed = 7) {
   const rand = mulberry32(seed);

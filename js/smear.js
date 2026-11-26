@@ -138,7 +138,7 @@ export class SmearField {
     return null;
   }
 
-  ring(rec, color = '#1f63b4', width = 0.5) {
+  ring(rec, color = '#a3182c', width = 0.5) {
     const r = rec.r + 1.2;
     const m = new THREE.Mesh(new THREE.RingGeometry(r, r + width, 64), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthTest: false }));
     m.rotation.x = -Math.PI / 2;

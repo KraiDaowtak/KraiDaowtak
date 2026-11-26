@@ -23,8 +23,8 @@ function studioBackdrop() {
   g.fillStyle = glow;
   g.fillRect(0, 0, 512, 512);
   const warm = g.createRadialGradient(70, 40, 0, 70, 40, 260);
-  warm.addColorStop(0, 'rgba(210,226,248,0.55)');
-  warm.addColorStop(1, 'rgba(210,226,248,0)');
+  warm.addColorStop(0, 'rgba(248,214,218,0.5)');
+  warm.addColorStop(1, 'rgba(248,214,218,0)');
   g.fillStyle = warm;
   g.fillRect(0, 0, 512, 512);
   const t = new THREE.CanvasTexture(c);
@@ -73,7 +73,7 @@ export class CellViewer {
     Object.assign(key.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 80 });
     key.shadow.radius = 6;
     key.shadow.bias = -0.0005;
-    const rim = new THREE.DirectionalLight('#a8c3df', 1.2);
+    const rim = new THREE.DirectionalLight('#e6bcc2', 1.15);
     rim.position.set(-14, 6, -12);
     const under = new THREE.DirectionalLight('#ffd6de', 0.45);
     under.position.set(0, -10, 4);
