@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>น้องเทา แมวคู่สุขภาพ</title>
+<title>มังกรน้อยคู่สุขภาพ</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Mali:wght@500;600;700&display=swap">
 <style>
 /* Layout: cat stage on the left (stacked on top on phones), logging tabs and history on the right.
@@ -201,7 +201,7 @@ input[type=time],input[type=text]:not(.cat-name){box-shadow:inset 0 2px 4px var(
 
 <div class="wrap">
   <header class="top">
-    <h1 class="brand">แมวคู่สุขภาพ<small>ดูแลตัวเองดี แมว British Shorthair ของคุณก็โตดี</small></h1>
+    <h1 class="brand">มังกรคู่สุขภาพ<small>ดูแลตัวเองดี ลูกมังกรของคุณก็โตดี</small></h1>
     <div class="datenav">
       <button class="icon-btn" id="prevDay" aria-label="วันก่อนหน้า">‹</button>
       <b id="dateLabel"></b>
@@ -218,11 +218,11 @@ input[type=time],input[type=text]:not(.cat-name){box-shadow:inset 0 2px 4px var(
     <section class="col">
       <div class="stage">
         <div class="cat-head">
-          <input class="cat-name" id="catName" type="text" maxlength="20" aria-label="ชื่อแมว">
+          <input class="cat-name" id="catName" type="text" maxlength="20" aria-label="ชื่อมังกร">
           <div class="tagrow" id="catTags"></div>
         </div>
         <div class="bubble" id="bubble" aria-live="polite"></div>
-        <button class="catbox" id="catBox" aria-label="ลูบแมว"></button>
+        <button class="catbox" id="catBox" aria-label="ลูบมังกร"></button>
         <div class="meters" id="meters"></div>
       </div>
     </section>
@@ -255,11 +255,11 @@ input[type=time],input[type=text]:not(.cat-name){box-shadow:inset 0 2px 4px var(
               <label class="chip"><input type="radio" name="portion" id="po-m" value="much">มากไป</label>
             </div>
           </fieldset>
-          <button class="btn" type="submit">ป้อนให้แมวรู้</button>
+          <button class="btn" type="submit">ป้อนให้มังกรรู้</button>
         </form>
 
         <div id="p-vit" class="col" hidden>
-          <p class="hint">แตะรายการที่กินแล้ววันนี้ แมวจะขนเงาขึ้นเมื่อกินครบ</p>
+          <p class="hint">แตะรายการที่กินแล้ววันนี้ เกล็ดมังกรจะเงาขึ้นเมื่อกินครบ</p>
           <ul class="vit-list" id="vitList"></ul>
           <form class="row" id="vitAdd" autocomplete="off">
             <label class="field"><span class="lbl">เพิ่มวิตามินหรืออาหารเสริม</span>
@@ -269,7 +269,7 @@ input[type=time],input[type=text]:not(.cat-name){box-shadow:inset 0 2px 4px var(
         </div>
 
         <form id="p-sleep" class="col" hidden autocomplete="off">
-          <p class="hint">บันทึกการนอนของคืนที่ผ่านมา (ตื่นเช้าวันที่เลือก) นอน 7–9 ชั่วโมงแมวจะสดชื่นที่สุด</p>
+          <p class="hint">บันทึกการนอนของคืนที่ผ่านมา (ตื่นเช้าวันที่เลือก) นอน 7–9 ชั่วโมงมังกรจะสดชื่นที่สุด</p>
           <div class="row">
             <label class="field"><span class="lbl">เข้านอน</span><input type="time" id="bed" value="23:00" required></label>
             <label class="field"><span class="lbl">ตื่น</span><input type="time" id="wake" value="07:00" required></label>
@@ -329,7 +329,7 @@ var MEAL={breakfast:'มื้อเช้า',lunch:'มื้อกลาง�
 var PORTION={little:'กินน้อยไป',ok:'อิ่มพอดี',much:'กินมากไป'};
 var SQ={good:'หลับสนิท',ok:'พอใช้',bad:'หลับ ๆ ตื่น ๆ'};
 var W={food:40,sleep:35,vit:15,water:10};
-var STAGES=[[0,'ลูกแมว'],[30,'แมวเด็ก'],[90,'แมวรุ่น'],[210,'แมวโตเต็มวัย'],[450,'British แก้มยุ้ย']];
+var STAGES=[[0,'เพิ่งฟักจากไข่'],[30,'ลูกมังกร'],[90,'มังกรรุ่น'],[210,'มังกรหนุ่ม'],[450,'มังกรเต็มวัย']];
 var DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
 
 function pad(n){return (n<10?'0':'')+n}
@@ -342,7 +342,7 @@ function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&am
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function $(id){return document.getElementById(id)}
 
-function fresh(){return {name:'น้องเทา',start:today(),demo:false,days:{},
+function fresh(){return {name:'น้องมรกต',start:today(),demo:false,days:{},
   vitamins:[{id:'v1',name:'วิตามินรวม'},{id:'v2',name:'วิตามินซี'},{id:'v3',name:'วิตามินดี'},{id:'v4',name:'โอเมก้า 3'}]}}
 var S=fresh();
 try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.days&&o.vitamins)S=o}}catch(e){}
@@ -389,101 +389,35 @@ function speech(st,ex){var d=S.days[today()]||{},hr=new Date().getHours(),meals=
   if(ex==='sick')return 'ไม่ค่อยสบายเลย… ช่วยดูแลตัวเองหน่อยนะ เราจะได้หายด้วย';
   if(ex==='sleepy')return 'เมื่อคืนนอนแค่ '+sleepHours(d.sleep).toFixed(1)+' ชั่วโมงเอง ง่วงจัง… คืนนี้เข้านอนเร็วหน่อยนะ';
   if(!meals.length&&hr>=10)return 'ท้องร้องแล้ว… วันนี้กินอะไรหรือยัง บอกเราหน่อย';
-  if(meals.length&&mealScore(meals[meals.length-1])<45)return 'มื้อล่าสุดหนักไปหน่อยนะ มื้อหน้าขอผักเพิ่มได้ไหมเมี๊ยว';
+  if(meals.length&&mealScore(meals[meals.length-1])<45)return 'มื้อล่าสุดหนักไปหน่อยนะ มื้อหน้าขอผักเพิ่มได้ไหม';
   if(!d.sleep&&hr>=9)return 'เมื่อคืนหลับสบายไหม เล่าให้เราฟังหน่อย';
-  if(S.vitamins.length&&!(d.vit||[]).length&&hr>=12)return 'วันนี้ยังไม่ได้กินวิตามินเลยนะเมี๊ยว';
+  if(S.vitamins.length&&!(d.vit||[]).length&&hr>=12)return 'วันนี้ยังไม่ได้กินวิตามินเลยนะ';
   if((d.water||0)<4&&hr>=15)return 'จิบน้ำหน่อยไหม วันนี้ยังดื่มน้อยอยู่เลย';
   if(ex==='sad')return 'ช่วงนี้เหงา ๆ นะ… มาดูแลตัวเองไปด้วยกันเถอะ';
-  if(ex==='joy')return 'วันนี้ดูแลตัวเองดีมาก ขนเราเงาวับเลย เมี๊ยว~';
+  if(ex==='joy')return 'วันนี้ดูแลตัวเองดีมาก เกล็ดเราเงาวับเลย กร๊าว~';
   if(ex==='happy')return 'สบายตัวดีจัง ทำแบบนี้ต่อไปนะ';
-  return 'เมี๊ยว~ วันนี้เป็นยังไงบ้าง'}
+  return 'กร๊าว~ วันนี้เป็นยังไงบ้าง'}
 function sceneTime(){var h=new Date().getHours();return h>=5&&h<10?'morning':h>=10&&h<17?'day':h>=17&&h<20?'evening':'night'}
-var DEFS='<defs>'
- +'<radialGradient id="gHead" gradientUnits="userSpaceOnUse" cx="118" cy="82" r="150"><stop offset="0" class="c-hi"/><stop offset=".45" class="c-mid"/><stop offset="1" class="c-lo"/></radialGradient>'
- +'<radialGradient id="gBody" gradientUnits="userSpaceOnUse" cx="118" cy="180" r="140"><stop offset="0" class="c-hi"/><stop offset=".4" class="c-mid"/><stop offset="1" class="c-lo"/></radialGradient>'
- +'<radialGradient id="gDark" cx=".35" cy=".25" r=".9"><stop offset="0" class="c-mid"/><stop offset=".6" class="c-lo"/><stop offset="1" class="c-deep"/></radialGradient>'
- +'<linearGradient id="gTail" gradientUnits="userSpaceOnUse" x1="215" y1="250" x2="262" y2="172"><stop offset="0" class="c-lo"/><stop offset=".5" class="c-mid"/><stop offset="1" class="c-lo"/></linearGradient>'
- +'<radialGradient id="gChest" cx=".5" cy=".35" r=".6"><stop offset="0" class="c-hi" stop-opacity=".75"/><stop offset="1" class="c-hi" stop-opacity="0"/></radialGradient>'
- +'<radialGradient id="gPaw" cx=".4" cy=".25" r=".8"><stop offset="0" class="c-pale"/><stop offset=".6" class="c-hi"/><stop offset="1" class="c-mid"/></radialGradient>'
- +'<radialGradient id="gMuzzle" cx=".42" cy=".3" r=".75"><stop offset="0" class="c-pale"/><stop offset=".7" class="c-hi"/><stop offset="1" class="c-mid"/></radialGradient>'
- +'<linearGradient id="gLid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="c-mid"/><stop offset="1" class="c-lo"/></linearGradient>'
- +'<radialGradient id="gIris" cx=".5" cy=".55" r=".5"><stop offset=".2" stop-color="#F7C25A"/><stop offset=".55" stop-color="#E08A22"/><stop offset=".86" stop-color="#A2540F"/><stop offset="1" stop-color="#4E2607"/></radialGradient>'
- +'<linearGradient id="gNose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#857C8C"/><stop offset="1" stop-color="#4A4451"/></linearGradient>'
- +'<radialGradient id="gEar" cx=".5" cy=".7" r=".7"><stop offset="0" stop-color="#CDA4A6"/><stop offset="1" stop-color="#7C6875"/></radialGradient>'
- +'<radialGradient id="gCushTop" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#E3A768"/><stop offset=".6" stop-color="#BF7636"/><stop offset="1" stop-color="#99561F"/></radialGradient>'
- +'<linearGradient id="gCushSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8E4E1C"/><stop offset="1" stop-color="#5E3210"/></linearGradient>'
- +'<filter id="fur" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.1 0.4" numOctaves="2" seed="3" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0.1  0 0 0 0 0.13  0 0 0 0 0.2  0 0 0 1.6 -0.62" result="gd"/><feComposite in="gd" in2="d" operator="in" result="grain"/><feMerge><feMergeNode in="d"/><feMergeNode in="grain"/></feMerge></filter>'
- +'<filter id="b2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>'
- +'<filter id="b5" x="-40%" y="-60%" width="180%" height="220%"><feGaussianBlur stdDeviation="5"/></filter>'
- +'<filter id="b9" x="-40%" y="-80%" width="180%" height="260%"><feGaussianBlur stdDeviation="9"/></filter>'
- +'</defs>';
-function eye(cx,ex,side,night){var cy=120,id='ec'+cx,o;
-  if(ex==='joy')return '<path d="M'+(cx-15)+' 125 Q'+cx+' 104 '+(cx+15)+' 125" fill="none" stroke="#1d1712" stroke-width="4.2" stroke-linecap="round"/>'
-    +'<path d="M'+(cx-13)+' 128 Q'+cx+' 110 '+(cx+13)+' 128" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="1.6" stroke-linecap="round"/>';
-  var rx=(night?9.5:5.6)+(ex==='happy'?1.4:0)-(ex==='sick'?.8:0);
-  o='<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="15.5"/></clipPath><g clip-path="url(#'+id+')">'
-   +'<circle fill="url(#gIris)" cx="'+cx+'" cy="'+cy+'" r="16"/>'
-   +'<ellipse fill="#0c0806" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="12.2"/>'
-   +'<ellipse fill="#000" opacity=".42" filter="url(#b2)" cx="'+cx+'" cy="'+(cy-16)+'" rx="20" ry="9"/>'
-   +'<ellipse fill="#fff" opacity=".93" cx="'+(cx-5)+'" cy="'+(cy-5)+'" rx="4.3" ry="3.8"/><circle fill="#fff" opacity=".45" cx="'+(cx+5.5)+'" cy="'+(cy+6.5)+'" r="1.9"/>';
-  if(ex==='sleepy')o+='<rect fill="url(#gLid)" x="'+(cx-17)+'" y="'+(cy-18)+'" width="34" height="21"/><path d="M'+(cx-16)+' '+(cy+3)+' H'+(cx+16)+'" stroke="#1d1712" stroke-width="2.6"/>';
-  else if(ex==='sad'||ex==='sick'){var a=side<0?[cy,cy-11]:[cy-11,cy];
-    o+='<polygon fill="url(#gLid)" points="'+(cx-17)+','+(cy-18)+' '+(cx+17)+','+(cy-18)+' '+(cx+17)+','+a[1]+' '+(cx-17)+','+a[0]+'"/><path d="M'+(cx-17)+' '+a[0]+' L'+(cx+17)+' '+a[1]+'" stroke="#1d1712" stroke-width="2.2"/>'}
-  else o+='<rect class="lid" fill="url(#gLid)" x="'+(cx-17)+'" y="'+(cy-17)+'" width="34" height="34"/>';
-  return o+'</g><circle cx="'+cx+'" cy="'+cy+'" r="15.5" fill="none" stroke="#1d1712" stroke-width="2.4"/>'}
-function whiskers(droop){var o='';
-  [0,1,2].forEach(function(i){var y=149+i*3.5,e=140+i*13+droop,c=y-6+i*3;
-    o+='<path class="whisk" d="M110 '+y+' Q82 '+c+' 50 '+e+'"/><path class="whisk" d="M190 '+y+' Q218 '+c+' 250 '+e+'"/>'});return o}
 function catSVG(st,ex){
-  var g=Math.sqrt(Math.min(1,st.xp/450)), s=0.6+0.4*g, hs=1.2-0.2*g, ck=26+10*g;
-  var T='translate(150 285) scale('+s+') translate(-150 -285)', H='translate(150 182) scale('+hs+') translate(-150 -182)';
-  var down=ex==='sad'||ex==='sick', night=sceneTime()==='night', sh='#141b28';
-  var mouth=down?'<path class="mline" d="M141 161 Q150 153 159 161"/>'
-    :'<path class="mline" d="M150 147 Q150 157 139.5 157 M150 147 Q150 157 160.5 157"/>'+(ex==='joy'?'<ellipse fill="#B8686A" cx="150" cy="161" rx="5.2" ry="4.2"/>':'');
-  var tox=(150+65*s)/3, toy=(285-37*s)/3;
-  var floor='<svg viewBox="0 0 300 300" aria-hidden="true">'+DEFS
-    +'<ellipse fill="#000" opacity=".4" filter="url(#b9)" cx="156" cy="291" rx="138" ry="11"/>'
-    +'<ellipse fill="url(#gCushSide)" cx="150" cy="285" rx="130" ry="16"/>'
-    +'<ellipse fill="url(#gCushTop)" cx="150" cy="279" rx="130" ry="15.5"/>'
-    +'<ellipse fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.5" cx="150" cy="279" rx="128" ry="14.2"/>'
-    +'<ellipse fill="#1a0f06" opacity=".5" filter="url(#b5)" cx="'+(150+10*s)+'" cy="281" rx="'+(92*s)+'" ry="'+(9*s)+'"/></svg>';
-  var tail='<svg class="tailL" style="transform-origin:'+tox+'% '+toy+'%" viewBox="0 0 300 300" aria-hidden="true"><g transform="'+T+'">'
-    +'<path filter="url(#fur)" fill="none" stroke="url(#gTail)" stroke-width="26" stroke-linecap="round" d="M215 248 C272 252 276 192 248 172"/>'
-    +'<path filter="url(#b2)" fill="none" class="k-hi" stroke-opacity=".5" stroke-width="6" stroke-linecap="round" d="M226 240 C262 240 262 196 243 180"/></g></svg>';
-  var body='<svg viewBox="0 0 300 300" aria-hidden="true"><g transform="'+T+'">'
-    +'<g filter="url(#fur)"><ellipse fill="url(#gDark)" cx="96" cy="275" rx="26" ry="12"/><ellipse fill="url(#gDark)" cx="204" cy="275" rx="26" ry="12"/>'
-    +'<ellipse fill="url(#gBody)" cx="150" cy="222" rx="76" ry="62"/></g>'
-    +'<ellipse fill="url(#gChest)" cx="146" cy="226" rx="42" ry="46"/>'
-    +'<ellipse fill="'+sh+'" opacity=".42" filter="url(#b5)" cx="150" cy="270" rx="52" ry="16"/>'
-    +'<ellipse fill="'+sh+'" opacity=".3" filter="url(#b5)" cx="212" cy="235" rx="14" ry="40"/>'
-    +'<g filter="url(#fur)"><ellipse fill="url(#gBody)" cx="131" cy="258" rx="15.5" ry="27"/><ellipse fill="url(#gBody)" cx="169" cy="258" rx="15.5" ry="27"/></g>'
-    +'<path fill="none" stroke="'+sh+'" stroke-opacity=".45" stroke-width="3" filter="url(#b2)" d="M150 236 V274"/>'
-    +'<ellipse fill="url(#gPaw)" cx="131" cy="278" rx="17" ry="9.5"/><ellipse fill="url(#gPaw)" cx="169" cy="278" rx="17" ry="9.5"/>'
-    +'<path fill="none" stroke="'+sh+'" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round" d="M126 276 v7 M136 276 v7 M164 276 v7 M174 276 v7"/>'
-    +'<ellipse fill="'+sh+'" opacity=".5" filter="url(#b5)" cx="152" cy="194" rx="62" ry="17"/>'
-    +'<g transform="'+H+'">'
-    +'<g filter="url(#fur)"><path fill="url(#gHead)" d="M76 104 Q66 26 134 66 Z"/><path fill="url(#gDark)" d="M224 104 Q234 26 166 66 Z"/></g>'
-    +'<path fill="url(#gEar)" filter="url(#b2)" d="M88 88 Q83 50 118 70 Z"/><path fill="url(#gEar)" filter="url(#b2)" d="M212 88 Q217 50 182 70 Z"/>'
-    +'<g filter="url(#fur)"><ellipse fill="url(#gHead)" cx="150" cy="125" rx="78" ry="66"/><circle fill="url(#gHead)" cx="97" cy="150" r="'+ck+'"/><circle fill="url(#gHead)" cx="203" cy="150" r="'+ck+'"/></g>'
-    +'<ellipse fill="#fff" opacity="'+(st.h>=75?.34:.16)+'" filter="url(#b5)" cx="122" cy="84" rx="38" ry="13"/>'
-    +'<ellipse fill="#fff" opacity=".13" filter="url(#b5)" cx="92" cy="140" rx="17" ry="13"/>'
-    +'<ellipse fill="'+sh+'" opacity=".3" filter="url(#b5)" cx="208" cy="158" rx="18" ry="22"/>'
-    +'<ellipse fill="'+sh+'" opacity=".28" filter="url(#b5)" cx="150" cy="178" rx="48" ry="9"/>'
-    +'<ellipse fill="'+sh+'" opacity=".22" filter="url(#b5)" cx="150" cy="112" rx="10" ry="16"/>'
-    +'</g></g></svg>';
-  var face='<svg viewBox="0 0 300 300" role="img" aria-label="แมว British Shorthair สีบลู"><g transform="'+T+'"><g transform="'+H+'">'
-    +(ex==='joy'||ex==='happy'?'<ellipse fill="#D9908F" opacity=".4" filter="url(#b2)" cx="93" cy="147" rx="12" ry="6"/><ellipse fill="#D9908F" opacity=".4" filter="url(#b2)" cx="207" cy="147" rx="12" ry="6"/>':'')
-    +eye(118,ex,-1,night)+eye(182,ex,1,night)
-    +'<ellipse fill="url(#gMuzzle)" cx="150" cy="163" rx="12" ry="7"/>'
-    +'<ellipse fill="url(#gMuzzle)" cx="137" cy="153" rx="17" ry="13"/><ellipse fill="url(#gMuzzle)" cx="163" cy="153" rx="17" ry="13"/>'
-    +'<g fill="'+sh+'" opacity=".3"><circle cx="128" cy="150" r="1"/><circle cx="133" cy="155" r="1"/><circle cx="127" cy="157" r="1"/><circle cx="172" cy="150" r="1"/><circle cx="167" cy="155" r="1"/><circle cx="173" cy="157" r="1"/></g>'
-    +'<path fill="url(#gNose)" d="M142 137.5 Q150 134.5 158 137.5 Q156.5 145 150 147.5 Q143.5 145 142 137.5Z"/><ellipse fill="#fff" opacity=".35" cx="147.5" cy="138.6" rx="3" ry="1.1"/>'
-    +mouth+whiskers(down?10:0)
-    +'</g></g>'
-    +(ex==='sleepy'?'<g class="zzz"><text x="222" y="92" font-size="22">z</text><text x="240" y="70" font-size="28">z</text><text x="262" y="44" font-size="34">Z</text></g>':'')
-    +(ex==='joy'?'<path fill="#D8473F" stroke="#fff" stroke-opacity=".5" transform="translate(238 56)" d="M0 6 C-10 -6 -22 6 0 22 C22 6 10 -6 0 6Z"/>':'')
-    +'</svg>';
-  return '<div class="cat">'+floor+'<div class="catbody">'+tail+body+face+'</div></div>'}
+  var g=Math.sqrt(Math.min(1,st.xp/450)),s=0.6+0.4*g,hp=st.h/100,down=ex==='sad'||ex==='sick';
+  var skin='color-mix(in oklab,#2FA391 '+Math.round(hp*100)+'%,#7F9089)',fin='#E27F4A',belly='#E9DDB4';
+  function eye(cx){var o='<circle cx="'+cx+'" cy="112" r="15" fill="#F2A62A" stroke="#12302b" stroke-width="2.4"/><ellipse cx="'+cx+'" cy="112" rx="4.5" ry="11.5" fill="#050302"/><circle cx="'+(cx-5)+'" cy="107" r="3.6" fill="#fff"/>';
+    if(ex==='joy')o='<path d="M'+(cx-14)+' 116 Q'+cx+' 98 '+(cx+14)+' 116" fill="none" stroke="#12302b" stroke-width="4" stroke-linecap="round"/>';
+    else if(ex==='sleepy'||down)o+='<path d="M'+(cx-17)+' 95 h34 v'+(ex==='sleepy'?19:10)+' h-34z" fill="'+skin+'"/>';
+    return o}
+  return '<div class="cat"><svg viewBox="0 0 300 300" role="img" aria-label="ลูกมังกรสีหยก">'
+  +'<ellipse cx="150" cy="282" rx="128" ry="16" fill="#B86F30"/>'
+  +'<g transform="translate(150 285) scale('+s+') translate(-150 -285)">'
+  +'<path d="M92 190 L30 130 Q52 168 44 200 Q66 196 76 226 Z" fill="'+fin+'"/><path d="M208 190 L270 130 Q248 168 256 200 Q234 196 224 226 Z" fill="'+fin+'"/>'
+  +'<path d="M205 255 C262 262 272 214 246 196" fill="none" stroke="'+skin+'" stroke-width="24" stroke-linecap="round"/><path d="M246 196 l-14 -20 l22 2 z" fill="'+fin+'"/>'
+  +'<ellipse cx="150" cy="224" rx="72" ry="60" fill="'+skin+'"/><ellipse cx="150" cy="232" rx="44" ry="46" fill="'+belly+'"/>'
+  +'<ellipse cx="104" cy="276" rx="26" ry="11" fill="'+skin+'"/><ellipse cx="196" cy="276" rx="26" ry="11" fill="'+skin+'"/>'
+  +'<path d="M112 70 L100 34 L128 60 Z" fill="#EFE7D2"/><path d="M188 70 L200 34 L172 60 Z" fill="#EFE7D2"/>'
+  +'<ellipse cx="150" cy="118" rx="74" ry="62" fill="'+skin+'"/><ellipse cx="150" cy="146" rx="42" ry="28" fill="'+skin+'" stroke="#12302b" stroke-opacity=".15"/>'
+  +eye(118)+eye(182)
+  +'<circle cx="140" cy="138" r="2.4" fill="#12302b"/><circle cx="160" cy="138" r="2.4" fill="#12302b"/>'
+  +'<path d="'+(down?'M128 162 Q150 150 172 162':'M126 154 Q150 172 174 154')+'" fill="none" stroke="#12302b" stroke-width="2.4" stroke-linecap="round"/>'
+  +'</g></svg></div>'}
 
 /* ---------- 3D cat (three.js). Falls back to the drawn cat when WebGL is unavailable. ---------- */
 var Cat3D=(function(){
@@ -494,73 +428,79 @@ var Cat3D=(function(){
   var HEALTHY=[0x5A667C,0x8F9CB2],DULL=[0x6A6967,0x94938F];
   function lin(h){return new T.Color(h).convertSRGBToLinear()}
   function mix(a,b,t){return new T.Color(a).lerp(new T.Color(b),t)}
-  function furTex(){var c=document.createElement('canvas');c.width=c.height=256;var x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,256,256);
-    for(var i=0;i<5600;i++){var v=70+Math.random()*185|0;x.fillStyle='rgb('+v+','+v+','+v+')';x.beginPath();x.arc(Math.random()*256,Math.random()*256,1+Math.random()*1.3,0,7);x.fill()}
-    var t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(8,5);t.minFilter=T.LinearFilter;return t}
-  function ell(mat,rx,ry,rz,x,y,z,parent,fur){var m=new T.Mesh(SPH,mat);m.scale.set(rx,ry,rz);m.position.set(x,y,z);m.castShadow=true;parent.add(m);
-    if(fur)for(var i=0;i<N;i++){var d=FL*(i+1)/N,s=new T.Mesh(SPH,furMats[i]);s.scale.set(rx+d,ry+d,rz+d);s.position.set(x,y,z);s.receiveShadow=true;parent.add(s)}
-    return m}
+  var horns=[],wings=[],bellyMat,hornMat,finMat;
+  function scaleTex(){var c=document.createElement('canvas');c.width=c.height=128;var x=c.getContext('2d');x.fillStyle='#777';x.fillRect(0,0,128,128);
+    for(var r=-1;r<9;r++)for(var k=-1;k<9;k++){var cx=k*16+(r%2?8:0)+8,cy=r*16+4,g=x.createRadialGradient(cx,cy-3,1,cx,cy,11);
+      g.addColorStop(0,'#e8e8e8');g.addColorStop(.75,'#9a9a9a');g.addColorStop(1,'#2e2e2e');x.fillStyle=g;x.beginPath();x.arc(cx,cy,10.5,0,7);x.fill()}
+    var t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(9,7);return t}
+  function ell(mat,rx,ry,rz,x,y,z,parent){var m=new T.Mesh(SPH,mat);m.scale.set(rx,ry,rz);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
   function tube(pts,r,mat,parent){var m=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts.map(function(p){return new T.Vector3(p[0],p[1],p[2])})),24,r,8,false),mat);parent.add(m);return m}
+  function spike(mat,r,h,x,y,z,rx,rz,parent,flat){var m=new T.Mesh(new T.ConeGeometry(r,h,flat?4:16),mat);m.position.set(x,y,z);m.rotation.set(rx,0,rz);if(flat)m.scale.x=.35;m.castShadow=true;parent.add(m);return m}
   function drawEye(pupil){var x=eyeCtx,cx=128,cy=128;x.fillStyle='#1a0f08';x.fillRect(0,0,512,256);
-    var g=x.createRadialGradient(cx,cy,6,cx,cy,84);g.addColorStop(0,'#FFD071');g.addColorStop(.45,'#EE9A2A');g.addColorStop(.8,'#B5620F');g.addColorStop(1,'#3C1D06');
+    var g=x.createRadialGradient(cx,cy,6,cx,cy,84);g.addColorStop(0,'#FFE27A');g.addColorStop(.45,'#F2A62A');g.addColorStop(.8,'#B5620F');g.addColorStop(1,'#3C1D06');
     x.fillStyle=g;x.beginPath();x.arc(cx,cy,84,0,7);x.fill();
     x.strokeStyle='rgba(90,40,5,.35)';x.lineWidth=1;for(var i=0;i<70;i++){var a=i/70*6.283;x.beginPath();x.moveTo(cx+Math.cos(a)*22,cy+Math.sin(a)*22);x.lineTo(cx+Math.cos(a)*78,cy+Math.sin(a)*78);x.stroke()}
-    x.fillStyle='#050302';x.beginPath();x.ellipse(cx,cy,pupil,56,0,0,7);x.fill();eyeTex.needsUpdate=true}
+    x.fillStyle='#050302';x.beginPath();x.ellipse(cx,cy,pupil,58,0,0,7);x.fill();eyeTex.needsUpdate=true}
   function build(){
     SPH=new T.SphereGeometry(1,36,26);
-    var ft=furTex();
-    baseMat=new T.MeshStandardMaterial({roughness:1,metalness:0});
-    paleMat=new T.MeshStandardMaterial({roughness:.95});earMat=new T.MeshStandardMaterial({roughness:1});lidMat=new T.MeshStandardMaterial({roughness:1,side:T.DoubleSide});
-    for(var i=0;i<N;i++){var fm=new T.MeshStandardMaterial({roughness:1,alphaMap:ft,alphaTest:.1+.76*i/N,side:T.DoubleSide});
-      /* strands that pass the alpha test must be fully opaque, or the room shows through the canvas */
-      fm.onBeforeCompile=function(sh){sh.fragmentShader=sh.fragmentShader.replace('#include <dithering_fragment>','#include <dithering_fragment>\n gl_FragColor.a=1.0;')};furMats.push(fm)}
-    var dark=new T.MeshStandardMaterial({color:lin(0x4d4753),roughness:.45}),line=new T.MeshStandardMaterial({color:lin(0x2a2430),roughness:.8});
+    var sc=scaleTex();
+    baseMat=new T.MeshStandardMaterial({roughness:.5,metalness:.12,bumpMap:sc,bumpScale:.014});
+    lidMat=new T.MeshStandardMaterial({roughness:.6,side:T.DoubleSide});
+    bellyMat=new T.MeshStandardMaterial({color:lin(0xE9DDB4),roughness:.65});
+    hornMat=new T.MeshStandardMaterial({color:lin(0xEFE7D2),roughness:.35});
+    finMat=new T.MeshStandardMaterial({color:lin(0xE27F4A),roughness:.6,side:T.DoubleSide});
+    var dark=new T.MeshStandardMaterial({color:lin(0x14302c),roughness:.6}),line=new T.MeshStandardMaterial({color:lin(0x12302b),roughness:.8});
     root=new T.Group();scene.add(root);cat=new T.Group();cat.position.y=.06;root.add(cat);
-    /* cushion */
     var cu=new T.Mesh(SPH,new T.MeshStandardMaterial({color:lin(0xB86F30),roughness:.95}));cu.scale.set(.95,.07,.82);cu.receiveShadow=true;cu.castShadow=true;scene.add(cu);
     var gr=new T.Mesh(new T.PlaneGeometry(9,5),new T.ShadowMaterial({opacity:.4}));gr.rotation.x=-Math.PI/2;gr.position.set(0,-.03,1.9);gr.receiveShadow=true;scene.add(gr);
     /* body */
     bodyG=new T.Group();cat.add(bodyG);
-    ell(baseMat,.39,.42,.37,0,.42,-.06,bodyG,1);
-    ell(baseMat,.27,.31,.24,0,.57,.1,bodyG,1);
-    ell(baseMat,.25,.2,.24,0,.8,.06,bodyG,1);
+    ell(baseMat,.36,.42,.34,0,.42,-.04,bodyG);
+    ell(bellyMat,.26,.35,.2,0,.41,.15,bodyG);
+    ell(baseMat,.2,.22,.2,0,.8,.06,bodyG);
+    [[.88,-.13,-.5],[.72,-.3,-.9],[.55,-.37,-1.2],[.38,-.38,-1.5],[.22,-.36,-1.8]].forEach(function(p){spike(finMat,.07,.13,0,p[0],p[1],p[2],0,bodyG,1)});
     [-1,1].forEach(function(s){
-      ell(baseMat,.22,.23,.3,s*.27,.22,-.03,bodyG,1);
-      ell(baseMat,.092,.28,.1,s*.13,.27,.27,cat,1);
-      ell(paleMat,.1,.055,.13,s*.13,.05,.35,cat,0);
-      ell(paleMat,.1,.05,.15,s*.31,.045,.24,cat,0)});
-    /* tail wraps round to the front paws */
-    tailG=new T.Group();tailG.position.set(.16,.11,-.3);cat.add(tailG);
-    var tp=[[0,0,0],[.26,-.01,.02],[.44,-.02,.26],[.4,-.03,.56],[.22,-.03,.72]];
-    tube(tp,.068,baseMat,tailG).castShadow=true;
-    for(i=0;i<N;i++)tube(tp,.068+FL*(i+1)/N,furMats[i],tailG);
-    ell(baseMat,.068,.068,.068,.22,-.03,.72,tailG,1);
+      ell(baseMat,.2,.22,.28,s*.27,.2,-.02,bodyG);
+      ell(baseMat,.1,.055,.17,s*.31,.05,.22,cat);
+      [-1,0,1].forEach(function(k){spike(hornMat,.02,.06,s*.31+k*.055,.035,.4,1.45,0,cat)});
+      var arm=ell(baseMat,.07,.17,.08,s*.29,.5,.2,bodyG);arm.rotation.set(-.5,0,s*.25);
+      ell(baseMat,.065,.055,.07,s*.26,.36,.31,bodyG);
+      /* wing */
+      var wg=new T.Group();wg.position.set(s*.15,.76,-.24);wg.userData.s=s;bodyG.add(wg);wings.push(wg);
+      var sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(.5,.42);sh.quadraticCurveTo(.43,.2,.5,.02);sh.quadraticCurveTo(.36,.05,.3,-.14);sh.quadraticCurveTo(.2,-.03,.1,-.2);sh.lineTo(0,-.12);
+      var wi=new T.Group();wi.scale.x=s;wg.add(wi);
+      var mem=new T.Mesh(new T.ShapeGeometry(sh),finMat);mem.castShadow=true;wi.add(mem);
+      [[.5,.42],[.5,.02],[.3,-.14]].forEach(function(e){tube([[0,0,0],[e[0]*.5,e[1]*.5+.02,0],[e[0],e[1],0]],.013,baseMat,wi)})});
+    /* tail: thick at the base, tapering to a leaf-shaped tip */
+    tailG=new T.Group();tailG.position.set(.1,.16,-.3);cat.add(tailG);
+    var tc=new T.CatmullRomCurve3([[0,0,0],[.28,0,0],[.5,0,.22],[.5,0,.52],[.32,0,.72]].map(function(p){return new T.Vector3(p[0],p[1],p[2])}));
+    for(var i=0;i<16;i++){var u=i/15,p=tc.getPoint(u),r=.15-.115*u;ell(baseMat,r,r,r,p.x,r-.15,p.z,tailG)}
+    var tp=tc.getPoint(1),tt=tc.getTangent(1),leaf=new T.Mesh(new T.ConeGeometry(.09,.2,4),finMat);
+    leaf.position.set(tp.x+tt.x*.1,-.1,tp.z+tt.z*.1);leaf.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),new T.Vector3(tt.x,0,tt.z).normalize());leaf.scale.z=.3;leaf.castShadow=true;tailG.add(leaf);
     /* head */
-    headG=new T.Group();headG.position.set(0,.99,.12);cat.add(headG);
-    ell(baseMat,.4,.35,.36,0,0,0,headG,1);
+    headG=new T.Group();headG.position.set(0,1.0,.14);cat.add(headG);
+    ell(baseMat,.36,.31,.33,0,0,0,headG);
+    ell(baseMat,.2,.15,.2,0,-.08,.27,headG);
+    ell(bellyMat,.17,.07,.17,0,-.19,.2,headG);
+    spike(finMat,.06,.12,0,.31,-.06,-.35,0,headG,1);spike(finMat,.06,.12,0,.24,-.22,-.9,0,headG,1);
     [-1,1].forEach(function(s){
-      var cg=new T.Group();cg.position.set(s*.2,-.12,.14);headG.add(cg);cheeks.push(cg);ell(baseMat,.2,.17,.2,0,0,0,cg,1);
-      ell(paleMat,.088,.066,.07,s*.066,-.135,.335,headG,0);
-      var eg=new T.Group();eg.position.set(s*.26,.33,-.02);eg.rotation.z=-s*.36;headG.add(eg);ears.push(eg);
-      var e=new T.Mesh(new T.ConeGeometry(.17,.25,28),earMat);e.scale.z=.5;e.castShadow=true;eg.add(e);
-      var ie=new T.Mesh(new T.ConeGeometry(.115,.21,24),new T.MeshStandardMaterial({color:lin(0xB48F96),roughness:.9}));ie.scale.z=.3;ie.position.set(0,-.025,.06);eg.add(ie);
-      /* eye */
-      var g=new T.Group();g.position.set(s*.155,.03,.3);g.rotation.y=s*.1;headG.add(g);
-      var ball=new T.Mesh(new T.SphereGeometry(.085,32,24),new T.MeshPhysicalMaterial({map:eyeTex,roughness:.04,clearcoat:1,clearcoatRoughness:.03}));ball.rotation.y=0;g.add(ball);
+      var hg=new T.Group();hg.position.set(s*.17,.24,-.06);hg.rotation.set(-.55,0,-s*.3);headG.add(hg);horns.push(hg);
+      var h=new T.Mesh(new T.ConeGeometry(.06,.3,16),hornMat);h.position.y=.15;h.castShadow=true;hg.add(h);
+      var fg=new T.Group();fg.position.set(s*.32,-.04,-.04);fg.rotation.z=-s*1.1;headG.add(fg);ears.push(fg);
+      var f=new T.Mesh(new T.ConeGeometry(.1,.24,4),finMat);f.scale.z=.25;f.position.y=.1;f.castShadow=true;fg.add(f);
+      var n=ell(dark,.016,.012,.01,s*.06,-.03,.458,headG);n.castShadow=false;
+      var br=ell(baseMat,.1,.03,.06,s*.17,.175,.25,headG);br.rotation.z=-s*.18;
+      spike(hornMat,.014,.045,s*.07,-.185,.425,Math.PI,0,headG);
+      var g=new T.Group();g.position.set(s*.17,.06,.25);g.rotation.y=s*.16;headG.add(g);
+      var ball=new T.Mesh(new T.SphereGeometry(.085,32,24),new T.MeshPhysicalMaterial({map:eyeTex,roughness:.04,clearcoat:1,clearcoatRoughness:.03}));g.add(ball);
       var up=new T.Mesh(new T.SphereGeometry(.093,24,12,0,6.2832,0,1.5708),lidMat),lo=new T.Mesh(new T.SphereGeometry(.093,24,12,0,6.2832,1.5708,1.5708),lidMat);
-      g.add(up);g.add(lo);eyes.push({up:up,lo:lo,s:s});
-      /* whiskers */
-      var wg=new T.Group();wg.position.set(s*.12,-.13,.36);headG.add(wg);whiskG.push(wg);
-      [-1,0,1].forEach(function(k){var c=new T.QuadraticBezierCurve3(new T.Vector3(0,k*.012,0),new T.Vector3(s*.16,k*.03+.03,.02),new T.Vector3(s*.34,k*.075,-.05));
-        wg.add(new T.Line(new T.BufferGeometry().setFromPoints(c.getPoints(10)),new T.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.85})))})});
-    ell(paleMat,.07,.05,.06,0,-.2,.29,headG,0);
-    var nose=ell(dark,.036,.026,.022,0,-.078,.392,headG,0);nose.castShadow=false;
-    tube([[0,-.1,.4],[0,-.14,.4]],.005,line,headG);
+      g.add(up);g.add(lo);eyes.push({up:up,lo:lo,s:s})});
     mouthUp=new T.Group();mouthDown=new T.Group();headG.add(mouthUp);headG.add(mouthDown);
-    [-1,1].forEach(function(s){tube([[0,-.14,.4],[s*.035,-.172,.395],[s*.085,-.165,.375]],.005,line,mouthUp);
-      tube([[0,-.15,.4],[s*.04,-.168,.395],[s*.08,-.195,.37]],.005,line,mouthDown)});
+    tube([[-.16,-.13,.36],[-.08,-.168,.445],[0,-.175,.468],[.08,-.168,.445],[.16,-.13,.36]],.006,line,mouthUp);
+    tube([[-.16,-.2,.34],[-.08,-.172,.44],[0,-.162,.468],[.08,-.172,.44],[.16,-.2,.34]],.006,line,mouthDown);
   }
-  function lights(time){
+  
+function lights(time){
     var P={morning:[0xfff1dc,0x8a6f55,.4,0xffe0ad,.9,[-2.6,3.4,3],0xcfe0ff,.28],
            day:[0xe6eefb,0x8a6f55,.42,0xffffff,.85,[-2.4,4,3],0xcfe0ff,.28],
            evening:[0xf3c9a0,0x5a3a25,.34,0xffa866,.9,[-3.6,2.2,2.6],0xff9a60,.3],
@@ -577,7 +517,7 @@ var Cat3D=(function(){
     renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
     el.appendChild(renderer.domElement);
     el.insertAdjacentHTML('beforeend','<span class="fx" id="catFx" aria-hidden="true"></span><span class="hint3d">ลากเพื่อหมุนดูรอบตัว</span>');
-    scene=new T.Scene();camera=new T.PerspectiveCamera(30,1.25,.1,50);camera.position.set(0,1.05,3.9);camera.lookAt(0,.6,0);
+    scene=new T.Scene();camera=new T.PerspectiveCamera(30,1.25,.1,50);camera.position.set(0,1.08,4.0);camera.lookAt(0,.64,0);
     hemi=new T.HemisphereLight(0xffffff,0x888888,.8);scene.add(hemi);
     key=new T.DirectionalLight(0xffffff,1.2);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
     var sc=key.shadow.camera;sc.left=-1.8;sc.right=1.8;sc.top=2.2;sc.bottom=-1;sc.near=.5;sc.far=12;key.shadow.bias=-.0006;key.shadow.normalBias=.03;key.shadow.radius=5;scene.add(key);
@@ -601,6 +541,7 @@ var Cat3D=(function(){
       cur.yaw+=(tgt.yaw-cur.yaw)*.15;root.rotation.y=cur.yaw;
       if(!reduce){bodyG.scale.set(1+Math.sin(t*1.7)*.008,1+Math.sin(t*1.7)*.012,1+Math.sin(t*1.7)*.012);
         tailG.rotation.y=Math.sin(t*(slow?.7:1.7))*(slow?.05:.13);tailG.rotation.z=Math.sin(t*1.1)*.03;
+        var joy=st.ex==='joy';wings.forEach(function(w){w.rotation.y=w.userData.s*(.6+Math.sin(t*(joy?8:slow?1.1:2.1))*(joy?.32:.09))});
         ears.forEach(function(e,i){e.rotation.x=Math.max(0,Math.sin(t*.9+i*2.3)-.93)*2.4})}
       var idle=reduce?0:Math.sin(t*.45)*.06,droop=st.ex==='sleepy'?.16+Math.sin(t*.8)*.04:st.ex==='sick'||st.ex==='sad'?.12:0;
       cur.hx+=(tgt.hx+droop-cur.hx)*k;cur.hy+=(tgt.hy-cur.yaw*.0+idle-cur.hy)*k;
@@ -615,36 +556,37 @@ var Cat3D=(function(){
   R.update=function(s,ex,time){
     st.ex=ex;var g=Math.sqrt(Math.min(1,s.xp/450)),hp=s.h/100;
     cat.scale.setScalar(.6+.4*g);headG.scale.setScalar(1.2-.2*g);
-    cheeks.forEach(function(c){c.scale.setScalar(.74+.26*g)});
-    var lo=mix(DULL[0],HEALTHY[0],hp),hi=mix(DULL[1],HEALTHY[1],hp);
-    var mid=lo.clone().lerp(hi,.5);baseMat.color.copy(lo).convertSRGBToLinear();lidMat.color.copy(mid).convertSRGBToLinear();earMat.color.copy(mid).convertSRGBToLinear();
-    paleMat.color.copy(hi.clone().lerp(new T.Color(0xDDE3EC),.4)).convertSRGBToLinear();
-    furMats.forEach(function(m,i){m.color.copy(lo.clone().lerp(hi,Math.pow((i+1)/N,.8))).convertSRGBToLinear()});
+    horns.forEach(function(h){h.scale.setScalar(.3+.7*g)});
+    wings.forEach(function(w){w.scale.setScalar(.45+.75*g)});
+    var skin=mix(0x7F9089,0x2FA391,hp);
+    baseMat.color.copy(skin).convertSRGBToLinear();baseMat.roughness=.78-.36*hp;baseMat.metalness=.04+.14*hp;
+    lidMat.color.copy(skin.clone().multiplyScalar(.82)).convertSRGBToLinear();
+    finMat.color.copy(mix(0xA98F80,0xE27F4A,hp)).convertSRGBToLinear();
     var L={joy:[-.1,.1,0],happy:[-1.15,1.1,0],calm:[-1.3,1.1,0],sleepy:[-.22,1,0],sad:[-.5,1,.38],sick:[-.4,1,.38]}[ex];
     tgt.up=L[0];tgt.lo=L[1];tgt.tilt=L[2];
     var down=ex==='sad'||ex==='sick';mouthUp.visible=!down;mouthDown.visible=down;
-    whiskG.forEach(function(w,i){w.rotation.z=(i?-1:1)*(down?.32:0)});
-    ears.forEach(function(e,i){e.rotation.z=(i?-1:1)*(down?.62:.36)});
-    var pupil=(time==='night'?34:15)+(ex==='happy'||ex==='joy'?6:0)-(ex==='sick'?3:0);
+    ears.forEach(function(e,i){e.rotation.z=(i?-1:1)*(down?1.75:1.1)});
+    var pupil=(time==='night'?32:13)+(ex==='happy'||ex==='joy'?6:0)-(ex==='sick'?3:0);
     if(eyeKey!==''+pupil){eyeKey=''+pupil;drawEye(pupil)}
     lights(time);
     var fx=document.getElementById('catFx');if(fx)fx.textContent=ex==='sleepy'?'z z Z':ex==='joy'?'♥':''};
-  return R})();
+  
+return R})();
 
 /* ---------- render ---------- */
 function meter(label,val,note,cls,pct){return '<div><div class="meter-top"><b>'+label+'</b><span>'+note+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+clamp(pct,0,100)+'%"></i></div></div>'}
 function render(){
   var st=simulate(), ex=expression(st), t=today(), si=stageOf(st.xp), d=S.days[cur]||{meals:[],vit:[],sleep:null,water:0};
   if($('catName')!==document.activeElement)$('catName').value=S.name;
-  var kg=(0.9+5.6*Math.min(1,st.xp/450)).toFixed(1);
-  $('catTags').innerHTML='<span class="tag copper">'+STAGES[si][1]+'</span><span class="tag">'+kg+' กก.</span>';
+  var kg=Math.round(12+68*Math.min(1,st.xp/450));
+  $('catTags').innerHTML='<span class="tag copper">'+STAGES[si][1]+'</span><span class="tag">ปีกกว้าง '+kg+' ซม.</span>';
   $('bubble').textContent=petLine||speech(st,ex);
   var cb=$('catBox');cb.dataset.time=sceneTime();
   if(Cat3D.ready)Cat3D.update(st,ex,sceneTime());else{cb.style.setProperty('--hp',Math.round(st.h)+'%');cb.innerHTML=catSVG(st,ex)}
-  var hw=st.h>=75?'แข็งแรง ขนเงา':st.h>=50?'ปกติดี':st.h>=35?'อ่อนเพลีย':'ป่วย';
+  var hw=st.h>=75?'แข็งแรง เกล็ดเงา':st.h>=50?'ปกติดี':st.h>=35?'อ่อนเพลีย':'ป่วย';
   var mw={joy:'มีความสุขมาก',happy:'อารมณ์ดี',calm:'เฉย ๆ',sad:'เหงาหงอย',sleepy:'ง่วงนอน',sick:'ซึม'}[ex];
   var nx=STAGES[si+1], gp=nx?(st.xp-STAGES[si][0])/(nx[0]-STAGES[si][0])*100:100;
-  var gn=nx?'อีก '+Math.ceil(nx[0]-st.xp)+' แต้มเป็น'+nx[1]:'โตเต็มที่แล้ว';
+  var gn=nx?'อีก '+Math.ceil(nx[0]-st.xp)+' แต้มถึงขั้น'+nx[1]:'โตเต็มที่แล้ว';
   $('meters').innerHTML=meter('สุขภาพ',st.h,hw+' · '+Math.round(st.h),tier(st.h),st.h)
     +meter('อารมณ์',st.m,mw+' · '+Math.round(st.m),tier(st.m),st.m)
     +meter('การเติบโต',gp,gn,'grow',gp);
@@ -689,7 +631,7 @@ function sgn(n){return (n>0?'+':'')+n}
 function act(label,fn){var a=simulate();fn();save();petLine='';var b=simulate();render();
   var parts=[],dh=Math.round(b.h-a.h),dm=Math.round(b.m-a.m),dx=Math.round((b.xp-a.xp)*10)/10;
   if(dh)parts.push('สุขภาพ '+sgn(dh));if(dm)parts.push('อารมณ์ '+sgn(dm));if(dx)parts.push('เติบโต '+sgn(dx));
-  if(stageOf(b.xp)>stageOf(a.xp))parts=[S.name+'โตเป็น'+STAGES[stageOf(b.xp)][1]+'แล้ว!'];
+  if(stageOf(b.xp)>stageOf(a.xp))parts=[S.name+'โตถึงขั้น'+STAGES[stageOf(b.xp)][1]+'แล้ว!'];
   var box=$('catBox');box.classList.remove('pop');void box.offsetWidth;box.classList.add('pop');
   if(label)toast(label+(parts.length?' · '+parts.join(' · '):''))}
 
@@ -699,9 +641,9 @@ $('tabs').addEventListener('click',function(e){var b=e.target.closest('button');
 $('prevDay').onclick=function(){cur=addDays(cur,-1);render()};
 $('nextDay').onclick=function(){if(cur<today()){cur=addDays(cur,1);render()}};
 $('week').addEventListener('click',function(e){var b=e.target.closest('[data-day]');if(b){cur=b.dataset.day;render()}});
-$('catName').addEventListener('input',function(){S.name=this.value.trim()||'น้องเทา';save()});
+$('catName').addEventListener('input',function(){S.name=this.value.trim()||'น้องมรกต';save()});
 $('catBox').onclick=function(){if(Cat3D.ready&&Cat3D.dragged())return;var st=simulate(),ex=expression(st);
-  var lines=ex==='sick'||ex==='sad'?['ขอบคุณที่ลูบนะ… ดีขึ้นนิดนึงแล้ว','อยู่ข้าง ๆ กันนะ']:['ครืดดด~ ลูบอีก ๆ','เมี๊ยว! ชอบจัง','แก้มเรานุ่มไหม','ครืดดด ครืดดด~'];
+  var lines=ex==='sick'||ex==='sad'?['ขอบคุณที่ลูบนะ… ดีขึ้นนิดนึงแล้ว','อยู่ข้าง ๆ กันนะ']:['ฮึ่มม~ เกาใต้คางอีก ๆ','กร๊าว! ชอบจัง','เขาเรายาวขึ้นหรือยัง','ดูปีกเราสิ กระพือได้แล้วนะ'];
   petLine=lines[Math.floor(Math.random()*lines.length)];render();
   this.classList.remove('pop');void this.offsetWidth;this.classList.add('pop')};
 
@@ -739,7 +681,7 @@ function loadDemo(){S=fresh();S.demo=true;var t=today();S.start=addDays(t,-6);
   S.days[t]={sleep:{bed:'23:00',wake:'07:00',q:'good'},meals:[{id:uid(),type:'breakfast',tags:['balanced','veg'],portion:'ok'}],vit:['v1','v2'],water:2};
   cur=t;save();petLine='';render()}
 $('demoBtn').onclick=loadDemo;
-function resetAll(){S=fresh();cur=today();save();petLine='';render();toast('เริ่มเลี้ยงลูกแมวตัวใหม่แล้ว')}
+function resetAll(){S=fresh();cur=today();save();petLine='';render();toast('ไข่มังกรใบใหม่ฟักแล้ว')}
 $('clearDemo').onclick=resetAll;
 var armed=0;
 $('resetBtn').onclick=function(){var b=this;if(armed){armed=0;b.textContent='เริ่มเลี้ยงใหม่';resetAll();return}
