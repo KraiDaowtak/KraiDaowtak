@@ -79,3 +79,7 @@ js/modes/*.js       โหมด basics, atlas, stream, quiz, diff, cases
 
 - **เซลล์ใหม่:** เพิ่มข้อมูลใน `CELLS` (`js/data.js`) และเพิ่ม `case` ใน `buildCell()` (`js/cells.js`)
 - **กรณีศึกษาใหม่:** เพิ่ม object ใน `CASES` โดยกำหนดสัดส่วนเซลล์บนสไลด์ใน `smear.rbc` และ `smear.wbc`
+
+## แอปอื่นใน repo นี้
+
+- [`nong-tao/`](nong-tao/index.html) **น้องเทา แมวคู่สุขภาพ**: บันทึกอาหาร วิตามิน การนอน และน้ำของตัวเอง แล้วแมว British Shorthair จะโต แข็งแรง และอารมณ์ดีตามการดูแลตัวเองของเรา เป็นไฟล์ HTML ไฟล์เดียว เปิดในเบราว์เซอร์ได้ทันที ข้อมูลเก็บใน localStorage ของเครื่อง

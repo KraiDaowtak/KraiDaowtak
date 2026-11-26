@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>น้องเทา แมวคู่สุขภาพ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Mali:wght@500;600;700&display=swap">
+<style>
+/* Layout: cat stage on the left (stacked on top on phones), logging tabs and history on the right.
+   Palette comes from a British Blue: slate-blue coat for neutrals, copper eyes for the accent. */
+:root{
+  --bg:#E7ECF2; --surface:#F7F9FC; --surface2:#DCE3EC; --stage:#D3DCE8;
+  --ink:#1C2736; --muted:#566373; --line:#C6D0DC;
+  --accent:#B25E18; --accent-ink:#FFFFFF; --accent-soft:#F1DCC6;
+  --coat:#8695AB; --coat-d:#6C7B92; --coat-l:#ABB7C9; --coat-dull:#9B9B98;
+  --eye:#DB8A28; --pupil:#1A1410; --pink:#E0A09C; --shadow:rgba(28,39,54,.16);
+  --good:#2A8259; --warn:#A9760A; --bad:#BC4237;
+  --display:"Mali","Anuphan","Leelawadee UI","Thonburi",system-ui,sans-serif;
+  --body:"Anuphan","Leelawadee UI","Thonburi","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#121821; --surface:#1A222E; --surface2:#263142; --stage:#1F2A39;
+  --ink:#E6ECF4; --muted:#9BA8B9; --line:#334052;
+  --accent:#E3913E; --accent-ink:#1B1205; --accent-soft:#3A2A19;
+  --coat:#8E9DB4; --coat-d:#70809A; --coat-l:#B2BECF; --coat-dull:#868683;
+  --eye:#F0A040; --pupil:#120D08; --pink:#D69694; --shadow:rgba(0,0,0,.4);
+  --good:#52C08F; --warn:#E2B243; --bad:#EC766C; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#121821; --surface:#1A222E; --surface2:#263142; --stage:#1F2A39;
+  --ink:#E6ECF4; --muted:#9BA8B9; --line:#334052;
+  --accent:#E3913E; --accent-ink:#1B1205; --accent-soft:#3A2A19;
+  --coat:#8E9DB4; --coat-d:#70809A; --coat-l:#B2BECF; --coat-dull:#868683;
+  --eye:#F0A040; --pupil:#120D08; --pink:#D69694; --shadow:rgba(0,0,0,.4);
+  --good:#52C08F; --warn:#E2B243; --bad:#EC766C; color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.brand{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:1.5}
+.brand small{display:block;line-height:1.5;font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.datenav{display:flex;align-items:center;gap:6px}
+.datenav b{min-width:11.5em;text-align:center;font-weight:600;font-size:.95rem}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.1rem;line-height:1}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+
+/* cat stage */
+.stage{background:var(--stage);border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.cat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cat-name{font-family:var(--display);font-weight:700;font-size:1.5rem;background:transparent;border:0;border-bottom:2px dashed transparent;
+  padding:0 2px;width:9em;max-width:100%;min-width:0}
+.cat-name:hover,.cat-name:focus{border-bottom-color:var(--accent);outline:none}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.82rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--surface);color:var(--ink)}
+.tag.copper{background:var(--accent);color:var(--accent-ink)}
+.bubble{position:relative;background:var(--surface);border-radius:18px;padding:10px 14px;font-family:var(--display);font-weight:500;font-size:1rem;line-height:1.45;min-height:3.9em;display:flex;align-items:center}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;background:var(--surface);transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.catbox{display:block;width:100%;border:0;background:transparent;padding:0;cursor:pointer;border-radius:20px}
+.catbox svg{display:block;width:100%;max-width:340px;height:auto;margin:0 auto}
+.meters{display:flex;flex-direction:column;gap:10px;background:var(--surface);border-radius:18px;padding:14px}
+.meter-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.92rem}
+.meter-top b{font-weight:600}
+.meter-top span{font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+.bar{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--good);transition:width .5s ease}
+.bar i.mid{background:var(--warn)} .bar i.low{background:var(--bad)} .bar i.grow{background:var(--accent)}
+
+/* svg cat */
+.coat{fill:color-mix(in oklab,var(--coat) var(--hp,100%),var(--coat-dull))}
+.coat-d{stroke:color-mix(in oklab,var(--coat-d) var(--hp,100%),var(--coat-dull));fill:none}
+.coat-dk{fill:color-mix(in oklab,var(--coat-d) var(--hp,100%),var(--coat-dull))}
+.coat-l{fill:color-mix(in oklab,var(--coat-l) var(--hp,100%),var(--coat-dull))}
+.eye{fill:var(--eye)} .pupil{fill:var(--pupil)} .glint{fill:#fff} .pinkf{fill:var(--pink)}
+.inkline{stroke:var(--pupil);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.whisk{stroke:var(--coat-l);stroke-width:1.6;stroke-linecap:round;fill:none}
+.gloss{stroke:#fff;stroke-opacity:.38;stroke-width:6;stroke-linecap:round;fill:none}
+.cushion{fill:var(--accent-soft)} .shade{fill:var(--shadow)}
+.zzz{font-family:var(--display);font-weight:700;fill:var(--muted)}
+.heart{fill:var(--bad)}
+.tail{transform-origin:215px 248px;animation:sway 3.2s ease-in-out infinite alternate}
+.breath{transform-origin:150px 285px;animation:breath 3.6s ease-in-out infinite}
+.lid{transform-box:fill-box;transform-origin:top;transform:scaleY(0);animation:blink 5s infinite}
+.pop{animation:pop .45s ease}
+@keyframes sway{from{transform:rotate(-7deg)}to{transform:rotate(9deg)}}
+@keyframes breath{50%{transform:scaleY(1.018)}}
+@keyframes blink{0%,94%,100%{transform:scaleY(0)}97%{transform:scaleY(1)}}
+@keyframes pop{30%{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.tail,.breath,.lid,.pop{animation:none}.bar i{transition:none}}
+
+/* panels */
+.panel{background:var(--surface);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h2{font-family:var(--display);font-size:1.12rem;font-weight:600}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--surface2);border-radius:14px;padding:4px}
+.tabs button{border:0;background:transparent;border-radius:11px;padding:8px 2px;cursor:pointer;font-weight:600;font-size:.95rem;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px var(--shadow)}
+.tabs .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-left:5px;vertical-align:middle}
+.field{display:flex;flex-direction:column;gap:6px;border:0;padding:0;margin:0;min-width:0}
+.field>legend,.field>.lbl{font-size:.85rem;font-weight:600;color:var(--muted);padding:0;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative;display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:99px;padding:6px 13px;cursor:pointer;font-size:.93rem;background:var(--surface);user-select:none}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip:has(input:checked){background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.good:has(input:checked){background:var(--good);border-color:var(--good);color:var(--surface)}
+.chip.bad:has(input:checked){background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.chip:has(input:focus-visible),button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:11px 18px;cursor:pointer;align-self:flex-start}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:6px 12px;font-size:.88rem;border-radius:11px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.row .field{flex:1 1 130px}
+input[type=time],input[type=text]:not(.cat-name){border:1.5px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 12px;width:100%;min-width:0}
+.hint{font-size:.88rem;color:var(--muted)}
+.vit-list{display:flex;flex-direction:column;gap:6px;list-style:none;margin:0;padding:0}
+.vit-list li{display:flex;align-items:center;gap:8px}
+.vit-list .chip{flex:1;min-width:0;border-radius:13px;padding:9px 13px}
+.x{border:0;background:transparent;color:var(--muted);cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:1.05rem;flex:none}
+.x:hover{color:var(--bad)}
+.water{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.glasses{display:flex;gap:5px;flex-wrap:wrap}
+.glasses i{width:18px;height:26px;border-radius:3px 3px 7px 7px;border:1.5px solid var(--line);background:var(--bg)}
+.glasses i.on{background:var(--coat);border-color:var(--coat-d)}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.log li{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.log li:first-child{border-top:0}
+.log .what{flex:1;min-width:0}
+.log .what b{font-weight:600}
+.log .what span{display:block;font-size:.86rem;color:var(--muted);overflow-wrap:anywhere}
+.pts{font-variant-numeric:tabular-nums;font-weight:600;font-size:.88rem;padding:2px 9px;border-radius:99px;border:1.5px solid currentColor;color:var(--good);flex:none}
+.pts.mid{color:var(--warn)} .pts.low{color:var(--bad)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end}
+.day{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:transparent;padding:0;cursor:pointer;border-radius:8px}
+.day .num{font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.day .col2{width:100%;height:84px;display:flex;align-items:flex-end;background:var(--surface2);border-radius:8px;overflow:hidden}
+.day .col2 i{display:block;width:100%;background:var(--good);border-radius:8px 8px 0 0;min-height:2px}
+.day .col2 i.mid{background:var(--warn)} .day .col2 i.low{background:var(--bad)}
+.day .dn{font-size:.85rem;font-weight:600}
+.day[aria-current="true"] .dn{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.banner{background:var(--accent-soft);border-radius:14px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;font-size:.93rem}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:14px;font-size:.93rem;font-weight:500;max-width:calc(100% - 32px);text-align:center;z-index:20;box-shadow:0 6px 20px var(--shadow)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <h1 class="brand">แมวคู่สุขภาพ<small>ดูแลตัวเองดี แมว British Shorthair ของคุณก็โตดี</small></h1>
+    <div class="datenav">
+      <button class="icon-btn" id="prevDay" aria-label="วันก่อนหน้า">‹</button>
+      <b id="dateLabel"></b>
+      <button class="icon-btn" id="nextDay" aria-label="วันถัดไป">›</button>
+    </div>
+  </header>
+
+  <div class="banner" id="demoBanner" hidden>
+    <span>กำลังแสดง<b>ข้อมูลตัวอย่าง 7 วัน</b> ไม่ใช่ข้อมูลของคุณ</span>
+    <button class="btn small" id="clearDemo">ล้างแล้วเริ่มของฉัน</button>
+  </div>
+
+  <div class="grid">
+    <section class="col">
+      <div class="stage">
+        <div class="cat-head">
+          <input class="cat-name" id="catName" type="text" maxlength="20" aria-label="ชื่อแมว">
+          <div class="tagrow" id="catTags"></div>
+        </div>
+        <div class="bubble" id="bubble" aria-live="polite"></div>
+        <button class="catbox" id="catBox" aria-label="ลูบแมว"></button>
+        <div class="meters" id="meters"></div>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="panel">
+        <div class="tabs" role="tablist" id="tabs">
+          <button role="tab" data-tab="food" aria-selected="true">อาหาร</button>
+          <button role="tab" data-tab="vit" aria-selected="false">วิตามิน</button>
+          <button role="tab" data-tab="sleep" aria-selected="false">การนอน</button>
+          <button role="tab" data-tab="water" aria-selected="false">น้ำ</button>
+        </div>
+
+        <form id="p-food" class="col" autocomplete="off">
+          <fieldset class="field"><legend>มื้อ</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="mtype" id="mt-b" value="breakfast" checked>เช้า</label>
+              <label class="chip"><input type="radio" name="mtype" id="mt-l" value="lunch">กลางวัน</label>
+              <label class="chip"><input type="radio" name="mtype" id="mt-d" value="dinner">เย็น</label>
+              <label class="chip"><input type="radio" name="mtype" id="mt-s" value="snack">ของว่าง</label>
+            </div>
+          </fieldset>
+          <fieldset class="field"><legend>ในจานมีอะไร (เลือกได้หลายอย่าง)</legend>
+            <div class="chips" id="tagChips"></div>
+          </fieldset>
+          <fieldset class="field"><legend>ปริมาณ</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="portion" id="po-s" value="little">น้อยไป</label>
+              <label class="chip"><input type="radio" name="portion" id="po-o" value="ok" checked>อิ่มพอดี</label>
+              <label class="chip"><input type="radio" name="portion" id="po-m" value="much">มากไป</label>
+            </div>
+          </fieldset>
+          <button class="btn" type="submit">ป้อนให้แมวรู้</button>
+        </form>
+
+        <div id="p-vit" class="col" hidden>
+          <p class="hint">แตะรายการที่กินแล้ววันนี้ แมวจะขนเงาขึ้นเมื่อกินครบ</p>
+          <ul class="vit-list" id="vitList"></ul>
+          <form class="row" id="vitAdd" autocomplete="off">
+            <label class="field"><span class="lbl">เพิ่มวิตามินหรืออาหารเสริม</span>
+              <input type="text" id="vitNew" maxlength="30" placeholder="เช่น แมกนีเซียม"></label>
+            <button class="btn ghost" type="submit">เพิ่ม</button>
+          </form>
+        </div>
+
+        <form id="p-sleep" class="col" hidden autocomplete="off">
+          <p class="hint">บันทึกการนอนของคืนที่ผ่านมา (ตื่นเช้าวันที่เลือก) นอน 7–9 ชั่วโมงแมวจะสดชื่นที่สุด</p>
+          <div class="row">
+            <label class="field"><span class="lbl">เข้านอน</span><input type="time" id="bed" value="23:00" required></label>
+            <label class="field"><span class="lbl">ตื่น</span><input type="time" id="wake" value="07:00" required></label>
+          </div>
+          <fieldset class="field"><legend>หลับเป็นยังไง</legend>
+            <div class="chips">
+              <label class="chip good"><input type="radio" name="sq" id="sq-g" value="good" checked>หลับสนิท</label>
+              <label class="chip"><input type="radio" name="sq" id="sq-o" value="ok">พอใช้</label>
+              <label class="chip bad"><input type="radio" name="sq" id="sq-b" value="bad">หลับ ๆ ตื่น ๆ</label>
+            </div>
+          </fieldset>
+          <button class="btn" type="submit">บันทึกการนอน</button>
+        </form>
+
+        <div id="p-water" class="col" hidden>
+          <p class="hint">เป้าหมายวันละ 8 แก้ว</p>
+          <div class="water">
+            <button class="icon-btn" id="waterMinus" aria-label="ลดหนึ่งแก้ว">−</button>
+            <div class="glasses" id="glasses"></div>
+            <button class="icon-btn" id="waterPlus" aria-label="เพิ่มหนึ่งแก้ว">+</button>
+            <b id="waterNum"></b>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 id="logTitle">บันทึกของวันนี้</h2>
+        <ul class="log" id="log"></ul>
+      </div>
+
+      <div class="panel">
+        <h2>คะแนนดูแลตัวเอง 7 วันล่าสุด</h2>
+        <div class="week" id="week"></div>
+        <p class="hint">คะแนนเต็ม 100 ต่อวัน มาจากอาหาร 40 การนอน 35 วิตามิน 15 และน้ำ 10 แตะวันเพื่อย้อนไปแก้ไข</p>
+      </div>
+
+      <div class="foot">
+        <button class="btn ghost small" id="demoBtn">ดูตัวอย่าง 7 วัน</button>
+        <button class="btn ghost small" id="resetBtn">เริ่มเลี้ยงใหม่</button>
+        <span class="hint">ข้อมูลเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น</span>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='nong-tao-care-v1';
+var TAGS=[
+  {id:'balanced',t:'ครบ 5 หมู่',g:1},{id:'veg',t:'ผัก ผลไม้',g:1},{id:'protein',t:'โปรตีนดี',g:1},{id:'whole',t:'ข้าวกล้อง ธัญพืช',g:1},
+  {id:'fried',t:'ของทอด ของมัน',g:0},{id:'sweet',t:'หวานจัด',g:0},{id:'fast',t:'ฟาสต์ฟู้ด แปรรูป',g:0},{id:'salty',t:'เค็มจัด',g:0}];
+var TAG={};TAGS.forEach(function(t){TAG[t.id]=t});
+var MEAL={breakfast:'มื้อเช้า',lunch:'มื้อกลางวัน',dinner:'มื้อเย็น',snack:'ของว่าง'};
+var PORTION={little:'กินน้อยไป',ok:'อิ่มพอดี',much:'กินมากไป'};
+var SQ={good:'หลับสนิท',ok:'พอใช้',bad:'หลับ ๆ ตื่น ๆ'};
+var W={food:40,sleep:35,vit:15,water:10};
+var STAGES=[[0,'ลูกแมว'],[30,'แมวเด็ก'],[90,'แมวรุ่น'],[210,'แมวโตเต็มวัย'],[450,'British แก้มยุ้ย']];
+var DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
+
+function pad(n){return (n<10?'0':'')+n}
+function keyOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function dateOf(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(k,n){var d=dateOf(k);d.setDate(d.getDate()+n);return keyOf(d)}
+function today(){return keyOf(new Date())}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function $(id){return document.getElementById(id)}
+
+function fresh(){return {name:'น้องเทา',start:today(),demo:false,days:{},
+  vitamins:[{id:'v1',name:'วิตามินรวม'},{id:'v2',name:'วิตามินซี'},{id:'v3',name:'วิตามินดี'},{id:'v4',name:'โอเมก้า 3'}]}}
+var S=fresh();
+try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.days&&o.vitamins)S=o}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var cur=today(), tab='food', petLine='';
+function day(k,make){if(!S.days[k]&&make){S.days[k]={meals:[],vit:[],sleep:null,water:0};if(k<S.start)S.start=k}return S.days[k]}
+
+/* ---------- scoring ---------- */
+function mealScore(m){var g=0,b=0;m.tags.forEach(function(t){if(TAG[t]){TAG[t].g?g++:b++}});
+  return clamp(55+15*g-18*b+(m.portion==='ok'?0:-10),0,100)}
+function sleepHours(s){var a=s.bed.split(':'),b=s.wake.split(':');var m=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]);if(m<=0)m+=1440;return m/60}
+function sleepScore(s){var h=sleepHours(s),p=h<7?(7-h)*20:h>9?(h-9)*20:0;
+  return clamp(100-p-(s.q==='ok'?10:s.q==='bad'?25:0),0,100)}
+function comps(d,isToday){d=d||{};var out={},meals=d.meals||[];
+  if(meals.length){var sum=0,mains={};meals.forEach(function(m){sum+=mealScore(m);if(m.type!=='snack')mains[m.type]=1});
+    var hr=new Date().getHours(),exp=isToday?(hr<11?1:hr<16?2:3):3;
+    out.food=sum/meals.length*(0.4+0.6*Math.min(1,Object.keys(mains).length/exp))}else out.food=null;
+  out.sleep=d.sleep?sleepScore(d.sleep):null;
+  if(S.vitamins.length){var n=(d.vit||[]).filter(function(id){return S.vitamins.some(function(v){return v.id===id})}).length;
+    out.vit=n?100*n/S.vitamins.length:null}
+  out.water=d.water?Math.min(100,d.water/8*100):null;
+  return out}
+function score(c,fallback){var s=0,w=0;for(var k in c){w+=W[k];s+=W[k]*(c[k]==null?fallback:c[k])}return w?s/w:fallback}
+function xpOf(c){var s=0;for(var k in c){if(c[k]!=null)s+=W[k]*c[k]}return s/1000}
+/* Replays every day since the cat arrived. Past days count what was logged (nothing logged = 0).
+   Today only counts what has been logged so far, so the cat is not punished before the day is over. */
+function simulate(){var h=60,m=65,xp=0,t=today(),k=S.start,guard=0;
+  while(k<t&&guard++<4000){var c=comps(S.days[k],false),s=score(c,0);h=h*.75+s*.25;m=m*.45+s*.55;xp+=xpOf(c);k=addDays(k,1)}
+  var ct=comps(S.days[t],true);
+  h=h*.75+score(ct,h)*.25;m=m*.45+score(ct,m)*.55;xp+=xpOf(ct);
+  return {h:clamp(h,0,100),m:clamp(m,0,100),xp:xp,c:ct}}
+function stageOf(xp){var i=0;for(var j=0;j<STAGES.length;j++)if(xp>=STAGES[j][0])i=j;return i}
+function tier(v){return v>=70?'':v>=45?'mid':'low'}
+
+/* ---------- cat ---------- */
+function expression(st){var d=S.days[today()]||{};
+  if(st.h<35)return 'sick';
+  if(d.sleep&&sleepScore(d.sleep)<60)return 'sleepy';
+  if(st.m<40)return 'sad';
+  if(st.m>=80)return 'joy';
+  if(st.m>=60)return 'happy';
+  return 'calm'}
+function speech(st,ex){var d=S.days[today()]||{},hr=new Date().getHours(),meals=d.meals||[];
+  if(ex==='sick')return 'ไม่ค่อยสบายเลย… ช่วยดูแลตัวเองหน่อยนะ เราจะได้หายด้วย';
+  if(ex==='sleepy')return 'เมื่อคืนนอนแค่ '+sleepHours(d.sleep).toFixed(1)+' ชั่วโมงเอง ง่วงจัง… คืนนี้เข้านอนเร็วหน่อยนะ';
+  if(!meals.length&&hr>=10)return 'ท้องร้องแล้ว… วันนี้กินอะไรหรือยัง บอกเราหน่อย';
+  if(meals.length&&mealScore(meals[meals.length-1])<45)return 'มื้อล่าสุดหนักไปหน่อยนะ มื้อหน้าขอผักเพิ่มได้ไหมเมี๊ยว';
+  if(!d.sleep&&hr>=9)return 'เมื่อคืนหลับสบายไหม เล่าให้เราฟังหน่อย';
+  if(S.vitamins.length&&!(d.vit||[]).length&&hr>=12)return 'วันนี้ยังไม่ได้กินวิตามินเลยนะเมี๊ยว';
+  if((d.water||0)<4&&hr>=15)return 'จิบน้ำหน่อยไหม วันนี้ยังดื่มน้อยอยู่เลย';
+  if(ex==='sad')return 'ช่วงนี้เหงา ๆ นะ… มาดูแลตัวเองไปด้วยกันเถอะ';
+  if(ex==='joy')return 'วันนี้ดูแลตัวเองดีมาก ขนเราเงาวับเลย เมี๊ยว~';
+  if(ex==='happy')return 'สบายตัวดีจัง ทำแบบนี้ต่อไปนะ';
+  return 'เมี๊ยว~ วันนี้เป็นยังไงบ้าง'}
+function eye(cx,ex,side){var cy=120,o='';
+  if(ex==='joy')return '<path class="inkline" stroke-width="4" d="M'+(cx-14)+' 124 Q'+cx+' 106 '+(cx+14)+' 124"/>';
+  var rx=ex==='happy'?8.5:ex==='sick'?5:7;
+  o+='<circle class="eye" cx="'+cx+'" cy="'+cy+'" r="15"/><ellipse class="pupil" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="11.5"/><circle class="glint" cx="'+(cx-4)+'" cy="'+(cy-5)+'" r="3.4"/>';
+  if(ex==='sleepy')o+='<rect class="coat" x="'+(cx-17)+'" y="'+(cy-18)+'" width="34" height="21"/><path class="inkline" stroke-width="2.5" d="M'+(cx-15)+' '+(cy+3)+' H'+(cx+15)+'"/>';
+  else if(ex==='sad'||ex==='sick'){var a=side<0?[cx-17,cy-1,cx+17,cy-11]:[cx-17,cy-11,cx+17,cy-1];
+    o+='<polygon class="coat" points="'+(cx-17)+','+(cy-18)+' '+(cx+17)+','+(cy-18)+' '+a[2]+','+a[3]+' '+a[0]+','+a[1]+'"/>'}
+  else o+='<rect class="coat lid" x="'+(cx-17)+'" y="'+(cy-17)+'" width="34" height="34"/>';
+  return o}
+function whiskers(droop){var o='',ys=[142,154,166];
+  ys.forEach(function(y,i){var e=y+(i-1)*4+droop;
+    o+='<path class="whisk" d="M104 '+(148+i*3)+' L56 '+e+'"/><path class="whisk" d="M196 '+(148+i*3)+' L244 '+e+'"/>'});return o}
+function catSVG(st,ex){
+  var g=Math.sqrt(Math.min(1,st.xp/450)), s=0.6+0.4*g, hs=1.2-0.2*g, ck=26+10*g;
+  var down=ex==='sad'||ex==='sick';
+  var mouth=down?'<path class="inkline" stroke-width="2.2" d="M141 161 Q150 153 159 161"/>'
+    :'<path class="inkline" stroke-width="2.2" d="M150 146 Q150 157 139 157 M150 146 Q150 157 161 157"/>'+(ex==='joy'?'<ellipse class="pinkf" cx="150" cy="161" rx="5.5" ry="4.5"/>':'');
+  return '<svg viewBox="0 0 300 300" role="img" aria-label="แมว British Shorthair สีบลู" style="--hp:'+Math.round(st.h)+'%">'
+  +'<ellipse class="cushion" cx="150" cy="282" rx="128" ry="16"/>'
+  +'<ellipse class="shade" cx="150" cy="284" rx="'+(88*s)+'" ry="'+(8*s)+'"/>'
+  +'<g transform="translate(150 285) scale('+s+') translate(-150 -285)"><g class="breath">'
+  +'<path class="coat-d tail" stroke-width="24" stroke-linecap="round" d="M215 248 C272 252 276 192 248 172"/>'
+  +'<ellipse class="coat" cx="150" cy="222" rx="76" ry="62"/>'
+  +'<ellipse class="coat-l" opacity=".55" cx="150" cy="232" rx="38" ry="42"/>'
+  +'<ellipse class="coat-dk" cx="97" cy="276" rx="25" ry="11"/><ellipse class="coat-dk" cx="203" cy="276" rx="25" ry="11"/>'
+  +'<ellipse class="coat" cx="131" cy="260" rx="15" ry="25"/><ellipse class="coat" cx="169" cy="260" rx="15" ry="25"/>'
+  +'<ellipse class="coat-l" cx="131" cy="279" rx="17" ry="9"/><ellipse class="coat-l" cx="169" cy="279" rx="17" ry="9"/>'
+  +'<g transform="translate(150 182) scale('+hs+') translate(-150 -182)">'
+  +'<path class="coat-dk" d="M80 102 Q76 42 130 70 Z"/><path class="coat-dk" d="M220 102 Q224 42 170 70 Z"/>'
+  +'<path class="pinkf" d="M91 90 Q89 60 117 74 Z"/><path class="pinkf" d="M209 90 Q211 60 183 74 Z"/>'
+  +'<ellipse class="coat" cx="150" cy="125" rx="78" ry="66"/>'
+  +'<circle class="coat" cx="97" cy="150" r="'+ck+'"/><circle class="coat" cx="203" cy="150" r="'+ck+'"/>'
+  +(st.h>=75?'<path class="gloss" d="M98 88 Q124 66 156 66"/>':'')
+  +(ex==='joy'||ex==='happy'?'<ellipse class="pinkf" opacity=".55" cx="94" cy="147" rx="11" ry="6"/><ellipse class="pinkf" opacity=".55" cx="206" cy="147" rx="11" ry="6"/>':'')
+  +eye(118,ex,-1)+eye(182,ex,1)
+  +'<ellipse class="coat-l" cx="137" cy="153" rx="17" ry="13"/><ellipse class="coat-l" cx="163" cy="153" rx="17" ry="13"/>'
+  +'<path class="pinkf" d="M143 138 h14 l-7 8 z"/>'+mouth+whiskers(down?9:0)
+  +'</g></g></g>'
+  +(ex==='sleepy'?'<text class="zzz" x="222" y="92" font-size="22">z</text><text class="zzz" x="240" y="70" font-size="28">z</text><text class="zzz" x="262" y="44" font-size="34">Z</text>':'')
+  +(ex==='joy'?'<path class="heart" transform="translate(238 56)" d="M0 6 C-10 -6 -22 6 0 22 C22 6 10 -6 0 6Z"/>':'')
+  +'</svg>'}
+
+/* ---------- render ---------- */
+function meter(label,val,note,cls,pct){return '<div><div class="meter-top"><b>'+label+'</b><span>'+note+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+clamp(pct,0,100)+'%"></i></div></div>'}
+function render(){
+  var st=simulate(), ex=expression(st), t=today(), si=stageOf(st.xp), d=S.days[cur]||{meals:[],vit:[],sleep:null,water:0};
+  if($('catName')!==document.activeElement)$('catName').value=S.name;
+  var kg=(0.9+5.6*Math.min(1,st.xp/450)).toFixed(1);
+  $('catTags').innerHTML='<span class="tag copper">'+STAGES[si][1]+'</span><span class="tag">'+kg+' กก.</span>';
+  $('bubble').textContent=petLine||speech(st,ex);
+  $('catBox').innerHTML=catSVG(st,ex);
+  var hw=st.h>=75?'แข็งแรง ขนเงา':st.h>=50?'ปกติดี':st.h>=35?'อ่อนเพลีย':'ป่วย';
+  var mw={joy:'มีความสุขมาก',happy:'อารมณ์ดี',calm:'เฉย ๆ',sad:'เหงาหงอย',sleepy:'ง่วงนอน',sick:'ซึม'}[ex];
+  var nx=STAGES[si+1], gp=nx?(st.xp-STAGES[si][0])/(nx[0]-STAGES[si][0])*100:100;
+  var gn=nx?'อีก '+Math.ceil(nx[0]-st.xp)+' แต้มเป็น'+nx[1]:'โตเต็มที่แล้ว';
+  $('meters').innerHTML=meter('สุขภาพ',st.h,hw+' · '+Math.round(st.h),tier(st.h),st.h)
+    +meter('อารมณ์',st.m,mw+' · '+Math.round(st.m),tier(st.m),st.m)
+    +meter('การเติบโต',gp,gn,'grow',gp);
+
+  $('dateLabel').textContent=cur===t?'วันนี้ · '+dateOf(cur).toLocaleDateString('th-TH',{day:'numeric',month:'short'})
+    :dateOf(cur).toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
+  $('nextDay').disabled=cur>=t;
+  $('demoBanner').hidden=!S.demo; $('demoBtn').hidden=!!S.demo;
+  $('logTitle').textContent=cur===t?'บันทึกของวันนี้':'บันทึกของวันที่เลือก';
+
+  /* tabs */
+  var done={food:d.meals.length>0,vit:d.vit.length>0,sleep:!!d.sleep,water:d.water>0};
+  [].forEach.call($('tabs').children,function(b){var k=b.dataset.tab;b.setAttribute('aria-selected',k===tab);
+    var dot=b.querySelector('.dot');if(done[k]&&!dot)b.insertAdjacentHTML('beforeend','<i class="dot" title="บันทึกแล้ว"></i>');if(!done[k]&&dot)dot.remove();
+    $('p-'+k).hidden=k!==tab});
+
+  /* vitamins */
+  $('vitList').innerHTML=S.vitamins.map(function(v){return '<li><label class="chip good"><input type="checkbox" data-vit="'+v.id+'" id="vit-'+v.id+'"'+(d.vit.indexOf(v.id)>=0?' checked':'')+'>'+esc(v.name)+'</label><button class="x" data-delvit="'+v.id+'" aria-label="ลบ '+esc(v.name)+' ออกจากรายการ">✕</button></li>'}).join('')
+    ||'<li class="hint">ยังไม่มีรายการ เพิ่มด้านล่างได้เลย</li>';
+  /* water */
+  var gl='';for(var i=0;i<8;i++)gl+='<i class="'+(i<d.water?'on':'')+'"></i>';
+  $('glasses').innerHTML=gl;$('waterNum').textContent=d.water+' / 8 แก้ว';
+
+  /* log */
+  var rows=d.meals.map(function(m){var sc=mealScore(m);return '<li><div class="what"><b>'+MEAL[m.type]+'</b><span>'
+    +esc(m.tags.map(function(x){return TAG[x]?TAG[x].t:''}).filter(Boolean).concat(PORTION[m.portion]).join(' · '))+'</span></div><span class="pts '+tier(sc)+'">'+sc+'</span><button class="x" data-delmeal="'+m.id+'" aria-label="ลบ'+MEAL[m.type]+'">✕</button></li>'});
+  if(d.sleep){var ss=Math.round(sleepScore(d.sleep));rows.push('<li><div class="what"><b>นอน '+sleepHours(d.sleep).toFixed(1)+' ชั่วโมง</b><span>'+d.sleep.bed+' ถึง '+d.sleep.wake+' · '+SQ[d.sleep.q]+'</span></div><span class="pts '+tier(ss)+'">'+ss+'</span><button class="x" data-delsleep="1" aria-label="ลบบันทึกการนอน">✕</button></li>')}
+  if(d.vit.length)rows.push('<li><div class="what"><b>วิตามิน '+d.vit.length+' จาก '+S.vitamins.length+' รายการ</b><span>'+esc(S.vitamins.filter(function(v){return d.vit.indexOf(v.id)>=0}).map(function(v){return v.name}).join(' · '))+'</span></div></li>');
+  if(d.water)rows.push('<li><div class="what"><b>น้ำ '+d.water+' แก้ว</b></div></li>');
+  $('log').innerHTML=rows.join('')||'<li class="hint">ยังไม่มีบันทึก เริ่มจากมื้อล่าสุดที่กินก็ได้</li>';
+
+  /* week */
+  var wk='';for(var n=6;n>=0;n--){var k=addDays(t,-n),v=Math.round(score(comps(S.days[k],k===t),0));
+    wk+='<button class="day" data-day="'+k+'" aria-current="'+(k===cur)+'" aria-label="'+dateOf(k).toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long'})+' '+v+' คะแนน"><span class="num">'+v+'</span><span class="col2"><i class="'+tier(v)+'" style="height:'+v+'%"></i></span><span class="dn">'+(k===t?'วันนี้':DOW[dateOf(k).getDay()])+'</span></button>'}
+  $('week').innerHTML=wk;
+}
+
+var toastT;
+function toast(msg){var el=$('toast');el.textContent=msg;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){el.hidden=true},3600)}
+function sgn(n){return (n>0?'+':'')+n}
+/* Apply a change, then tell the user what it did to the cat. */
+function act(label,fn){var a=simulate();fn();save();petLine='';var b=simulate();render();
+  var parts=[],dh=Math.round(b.h-a.h),dm=Math.round(b.m-a.m),dx=Math.round((b.xp-a.xp)*10)/10;
+  if(dh)parts.push('สุขภาพ '+sgn(dh));if(dm)parts.push('อารมณ์ '+sgn(dm));if(dx)parts.push('เติบโต '+sgn(dx));
+  if(stageOf(b.xp)>stageOf(a.xp))parts=[S.name+'โตเป็น'+STAGES[stageOf(b.xp)][1]+'แล้ว!'];
+  var box=$('catBox');box.classList.remove('pop');void box.offsetWidth;box.classList.add('pop');
+  if(label)toast(label+(parts.length?' · '+parts.join(' · '):''))}
+
+/* ---------- events ---------- */
+$('tagChips').innerHTML=TAGS.map(function(t){return '<label class="chip '+(t.g?'good':'bad')+'"><input type="checkbox" name="tag" id="tg-'+t.id+'" value="'+t.id+'">'+t.t+'</label>'}).join('');
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(b){tab=b.dataset.tab;render()}});
+$('prevDay').onclick=function(){cur=addDays(cur,-1);render()};
+$('nextDay').onclick=function(){if(cur<today()){cur=addDays(cur,1);render()}};
+$('week').addEventListener('click',function(e){var b=e.target.closest('[data-day]');if(b){cur=b.dataset.day;render()}});
+$('catName').addEventListener('input',function(){S.name=this.value.trim()||'น้องเทา';save()});
+$('catBox').onclick=function(){var st=simulate(),ex=expression(st);
+  var lines=ex==='sick'||ex==='sad'?['ขอบคุณที่ลูบนะ… ดีขึ้นนิดนึงแล้ว','อยู่ข้าง ๆ กันนะ']:['ครืดดด~ ลูบอีก ๆ','เมี๊ยว! ชอบจัง','แก้มเรานุ่มไหม','ครืดดด ครืดดด~'];
+  petLine=lines[Math.floor(Math.random()*lines.length)];render();
+  this.classList.remove('pop');void this.offsetWidth;this.classList.add('pop')};
+
+$('p-food').addEventListener('submit',function(e){e.preventDefault();var f=this;
+  var tags=[].filter.call(f.querySelectorAll('[name=tag]'),function(i){return i.checked}).map(function(i){return i.value});
+  if(!tags.length){toast('เลือกอย่างน้อยหนึ่งอย่างว่าในจานมีอะไร');return}
+  var type=f.querySelector('[name=mtype]:checked').value,portion=f.querySelector('[name=portion]:checked').value;
+  act('บันทึก'+MEAL[type]+'แล้ว',function(){day(cur,true).meals.push({id:uid(),type:type,tags:tags,portion:portion})});
+  [].forEach.call(f.querySelectorAll('[name=tag]'),function(i){i.checked=false});$('po-o').checked=true});
+$('p-sleep').addEventListener('submit',function(e){e.preventDefault();var bed=$('bed').value,wake=$('wake').value;
+  if(!bed||!wake){toast('ใส่เวลาเข้านอนและเวลาตื่นให้ครบ');return}
+  var q=this.querySelector('[name=sq]:checked').value;
+  act('บันทึกการนอนแล้ว',function(){day(cur,true).sleep={bed:bed,wake:wake,q:q}})});
+$('vitList').addEventListener('change',function(e){var id=e.target.dataset.vit;if(!id)return;
+  act(e.target.checked?'กินวิตามินแล้ว':'',function(){var d=day(cur,true),i=d.vit.indexOf(id);if(e.target.checked){if(i<0)d.vit.push(id)}else if(i>=0)d.vit.splice(i,1)})});
+$('vitList').addEventListener('click',function(e){var b=e.target.closest('[data-delvit]');if(!b)return;var id=b.dataset.delvit;
+  act('',function(){S.vitamins=S.vitamins.filter(function(v){return v.id!==id})})});
+$('vitAdd').addEventListener('submit',function(e){e.preventDefault();var n=$('vitNew').value.trim();if(!n)return;
+  act('',function(){S.vitamins.push({id:uid(),name:n})});$('vitNew').value=''});
+$('waterPlus').onclick=function(){act('ดื่มน้ำหนึ่งแก้ว',function(){var d=day(cur,true);d.water=Math.min(16,d.water+1)})};
+$('waterMinus').onclick=function(){act('',function(){var d=day(cur,true);d.water=Math.max(0,d.water-1)})};
+$('log').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.delmeal)act('ลบมื้ออาหารแล้ว',function(){var d=day(cur,true);d.meals=d.meals.filter(function(m){return m.id!==b.dataset.delmeal})});
+  if(b.dataset.delsleep)act('ลบบันทึกการนอนแล้ว',function(){day(cur,true).sleep=null})});
+
+function loadDemo(){S=fresh();S.demo=true;var t=today();S.start=addDays(t,-6);
+  var plan=[['23:10','07:05','good',[['breakfast',['balanced','veg']],['lunch',['protein','veg']],['dinner',['balanced']]],4,8],
+            ['23:40','06:50','ok',[['breakfast',['whole','protein']],['lunch',['fried']],['dinner',['veg','protein']]],3,6],
+            ['01:30','06:30','bad',[['lunch',['fast','sweet']],['dinner',['fried','salty']]],0,3],
+            ['00:20','07:00','ok',[['breakfast',['sweet']],['lunch',['balanced']],['dinner',['protein','veg']]],2,5],
+            ['22:50','06:40','good',[['breakfast',['balanced','whole']],['lunch',['veg','protein']],['dinner',['balanced','veg']]],4,8],
+            ['22:45','06:45','good',[['breakfast',['veg','protein']],['lunch',['balanced']],['dinner',['whole','veg','protein']]],4,7]];
+  plan.forEach(function(p,i){S.days[addDays(t,i-6)]={sleep:{bed:p[0],wake:p[1],q:p[2]},
+    meals:p[3].map(function(m){return {id:uid(),type:m[0],tags:m[1],portion:'ok'}}),vit:S.vitamins.slice(0,p[4]).map(function(v){return v.id}),water:p[5]}});
+  S.days[t]={sleep:{bed:'23:00',wake:'07:00',q:'good'},meals:[{id:uid(),type:'breakfast',tags:['balanced','veg'],portion:'ok'}],vit:['v1','v2'],water:2};
+  cur=t;save();petLine='';render()}
+$('demoBtn').onclick=loadDemo;
+function resetAll(){S=fresh();cur=today();save();petLine='';render();toast('เริ่มเลี้ยงลูกแมวตัวใหม่แล้ว')}
+$('clearDemo').onclick=resetAll;
+var armed=0;
+$('resetBtn').onclick=function(){var b=this;if(armed){armed=0;b.textContent='เริ่มเลี้ยงใหม่';resetAll();return}
+  armed=1;b.textContent='กดอีกครั้งเพื่อลบข้อมูลทั้งหมด';setTimeout(function(){armed=0;b.textContent='เริ่มเลี้ยงใหม่'},4000)};
+
+render();
+setInterval(function(){if(!document.hidden)render()},10*60*1000);
+})();
+</script>
+</body>
+</html>
