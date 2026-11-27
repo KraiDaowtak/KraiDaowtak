@@ -69,6 +69,11 @@
   .skins button{width:38px;height:38px;border-radius:50%;border:3px solid #fff;cursor:pointer;padding:0}
   .skins button[aria-pressed=true]{outline:4px solid var(--yellow);outline-offset:2px}
 
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font:inherit;font-weight:600;font-size:15px;padding:7px 12px;border:2px solid #fff;background:transparent;color:#fff;cursor:pointer}
+  .chip[aria-pressed=true]{background:var(--yellow);color:var(--navy);border-color:var(--navy);box-shadow:3px 3px 0 var(--pink)}
+  #prev{width:100%;max-width:400px;height:auto;border:3px solid var(--yellow);background:var(--blue)}
+
   /* run */
   #run{padding:0!important;max-width:none;gap:0}
   #stageWrap{position:relative;width:100%;height:100dvh;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
@@ -130,6 +135,19 @@
   <div class="field">สีผิวตัวละคร
     <div class="skins" id="skins"></div>
   </div>
+  <canvas id="prev" width="720" height="440" aria-label="ตัวอย่างตัวละครพร้อมชุดและอุปกรณ์ที่เลือก"></canvas>
+  <div class="field">ชุดวิ่ง
+    <div class="chips" id="fitRun"></div>
+  </div>
+  <div class="field">ชุดแฟนซี
+    <div class="chips" id="fitFancy"></div>
+  </div>
+  <div class="field">สีชุด
+    <div class="skins" id="colors"></div>
+  </div>
+  <div class="field">อุปกรณ์ประจำภาควิชา (เลือกได้หลายอย่าง)
+    <div class="chips" id="accs"></div>
+  </div>
   <button class="btn big" id="goRun">ออกวิ่ง! 🏃</button>
   <button class="btn ghost" id="backHome">← กลับ</button>
 </main>
@@ -164,7 +182,7 @@
   <a class="btn pink big" href="https://www.life.ahs.nu.ac.th/ahs_run" target="_blank" rel="noopener">สมัครวิ่งจริง ▶</a>
   <div class="row">
     <button class="btn ghost" id="again">วิ่งอีกรอบ</button>
-    <button class="btn ghost" id="reface">เปลี่ยนรูปหน้า</button>
+    <button class="btn ghost" id="reface">เปลี่ยนหน้า / ชุด</button>
   </div>
 </main>
 
@@ -176,7 +194,24 @@ const C = {blue:'#21409a', navy:'#14245f', deep:'#0e1a47', pink:'#ec1e8c', yello
            orange:'#ff8a1f', cream:'#fff6dc', shirt:'#2a45b8'};
 const FONT = (px, w='italic 900') => `${w} ${px}px Kanit, system-ui, sans-serif`;
 const SKINS = ['#ffd9b8','#f1c27d','#c68642','#8d5524'];
-const state = {skin: SKINS[1], name: '', face: null, lastTime: 0};
+const OUTFITS = [
+  {id:'tee',     name:'เสื้องาน 3 ช่า',    run:true, sleeve:.58, leg:.56, sock:true, band:true, logo:true, collar:true},
+  {id:'singlet', name:'เสื้อกล้ามวิ่ง',     run:true, sleeve:0,   leg:.4,  band:true, logo:true, stripe:true},
+  {id:'long',    name:'แขนยาว + กางเกงไทต์', run:true, sleeve:1,   leg:1,   band:true, logo:true, collar:true},
+  {id:'hero',    name:'ซูเปอร์ฮีโร่',       sleeve:1,   leg:1,   cape:true, belt:true, emblem:true},
+  {id:'coat',    name:'เสื้อกาวน์',         sleeve:1,   leg:1,   coat:true},
+  {id:'show',    name:'หางเครื่อง',         sleeve:0,   leg:.22, feathers:true, sparkle:true, gloves:true},
+  {id:'band',    name:'นักดนตรีแตรวง',      sleeve:.6,  leg:1,   hat:true, sash:true, white:true},
+  {id:'flower',  name:'เสื้อลายดอก',        sleeve:.58, leg:.56, flowers:true, lei:true},
+];
+const COLORS = [['#2a45b8','#ec1e8c'],['#ec1e8c','#ffe600'],['#ffd400','#2a45b8'],['#16a34a','#ffe600'],
+                ['#7c3aed','#ffe600'],['#ef4444','#ffffff'],['#111827','#ec1e8c']];
+const ACCS = [{id:'scope',name:'กล้องจุลทรรศน์'},{id:'syringe',name:'เข็มฉีดยา'},{id:'glasses',name:'แว่นตา'},
+              {id:'xray',name:'เครื่องเอกซเรย์'},{id:'ecmo',name:'เครื่อง ECMO'}];
+const state = {skin: SKINS[1], name: '', face: null, lastTime: 0, outfit: 'tee', color: 0, acc: {}};
+const curLook = () => ({skin: state.skin, o: OUTFITS.find(o => o.id === state.outfit),
+                        main: COLORS[state.color][0], trim: COLORS[state.color][1], acc: state.acc});
+let pvDirty = true;
 
 /* ---------- helpers ---------- */
 function show(id){
@@ -257,84 +292,244 @@ function placeholderFace(){
   g.beginPath(); g.ellipse(58,190,18,12,0,0,7); g.ellipse(182,190,18,12,0,0,7); g.fill();
   return c;
 }
-function headband(ctx, rx, ry){ // วาดผ้าคาดหัวภายในวงรีศีรษะ (ต้อง clip ไว้ก่อน)
-  ctx.fillStyle = C.pink; ctx.fillRect(-rx,-ry*0.80,rx*2,ry*0.26);
-  ctx.fillStyle = C.shirt; ctx.fillRect(-rx,-ry*0.71,rx*2,ry*0.08);
+function faceOverlay(ctx, rx, ry, L){ // ผ้าคาดหัวและแว่น วาดภายในวงรีศีรษะ (ต้อง clip ไว้ก่อน)
+  if (L.o.band){
+    ctx.fillStyle = L.trim; ctx.fillRect(-rx,-ry*0.80,rx*2,ry*0.26);
+    ctx.fillStyle = L.main; ctx.fillRect(-rx,-ry*0.71,rx*2,ry*0.08);
+  }
+  if (L.acc.glasses){
+    ctx.strokeStyle = '#14245f'; ctx.lineWidth = rx*0.07; ctx.lineCap = 'round'; ctx.fillStyle = 'rgba(170,225,255,.22)';
+    for (const d of [-1,1]){ ctx.beginPath(); ctx.arc(d*rx*0.36,ry*0.02,rx*0.25,0,7); ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(-rx*0.1,ry*0.02); ctx.lineTo(rx*0.1,ry*0.02);
+    ctx.moveTo(-rx*0.61,0); ctx.lineTo(-rx,-ry*0.06); ctx.moveTo(rx*0.61,0); ctx.lineTo(rx,-ry*0.06); ctx.stroke();
+  }
+}
+
+/* ---------- อุปกรณ์ประจำภาควิชา ---------- */
+const INK = '#14245f', SHELL = '#f4f4f8';
+function wheel(ctx, x, r, ph){
+  ctx.fillStyle = '#1b1b22'; ctx.beginPath(); ctx.arc(x,-r,r,0,7); ctx.fill();
+  ctx.fillStyle = '#c9ccd6'; ctx.beginPath(); ctx.arc(x,-r,r*0.5,0,7); ctx.fill();
+  ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = 2.5; ctx.beginPath();
+  ctx.moveTo(x+Math.cos(ph*2)*r*0.5,-r+Math.sin(ph*2)*r*0.5); ctx.lineTo(x-Math.cos(ph*2)*r*0.5,-r-Math.sin(ph*2)*r*0.5); ctx.stroke();
+}
+function accScope(ctx){ // กล้องจุลทรรศน์ จุดอ้างอิงอยู่ที่มือ
+  ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.fillStyle = SHELL; rr(ctx,-10,22,60,11,4); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = SHELL; ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(0,24); ctx.quadraticCurveTo(-16,-12,12,-36); ctx.stroke();
+  ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.fillStyle = INK; ctx.fillRect(10,7,40,6);
+  ctx.save(); ctx.translate(20,-30); ctx.rotate(0.38);
+  ctx.fillStyle = SHELL; rr(ctx,-8,-28,16,46,4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.yellow; ctx.fillRect(-8,8,16,7);
+  ctx.fillStyle = INK; rr(ctx,-6,-40,12,13,3); ctx.fill(); ctx.fillRect(-4,18,8,10);
+  ctx.restore();
+  ctx.fillStyle = C.pink; ctx.beginPath(); ctx.arc(-6,2,6,0,7); ctx.fill();
+}
+function accSyringe(ctx, col){ // เข็มฉีดยา ชี้ไปทาง +x
+  ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(-24,0); ctx.lineTo(4,0); ctx.moveTo(-24,-11); ctx.lineTo(-24,11); ctx.stroke();
+  ctx.fillStyle = SHELL; rr(ctx,0,-9,52,18,3); ctx.fill();
+  ctx.fillStyle = col; ctx.fillRect(22,-7,28,14);
+  rr(ctx,0,-9,52,18,3); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(0,14);
+  for (let i=1;i<4;i++){ ctx.moveTo(10+i*10,-9); ctx.lineTo(10+i*10,-3); }
+  ctx.moveTo(52,0); ctx.lineTo(60,0); ctx.stroke();
+  ctx.strokeStyle = '#d7dbe6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(60,0); ctx.lineTo(86,0); ctx.stroke();
+}
+function accXray(ctx, ph){ // เครื่องเอกซเรย์เคลื่อนที่ จุดอ้างอิงอยู่ที่พื้น
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.strokeStyle = '#9aa0b4'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-44,-84); ctx.lineTo(-70,-108); ctx.stroke();
+  ctx.fillStyle = '#9aa0b4'; ctx.fillRect(14,-214,13,130); ctx.fillRect(14,-214,84,11);
+  ctx.fillStyle = INK; rr(ctx,78,-222,44,34,7); ctx.fill();
+  ctx.fillStyle = C.yellow; ctx.fillRect(90,-188,20,13);
+  ctx.globalAlpha = 0.35 + 0.3*Math.sin(ph*3); ctx.fillStyle = C.yellow;
+  ctx.beginPath(); ctx.moveTo(92,-175); ctx.lineTo(108,-175); ctx.lineTo(124,-120); ctx.lineTo(76,-120); ctx.fill(); ctx.globalAlpha = 1;
+  ctx.fillStyle = SHELL; rr(ctx,-48,-98,96,76,10); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = C.yellow; ctx.fillRect(-46,-52,92,12);
+  ctx.fillStyle = INK; ctx.font = FONT(22); ctx.textAlign = 'center'; ctx.fillText('X-RAY',0,-64);
+  wheel(ctx,-30,13,ph); wheel(ctx,30,13,ph);
+}
+function accEcmo(ctx, ph){ // เครื่อง ECMO บนรถเข็น จุดอ้างอิงอยู่ที่พื้น
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.strokeStyle = '#9aa0b4'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(40,-84); ctx.lineTo(72,-108); ctx.stroke();
+  ctx.fillStyle = '#9aa0b4'; ctx.fillRect(-36,-226,8,200); ctx.fillRect(-44,-32,90,10);
+  ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(22,-40); ctx.bezierCurveTo(70,-60,60,-150,-28,-190); ctx.stroke();
+  ctx.strokeStyle = '#2563eb'; ctx.beginPath(); ctx.moveTo(12,-92); ctx.bezierCurveTo(50,-120,30,-170,-28,-206); ctx.stroke();
+  ctx.fillStyle = SHELL; rr(ctx,8,-96,30,58,9); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = '#2563eb'; ctx.fillRect(10,-76,26,8); ctx.fillStyle = '#e11d48'; ctx.fillRect(10,-62,26,8);
+  ctx.fillStyle = INK; rr(ctx,-50,-170,64,54,8); ctx.fill();
+  ctx.fillStyle = '#0b3d2e'; ctx.fillRect(-44,-164,52,26);
+  ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2.5; ctx.beginPath();
+  for (let i=0;i<=26;i++){ const q = (i + Math.floor(ph*3))%9; ctx.lineTo(-44+i*2, -151 - (q===3?10:q===4?-7:0)); } ctx.stroke();
+  ctx.fillStyle = C.yellow; ctx.font = FONT(13,'800'); ctx.textAlign = 'center'; ctx.fillText('ECMO',-18,-122);
+  ctx.save(); ctx.translate(-12,-76); ctx.rotate(ph*1.5);
+  ctx.fillStyle = '#e11d48'; ctx.beginPath(); ctx.arc(0,0,17,0,7); ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-11,0); ctx.lineTo(11,0); ctx.moveTo(0,-11); ctx.lineTo(0,11); ctx.stroke();
+  ctx.restore();
+  wheel(ctx,-30,12,ph); wheel(ctx,32,12,ph);
 }
 
 /* ---------- นักวิ่ง ---------- */
-function drawRunner(ctx, x, groundY, ph, k, face, skin, cheer=0){
+function drawRunner(ctx, x, groundY, ph, k, face, L, cheer=0, lift=0){
+  const o = L.o, skin = L.skin, dark = shade(skin,.8), main = L.main, trim = L.trim;
+  const top = (o.white || o.coat) ? '#ffffff' : main;
+  const sd = (c, back) => back ? shade(c,.76) : c;
   const bob = Math.abs(Math.sin(ph))*7;
-  ctx.save(); ctx.translate(x, groundY - bob*k); ctx.scale(k,k);
-  ctx.lineJoin = 'round';
+  ctx.save(); ctx.translate(x, groundY); ctx.scale(k,k); ctx.lineJoin = 'round';
+  if (L.acc.ecmo){ ctx.save(); ctx.translate(-160,0); accEcmo(ctx,ph); ctx.restore(); }
+  if (L.acc.xray){ ctx.save(); ctx.translate(152,0); accXray(ctx,ph); ctx.restore(); }
+  ctx.translate(0, -bob - lift/k);
   const hip = [0,-99], sh = [12,-172];
-  const dark = shade(skin,.8);
+  if (o.cape){
+    const w = Math.sin(ph*2)*10;
+    ctx.fillStyle = trim; ctx.beginPath(); ctx.moveTo(sh[0]-10,sh[1]);
+    ctx.quadraticCurveTo(-72,-156+w,-124,-98+w); ctx.lineTo(-100,-58-w);
+    ctx.quadraticCurveTo(-52,-92,hip[0]-18,hip[1]-24); ctx.closePath(); ctx.fill();
+  }
+  if (o.feathers){
+    for (let i=0;i<9;i++){
+      ctx.save(); ctx.translate(-4,-150); ctx.rotate(-2.75 + i*0.31 + Math.sin(ph*2+i)*0.05);
+      ctx.fillStyle = i%2 ? shade(main,.78) : main; ctx.beginPath(); ctx.ellipse(0,-80,22,86,0,0,7); ctx.fill();
+      ctx.fillStyle = trim; ctx.beginPath(); ctx.arc(0,-154,7,0,7); ctx.fill();
+      ctx.restore();
+    }
+  }
   const leg = (p, back) => {
-    const sk = back ? dark : skin, bl = back ? shade(C.shirt,.75) : C.shirt, pk = back ? shade(C.pink,.8) : C.pink;
+    const sk = back ? dark : skin, mc = sd(main,back), tr = sd(trim,back);
     const a = 0.85*Math.sin(p), bend = 0.28 + 1.25*Math.max(0, Math.cos(p));
     const knee = [hip[0]+50*Math.sin(a), hip[1]+50*Math.cos(a)];
     const sa = a - bend;
     const foot = [knee[0]+50*Math.sin(sa), knee[1]+50*Math.cos(sa)];
-    limb(ctx, hip, knee, 21, sk);
-    limb(ctx, knee, foot, 16, sk);
-    limb(ctx, lerp(knee,foot,.45), foot, 17, bl);
-    limb(ctx, lerp(knee,foot,.52), lerp(knee,foot,.6), 17, pk, 'butt');
-    limb(ctx, lerp(knee,foot,.68), lerp(knee,foot,.76), 17, pk, 'butt');
-    limb(ctx, hip, lerp(hip,knee,.66), 28, pk);
-    limb(ctx, hip, lerp(hip,knee,.56), 28, bl);
+    if (o.leg >= 1){
+      limb(ctx, hip, knee, 23, mc); limb(ctx, knee, foot, 17, mc);
+      limb(ctx, lerp(knee,foot,.84), lerp(knee,foot,.95), 18, tr, 'butt');
+    } else {
+      limb(ctx, hip, knee, 21, sk); limb(ctx, knee, foot, 16, sk);
+      if (o.sock){
+        limb(ctx, lerp(knee,foot,.45), foot, 17, mc);
+        limb(ctx, lerp(knee,foot,.52), lerp(knee,foot,.6), 17, tr, 'butt');
+        limb(ctx, lerp(knee,foot,.68), lerp(knee,foot,.76), 17, tr, 'butt');
+      } else limb(ctx, lerp(knee,foot,.8), foot, 17, sd('#ffffff',back));
+      limb(ctx, hip, lerp(hip,knee,o.leg+.1), 28, tr);
+      limb(ctx, hip, lerp(hip,knee,o.leg), 28, mc);
+    }
     ctx.save(); ctx.translate(foot[0],foot[1]); ctx.rotate(-sa);
     ctx.fillStyle = back ? '#d9d9e6' : '#fff';
     ctx.beginPath(); ctx.ellipse(9,3,19,9,0,0,7); ctx.fill();
-    ctx.fillStyle = pk; ctx.fillRect(-8,8,34,3.5);
+    ctx.fillStyle = tr; ctx.fillRect(-8,8,34,3.5);
     ctx.restore();
   };
   const arm = (p, back) => {
-    const sk = back ? dark : skin, bl = back ? shade(C.shirt,.75) : C.shirt, pk = back ? shade(C.pink,.8) : C.pink;
+    const sk = back ? dark : skin, tc = sd(top,back), mc = sd(main,back), tr = sd(trim,back);
     const ua = (1-cheer)*(-0.95*Math.sin(p)) + cheer*((back?2.95:2.5) + 0.28*Math.sin(p*2+(back?1:0)));
     const el = [sh[0]+36*Math.sin(ua), sh[1]+8+36*Math.cos(ua)];
     const fa = ua + 1.45*(1-cheer) + 0.25*cheer;
     const hand = [el[0]+34*Math.sin(fa), el[1]+34*Math.cos(fa)];
-    const s0 = [sh[0], sh[1]+8];
-    limb(ctx, s0, el, 15, sk);
-    limb(ctx, el, hand, 13, sk);
-    limb(ctx, lerp(el,hand,.6), lerp(el,hand,.85), 15, pk, 'butt');
-    ctx.fillStyle = sk; ctx.beginPath(); ctx.arc(hand[0],hand[1],9,0,7); ctx.fill();
-    limb(ctx, s0, lerp(s0,el,.72), 21, pk);
-    limb(ctx, s0, lerp(s0,el,.58), 21, bl);
+    const s0 = [sh[0], sh[1]+8], hc = o.gloves ? mc : sk;
+    limb(ctx, s0, el, 15, sk); limb(ctx, el, hand, 13, hc);
+    if (o.sleeve >= 1){
+      limb(ctx, s0, el, 19, tc); limb(ctx, el, lerp(el,hand,.84), 16, tc);
+      limb(ctx, lerp(el,hand,.78), lerp(el,hand,.9), 17, tr, 'butt');
+    } else {
+      if (o.band) limb(ctx, lerp(el,hand,.6), lerp(el,hand,.85), 15, tr, 'butt');
+      if (o.sleeve > 0){ limb(ctx, s0, lerp(s0,el,o.sleeve+.14), 21, tr); limb(ctx, s0, lerp(s0,el,o.sleeve), 21, tc); }
+    }
+    ctx.fillStyle = hc; ctx.beginPath(); ctx.arc(hand[0],hand[1],9,0,7); ctx.fill();
+    return hand;
   };
-  arm(ph + Math.PI, true);
+  const held = (hand, what) => {
+    ctx.save(); ctx.translate(hand[0],hand[1]);
+    if (what === 'scope'){ ctx.translate(0,-22); ctx.scale(.82,.82); accScope(ctx); }
+    else { ctx.rotate(-0.75); ctx.translate(-8,0); ctx.scale(.9,.9); accSyringe(ctx,trim); }
+    ctx.restore();
+  };
+  const bh = arm(ph + Math.PI, true);
+  if (L.acc.syringe && L.acc.scope) held(bh,'syringe');
   leg(ph + Math.PI, true);
-  // torso
-  limb(ctx, [hip[0],hip[1]-4], [sh[0],sh[1]+16], 52, C.shirt);
-  limb(ctx, [hip[0]-2,hip[1]+6], [hip[0]+2,hip[1]+6], 50, C.shirt);
+  if (o.coat) limb(ctx, [hip[0]-8,hip[1]-6], [hip[0]-24-Math.sin(ph*2)*6,hip[1]+46], 26, '#e8e8f0');
+  // torso + pelvis
+  limb(ctx, [hip[0],hip[1]-4], [sh[0],sh[1]+16], 52, top);
+  limb(ctx, [hip[0]-2,hip[1]+6], [hip[0]+2,hip[1]+6], 50, o.coat ? top : main);
   leg(ph, false);
-  // shorts waist & trim
-  limb(ctx, [hip[0]-19,hip[1]-16], [hip[0]+21,hip[1]-16], 5, C.pink, 'butt');
-  // chest logo
-  ctx.save(); ctx.translate(10,-140);
-  ctx.beginPath(); ctx.ellipse(0,4,15,18,0,0,7); ctx.save(); ctx.clip(); miniBuilding(ctx,34,42); ctx.restore();
-  ctx.strokeStyle = C.pink; ctx.lineWidth = 2; ctx.stroke();
-  ctx.font = FONT(11); ctx.textAlign='center'; ctx.fillStyle = C.yellow; ctx.fillText('3ช่า RUN',0,-10);
-  ctx.restore();
+  if (o.coat){
+    limb(ctx, [hip[0]+6,hip[1]-6], [hip[0]+14+Math.sin(ph*2)*5,hip[1]+46], 26, '#ffffff');
+    limb(ctx, [sh[0]+2,sh[1]+12], [hip[0]+10,hip[1]+30], 3, '#c9ccd6', 'butt');
+    ctx.fillStyle = main; ctx.fillRect(-4,-140,16,14); ctx.fillStyle = trim; ctx.fillRect(0,-150,4,14);
+    ctx.fillStyle = '#c9ccd6'; for (let i=0;i<3;i++){ ctx.beginPath(); ctx.arc(14-i*2,-118+i*22,3,0,7); ctx.fill(); }
+  }
+  // waist
+  if (o.sash){
+    limb(ctx, [hip[0]-21,hip[1]-14], [hip[0]+23,hip[1]-14], 20, trim, 'butt');
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; for (let i=0;i<5;i++) ctx.fillRect(hip[0]-19+i*10,hip[1]-24,3,20);
+    ctx.fillRect(hip[0]-21,hip[1]-16,44,3);
+    limb(ctx, [hip[0]-18,hip[1]-6], [hip[0]-30,hip[1]+22+Math.sin(ph*2)*5], 9, trim);
+  } else if (o.belt) limb(ctx, [hip[0]-21,hip[1]-14], [hip[0]+23,hip[1]-14], 10, trim, 'butt');
+  else if (!o.coat) limb(ctx, [hip[0]-19,hip[1]-16], [hip[0]+21,hip[1]-16], 5, trim, 'butt');
+  // chest
+  if (o.logo){
+    ctx.save(); ctx.translate(10,-140);
+    ctx.beginPath(); ctx.ellipse(0,4,15,18,0,0,7); ctx.save(); ctx.clip(); miniBuilding(ctx,34,42); ctx.restore();
+    ctx.strokeStyle = trim; ctx.lineWidth = 2; ctx.stroke();
+    ctx.font = FONT(11); ctx.textAlign='center'; ctx.fillStyle = main === '#ffd400' ? C.navy : C.yellow; ctx.fillText('3ช่า RUN',0,-10);
+    ctx.restore();
+  }
+  if (o.stripe) limb(ctx, [-12,-166], [30,-112], 7, trim, 'butt');
+  if (o.emblem){
+    ctx.fillStyle = trim; ctx.beginPath();
+    for (let i=0;i<10;i++){ const r = i%2 ? 8 : 19, a = -Math.PI/2 + i*Math.PI/5; ctx.lineTo(10+Math.cos(a)*r,-138+Math.sin(a)*r); }
+    ctx.closePath(); ctx.fill();
+  }
+  if (o.sparkle){
+    ctx.fillStyle = '#fff';
+    for (let i=0;i<14;i++){ const fx = -14+((i*37)%44), fy = -168+((i*53)%78); ctx.globalAlpha = .5+.5*Math.sin(ph*3+i*1.7);
+      ctx.beginPath(); ctx.arc(fx,fy,2.6,0,7); ctx.fill(); }
+    ctx.globalAlpha = 1;
+  }
+  if (o.flowers){
+    for (const [fx,fy,c1] of [[-8,-160,'#fff'],[18,-146,trim],[-4,-128,trim],[22,-116,'#fff'],[2,-100,'#fff'],[-14,-108,trim]]){
+      ctx.fillStyle = c1; for (let j=0;j<5;j++){ ctx.beginPath(); ctx.arc(fx+Math.cos(j*1.257)*5,fy+Math.sin(j*1.257)*5,4,0,7); ctx.fill(); }
+      ctx.fillStyle = C.orange; ctx.beginPath(); ctx.arc(fx,fy,3,0,7); ctx.fill();
+    }
+  }
   // neck + collar
   limb(ctx, [sh[0]+2,sh[1]+4], [sh[0]+4,sh[1]-16], 17, skin);
-  limb(ctx, [sh[0]-13,sh[1]+3], [sh[0]+17,sh[1]+1], 7, C.pink);
+  if (o.collar) limb(ctx, [sh[0]-13,sh[1]+3], [sh[0]+17,sh[1]+1], 7, trim);
+  if (o.lei) for (let i=0;i<8;i++){
+    ctx.fillStyle = [C.pink,C.yellow,'#fff',C.orange][i%4];
+    ctx.beginPath(); ctx.arc(sh[0]-16+i*5, sh[1]+4+Math.sin(i/7*Math.PI)*12, 6, 0, 7); ctx.fill();
+  }
   // head
   const hc = [sh[0]+8, sh[1]-64], rx = 47, ry = 57;
   ctx.save(); ctx.translate(hc[0],hc[1]); ctx.rotate(Math.sin(ph*2)*0.04);
-  // headband tails
-  ctx.strokeStyle = C.pink; ctx.lineWidth = 7; ctx.lineCap='round';
-  for (const o of [0,1]){
-    ctx.beginPath(); ctx.moveTo(-rx+4,-ry*0.6);
-    ctx.quadraticCurveTo(-rx-22,-ry*0.6+o*10+Math.sin(ph*2+o)*8,-rx-40-o*6,-ry*0.5+o*18+Math.cos(ph*2+o)*9); ctx.stroke();
+  if (o.band){
+    ctx.strokeStyle = trim; ctx.lineWidth = 7; ctx.lineCap='round';
+    for (const q of [0,1]){
+      ctx.beginPath(); ctx.moveTo(-rx+4,-ry*0.6);
+      ctx.quadraticCurveTo(-rx-22,-ry*0.6+q*10+Math.sin(ph*2+q)*8,-rx-40-q*6,-ry*0.5+q*18+Math.cos(ph*2+q)*9); ctx.stroke();
+    }
+  }
+  if (o.feathers){
+    for (let i=0;i<5;i++){ ctx.save(); ctx.translate(0,-ry*0.8); ctx.rotate(-0.7+i*0.35+Math.sin(ph*2+i)*0.04);
+      ctx.fillStyle = i%2 ? shade(main,.78) : main; ctx.beginPath(); ctx.ellipse(0,-44,13,46,0,0,7); ctx.fill(); ctx.restore(); }
   }
   ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(0,0,rx+5,ry+5,0,0,7); ctx.fill();
   ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,7); ctx.save(); ctx.clip();
   ctx.drawImage(face,-rx,-ry,rx*2,ry*2);
-  headband(ctx,rx,ry);
+  faceOverlay(ctx,rx,ry,L);
   ctx.restore();
+  if (o.feathers){
+    ctx.fillStyle = trim; rr(ctx,-rx*0.7,-ry-4,rx*1.4,13,6); ctx.fill();
+    ctx.fillStyle = '#fff'; for (let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(-rx*0.5+i*rx*0.25,-ry+2,3.2,0,7); ctx.fill(); }
+  }
+  if (o.hat){
+    ctx.fillStyle = C.cream; rr(ctx,-rx*0.74,-ry*1.36,rx*1.48,ry*0.62,8); ctx.fill();
+    ctx.fillStyle = trim; ctx.fillRect(-rx*0.74,-ry*0.92,rx*1.48,ry*0.13);
+    ctx.fillStyle = C.cream; rr(ctx,-rx-14,-ry*0.82,rx*2+28,13,6); ctx.fill();
+  }
   ctx.restore();
-  arm(ph, false);
+  const fh = arm(ph, false);
+  if (L.acc.scope) held(fh,'scope'); else if (L.acc.syringe) held(fh,'syringe');
   ctx.restore();
 }
 
@@ -571,7 +766,7 @@ function drawScene(ctx, W, H, dist, t, ph, face, confetti, fin=-1){
   // จอแนวตั้ง: ย่อฉากให้เห็นกว้างอย่างน้อย 540 หน่วย แล้วเติมท้องฟ้าด้านบน
   const s = Math.min(H/600, W/540), VW = W/s, TOP = 600 - H/s;
   ctx.setTransform(s,0,0,s,0,-TOP*s);
-  const cam = dist*U, RX = Math.max(150, VW*0.3);
+  const cam = dist*U, RX = Math.max(state.acc.ecmo ? 245 : 150, VW*0.3);
   // sky + grid
   ctx.fillStyle = C.blue; ctx.fillRect(0,TOP,VW,600-TOP);
   if (TOP < -150){
@@ -633,7 +828,7 @@ function drawScene(ctx, W, H, dist, t, ph, face, confetti, fin=-1){
   if (fin >= 0) bandParade(ctx, VW, fin, t);
   const cheer = fin < 0 ? 0 : Math.max(0, Math.min(1,(fin-1.2)/0.4));
   const jump = cheer ? Math.abs(Math.sin((fin-1.2)*5.2))*38*cheer : 0;
-  drawRunner(ctx, RX, GY+34-jump, ph, 1.02, face, state.skin, cheer);
+  drawRunner(ctx, RX, GY+34, ph, 1.02, face, curLook(), cheer, jump);
   // bib name floating tag
   if (state.name){
     ctx.font = FONT(20,'800'); ctx.textAlign='center';
@@ -670,14 +865,14 @@ function paintFace(g, w, h){
   g.drawImage(ed.img, w/2 - dw/2 + ed.ox*w, h/2 - dh/2 + ed.oy*w, dw, dh);
 }
 function drawEditor(){
-  const w = edC.width, h = edC.height, g = edX;
+  const w = edC.width, h = edC.height, g = edX; pvDirty = true;
   g.clearRect(0,0,w,h);
   paintFace(g,w,h);
   // mask outside ellipse
   g.save(); g.fillStyle = 'rgba(20,36,95,.78)';
   g.beginPath(); g.rect(0,0,w,h); g.ellipse(w/2,h/2,w/2-14,h/2-14,0,0,Math.PI*2,true); g.fill('evenodd'); g.restore();
   g.save(); g.translate(w/2,h/2); g.beginPath(); g.ellipse(0,0,w/2-14,h/2-14,0,0,7);
-  g.save(); g.clip(); g.globalAlpha = .9; headband(g,w/2-14,h/2-14); g.restore();
+  g.save(); g.clip(); g.globalAlpha = .9; faceOverlay(g,w/2-14,h/2-14,curLook()); g.restore();
   g.strokeStyle = '#fff'; g.lineWidth = 6; g.stroke(); g.restore();
 }
 function exportFace(){
@@ -722,6 +917,36 @@ SKINS.forEach(col => {
   b.onclick = () => { state.skin = col; [...$('skins').children].forEach(x => x.setAttribute('aria-pressed', x === b)); drawEditor(); };
   $('skins').appendChild(b);
 });
+
+/* ---------- ตัวเลือกชุด สี และอุปกรณ์ + ตัวอย่างสด ---------- */
+const picks = [];
+function addPick(parent, cls, label, isOn, pick, bg){
+  const b = document.createElement('button'); b.type = 'button'; if (cls) b.className = cls;
+  if (bg){ b.style.background = bg; b.setAttribute('aria-label', label); } else b.textContent = label;
+  b.onclick = () => { pick(); syncPicks(); drawEditor(); };
+  picks.push([b,isOn]); parent.appendChild(b);
+}
+function syncPicks(){ for (const [b,isOn] of picks) b.setAttribute('aria-pressed', isOn()); }
+for (const o of OUTFITS) addPick($(o.run ? 'fitRun' : 'fitFancy'), 'chip', o.name, () => state.outfit === o.id, () => { state.outfit = o.id; });
+COLORS.forEach(([c,t],i) => addPick($('colors'), '', 'สีชุดแบบที่ '+(i+1), () => state.color === i, () => { state.color = i; },
+  `linear-gradient(135deg, ${c} 0 62%, ${t} 62%)`));
+for (const a of ACCS) addPick($('accs'), 'chip', a.name, () => !!state.acc[a.id], () => { state.acc[a.id] = !state.acc[a.id]; });
+syncPicks();
+const pv = $('prev'), pg = pv.getContext('2d'); let pvFace = null, pvOn = false;
+function prevLoop(now){
+  if (!$('make').classList.contains('on')){ pvOn = false; return; }
+  if (pvDirty || !pvFace){ pvFace = exportFace(); pvDirty = false; }
+  const t = now/1000;
+  pg.setTransform(1,0,0,1,0,0); pg.fillStyle = C.blue; pg.fillRect(0,0,720,440);
+  pg.strokeStyle = 'rgba(255,255,255,.07)'; pg.lineWidth = 1; pg.beginPath();
+  for (let x=0;x<720;x+=40){ pg.moveTo(x,0); pg.lineTo(x,380); } for (let y=0;y<380;y+=40){ pg.moveTo(0,y); pg.lineTo(720,y); } pg.stroke();
+  pg.fillStyle = C.deep; pg.fillRect(0,380,720,60); pg.fillStyle = C.pink; pg.fillRect(0,380,720,6);
+  pg.fillStyle = C.yellow; for (let x=-((t*260)%120); x<720; x+=120) pg.fillRect(x,414,64,6);
+  pg.fillStyle = 'rgba(0,0,0,.35)'; pg.beginPath(); pg.ellipse(366,410,54,9,0,0,7); pg.fill();
+  drawRunner(pg, 360, 406, t*8.5, 0.92, pvFace, curLook());
+  requestAnimationFrame(prevLoop);
+}
+function openMake(){ show('make'); drawEditor(); if (!pvOn){ pvOn = true; requestAnimationFrame(prevLoop); } }
 
 /* ---------- เสียง: จังหวะ 3 ช่า + แตรวง (สังเคราะห์สดด้วย Web Audio ไม่ใช้ไฟล์เสียง) ---------- */
 const snd = {ctx:null, out:null, noise:null, mode:'off', step:0, next:0, timer:0, muted:false, token:0};
@@ -876,8 +1101,9 @@ function drawCard(){
   // ferris + disco as collage props
   g.save(); g.translate(850,1190); ferris(g,1.3); g.restore();
   // runner
-  g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(395,1040,170,24,0,0,7); g.fill();
-  drawRunner(g, 380, 1030, 0.9, 2.15, state.face, state.skin);
+  const carts = state.acc.xray || state.acc.ecmo, rk = carts ? 1.72 : 2.15, rX = state.acc.ecmo ? 420 : 380;
+  g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(rX+15,1040,170,24,0,0,7); g.fill();
+  drawRunner(g, rX, 1030, 0.9, rk, state.face, curLook());
   // finisher badge
   g.save(); g.translate(820,520); g.rotate(.09);
   g.fillStyle = C.yellow; g.fillRect(-200,-90,400,236); g.strokeStyle = C.navy; g.lineWidth = 6; g.strokeRect(-200,-90,400,236);
@@ -886,7 +1112,7 @@ function drawCard(){
   g.fillStyle = C.pink; g.font = FONT(70); g.fillText(fmt(state.lastTime || 1800),0,120);
   g.restore();
   // medal
-  g.save(); g.translate(660,800);
+  g.save(); g.translate(state.acc.xray ? 955 : 660, state.acc.xray ? 745 : 800);
   g.fillStyle = '#fff'; g.beginPath(); g.moveTo(-50,-120); g.lineTo(-14,-120); g.lineTo(14,-30); g.lineTo(-22,-30); g.fill();
   g.fillStyle = '#5b7be0'; g.beginPath(); g.moveTo(50,-120); g.lineTo(14,-120); g.lineTo(-14,-30); g.lineTo(22,-30); g.fill();
   g.fillStyle = '#c9952c'; g.beginPath(); g.arc(0,20,62,0,7); g.fill();
@@ -927,11 +1153,11 @@ $('share').onclick = async () => {
 };
 
 /* ---------- นำทาง ---------- */
-$('goMake').onclick = () => { show('make'); drawEditor(); };
+$('goMake').onclick = openMake;
 $('backHome').onclick = () => show('home');
 $('goRun').onclick = startRun;
 $('again').onclick = startRun;
-$('reface').onclick = () => { show('make'); drawEditor(); };
+$('reface').onclick = openMake;
 
 const paintStatic = () => { const g = $('shirtPrev').getContext('2d'); g.clearRect(0,0,240,240); drawShirt(g,120,122,220); drawEditor(); if ($('done').classList.contains('on')) finish(); };
 paintStatic();
