@@ -85,6 +85,8 @@
   #count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
   #count .retro{font-size:min(40vw,220px)}
 
+  .mute{position:absolute;right:12px;top:108px;width:46px;height:46px;border:2px solid #fff;background:var(--navy);color:#fff;font-size:20px;cursor:pointer;padding:0}
+
   /* done */
   #cardImg{width:min(100%,380px);height:auto;border:4px solid var(--yellow);box-shadow:8px 8px 0 var(--pink)}
   [hidden]{display:none!important}
@@ -143,6 +145,7 @@
       </div>
       <div class="bar"><i id="hBar"></i></div>
     </div>
+    <button class="mute" id="mute" type="button" aria-label="ปิดเสียง">🔊</button>
     <div id="count"><div class="retro" id="countTxt"></div></div>
     <div class="hint" id="hint"><span>แตะจอ / กด Space รัว ๆ เพื่อเร่งสปีด!</span></div>
   </div>
@@ -720,6 +723,90 @@ SKINS.forEach(col => {
   $('skins').appendChild(b);
 });
 
+/* ---------- เสียง: จังหวะ 3 ช่า + แตรวง (สังเคราะห์สดด้วย Web Audio ไม่ใช้ไฟล์เสียง) ---------- */
+const snd = {ctx:null, out:null, noise:null, mode:'off', step:0, next:0, timer:0, muted:false, token:0};
+try { snd.muted = localStorage.getItem('3cha-mute') === '1'; } catch {}
+const STEP = 60/126/4;                       // ความยาวโน้ตเขบ็ต 2 ชั้นที่ 126 BPM
+const midi = n => 440*Math.pow(2,(n-69)/12);
+// ทำนองแตรวง 4 ห้อง [ตำแหน่ง, โน้ต, ความยาว] — จบด้วย "ช่า ช่า ช่า"
+const TUNE = [[0,67,2],[2,69,2],[4,72,2],[6,74,2],[8,76,4],[12,74,2],[14,72,2],
+  [16,74,2],[18,76,2],[20,79,4],[24,76,2],[26,74,2],[28,72,4],
+  [32,69,2],[34,72,2],[36,74,2],[38,72,2],[40,69,4],[44,67,2],[46,69,2],
+  [48,72,2],[50,74,2],[52,76,2],[54,79,2],[56,72,2],[58,72,2],[60,72,4]];
+const BASS = [[36,43],[36,43],[41,48],[43,50]];
+function env(g,t,a,peak,d){ g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
+function tone(t,type,f,a,peak,d,f2,lp){
+  const c = snd.ctx, o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(f,t);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2,t+d);
+  env(g,t,a,peak,d); let node = o;
+  if (lp){ const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); node = fl; }
+  node.connect(g); g.connect(snd.out); o.start(t); o.stop(t+a+d+0.05);
+}
+function hiss(t,hp,peak,d){
+  const c = snd.ctx, src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = snd.noise; f.type = 'highpass'; f.frequency.value = hp; env(g,t,0.002,peak,d);
+  src.connect(f); f.connect(g); g.connect(snd.out); src.start(t); src.stop(t+d+0.05);
+}
+function brass(t,n,len,vol){
+  const c = snd.ctx, g = c.createGain(), fl = c.createBiquadFilter(), d = len*STEP;
+  fl.type = 'lowpass'; fl.Q.value = 2;
+  fl.frequency.setValueAtTime(500,t); fl.frequency.linearRampToValueAtTime(2600,t+0.05); fl.frequency.linearRampToValueAtTime(1300,t+d);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.03);
+  g.gain.setValueAtTime(vol*0.8,t+d*0.75); g.gain.linearRampToValueAtTime(0.0001,t+d*0.97);
+  for (const det of [-7,7]){ const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = midi(n); o.detune.value = det; o.connect(fl); o.start(t); o.stop(t+d); }
+  fl.connect(g); g.connect(snd.out);
+}
+function schedule(step,t){
+  const s = step%16, b = BASS[Math.floor(step/16)%4];
+  if (s===0 || s===8){ tone(t,'sine',130,0.003,0.9,0.16,45); tone(t,'sawtooth',midi(b[0]),0.01,0.4,0.2,null,380); } // กลองใหญ่ + ทูบา
+  if (s===4 || s===12) tone(t,'sawtooth',midi(b[1]),0.01,0.3,0.16,null,380);
+  if (s%4===0){ tone(t,'square',800,0.002,0.1,0.07,null,3000); tone(t,'square',540,0.002,0.1,0.07,null,3000); }       // เคาะจังหวะ
+  if (s%4===2) hiss(t,7000,0.14,0.04);                                                                                // ฉิ่ง
+  if (s===4 || s===10) tone(t,'sine',260,0.002,0.3,0.08,200);
+  if (s===12 || s===14) tone(t,'sine',330,0.002,0.5,0.11,250);                                                        // ช่า ช่า
+  if (s===0) tone(t,'sine',220,0.002,0.55,0.14,160);                                                                  // ช่า
+  if (snd.mode === 'fin'){
+    const k = step%64;
+    for (const [st,n,len] of TUNE) if (st === k){ brass(t,n,len,0.16); brass(t,n-12,len,0.09); }
+    if (k === 0) hiss(t,4000,0.4,0.6);                                                                                // ฉาบ
+  }
+}
+function pump(){
+  if (!snd.ctx || snd.mode === 'off') return;
+  while (snd.next < snd.ctx.currentTime + 0.18){ schedule(snd.step, snd.next); snd.next += STEP; snd.step++; }
+}
+function sndStart(){
+  try {
+    if (!snd.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      const c = snd.ctx = new AC(); snd.out = c.createGain();
+      const comp = c.createDynamicsCompressor(); snd.out.connect(comp); comp.connect(c.destination);
+      const buf = c.createBuffer(1,c.sampleRate,c.sampleRate), d = buf.getChannelData(0);
+      for (let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+      snd.noise = buf;
+    }
+    snd.ctx.resume(); snd.token++;
+    snd.out.gain.cancelScheduledValues(0); snd.out.gain.setValueAtTime(snd.muted ? 0 : 0.55, snd.ctx.currentTime);
+    snd.mode = 'run'; snd.step = 0; snd.next = snd.ctx.currentTime + 0.08;
+    clearInterval(snd.timer); snd.timer = setInterval(pump,40); pump();
+  } catch {}
+}
+function sndFin(){ if (snd.ctx && snd.mode !== 'off'){ snd.mode = 'fin'; snd.step = 0; } }
+function sndStop(){
+  if (!snd.ctx || snd.mode === 'off') return;
+  const tk = snd.token; snd.out.gain.setTargetAtTime(0, snd.ctx.currentTime, 0.5);
+  setTimeout(() => { if (tk === snd.token){ snd.mode = 'off'; clearInterval(snd.timer); } }, 2500);
+}
+function paintMute(){ $('mute').textContent = snd.muted ? '🔇' : '🔊'; $('mute').setAttribute('aria-label', snd.muted ? 'เปิดเสียง' : 'ปิดเสียง'); }
+$('mute').addEventListener('pointerdown', e => e.stopPropagation());
+$('mute').onclick = () => {
+  snd.muted = !snd.muted; paintMute();
+  try { localStorage.setItem('3cha-mute', snd.muted ? '1' : '0'); } catch {}
+  if (snd.ctx) snd.out.gain.setTargetAtTime(snd.muted ? 0 : 0.55, snd.ctx.currentTime, 0.03);
+};
+paintMute();
+document.addEventListener('visibilitychange', () => { if (snd.ctx) document.hidden ? snd.ctx.suspend() : (snd.mode !== 'off' && snd.ctx.resume()); });
+
 /* ---------- การวิ่ง ---------- */
 const sc = $('scene'), sx = sc.getContext('2d');
 const run = {on:false, dist:0, time:0, boost:0, ph:0, t:0, phase:'idle', confetti:[], raf:0, last:0, cd:0};
@@ -730,7 +817,7 @@ function fit(){
 const fmt = sec => { const m = Math.floor(sec/60), s = Math.floor(sec%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); };
 function startRun(){
   state.face = exportFace(); state.name = $('name').value.trim();
-  show('run'); fit();
+  show('run'); fit(); sndStart();
   Object.assign(run, {on:true, dist:0, time:0, boost:0, ph:0, t:0, phase:'count', confetti:[], cd:3.2, last:performance.now()});
   $('hint').hidden = false; $('hint').firstElementChild.textContent = 'แตะจอ / กด Space รัว ๆ เพื่อเร่งสปีด!';
   cancelAnimationFrame(run.raf); run.raf = requestAnimationFrame(tick);
@@ -748,7 +835,7 @@ function tick(now){
     const v = 150 + run.boost;
     run.dist += v*dt; run.time += dt; run.ph += dt*(9 + run.boost*0.035);
     if (run.dist >= 5000){
-      run.phase = 'fin'; run.fin = 0; state.lastTime = run.time*55;
+      run.phase = 'fin'; run.fin = 0; sndFin(); state.lastTime = run.time*55;
       $('hint').firstElementChild.textContent = 'แตรวง 3 ช่า แห่ฉลองเข้าเส้นชัย! 🎺';
       for (let i=0;i<110;i++) run.confetti.push({x:Math.random(), y:-Math.random()*400, vy:160+Math.random()*220, r:Math.random()*6, vr:(Math.random()-.5)*8,
         c:[C.yellow,C.pink,'#fff',C.orange][i%4]});
@@ -823,7 +910,7 @@ function drawCard(){
   g.fillStyle = '#fff'; g.font = FONT(32,'600');
   g.fillText('สมัครได้ที่ www.life.ahs.nu.ac.th/ahs_run',W/2,1310);
 }
-function finish(){ drawCard(); $('cardImg').src = $('card').toDataURL('image/png'); show('done'); }
+function finish(){ sndStop(); drawCard(); $('cardImg').src = $('card').toDataURL('image/png'); show('done'); }
 const cardBlob = () => new Promise(r => $('card').toBlob(r,'image/png'));
 $('save').onclick = async () => {
   const b = await cardBlob(), a = document.createElement('a');
